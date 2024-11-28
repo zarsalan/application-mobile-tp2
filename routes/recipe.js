@@ -1,15 +1,15 @@
 import express from "express";
 const router = express.Router();
 
-import GroceryItem from "../models/item.js";
-import Category from "../models/item-category.js";
+import Recipe from "../models/recipe.js";
+import Category from "../models/recipe-category.js";
 // -- REQUÊTE --------------------------------------------------------------------------
 router.get("/get", async (req, res, next) => {
 	try {
 		const { categoryName, name } = req.query;
 
 		let category;
-		let groceryItems;
+		let recipes;
 
 		// Obtention du catégorie
 		if (categoryName) {
@@ -18,34 +18,37 @@ router.get("/get", async (req, res, next) => {
 			});
 
 			if (!category) {
+				console.log("Catégorie non trouvée: ", categoryName);
 				return res.status(404).json({
 					message: "Catégorie non trouvée",
 				});
 			}
 		}
 
-		// Obtention des items
+		// Obtention des recettes
 		if (category && name) {
-			groceryItems = await GroceryItem.find({ category, name });
-		} else if (category) {
-			groceryItems = await GroceryItem.find({
-				category,
+			recipes = await Recipe.find({
+				_id: { $in: category.recipes },
+				name: name,
 			});
+		} else if (category) {
+			recipes = await category.populate("recipes");
 		} else if (name) {
-			groceryItems = await GroceryItem.find({
+			recipes = await Recipe.find({
 				name,
 			});
 		} else {
-			groceryItems = await GroceryItem.find();
+			recipes = await Recipe.find();
+			const count = await Recipe.countDocuments();
 		}
 
-		if (!groceryItems || groceryItems.length === 0) {
+		if (!recipes || recipes.length === 0) {
 			return res.status(404).json({
 				message: "Aucun item trouvé",
 			});
 		}
 
-		res.json(groceryItems);
+		res.json(recipes);
 	} catch (err) {
 		next(err);
 	}

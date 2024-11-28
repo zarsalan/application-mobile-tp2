@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 
 import groceryItemRoutes from "./routes/grocery-item.js";
+import recipesRoutes from "./routes/recipe.js";
 
 import populate from "./utils/populate/populate.js";
 
@@ -20,6 +21,17 @@ async function connectToDatabase() {
 		// Connecte le client au serveur
 		await mongoose.connect(MONGO_DB_URI);
 		console.log("La connexion à la BD à été effectuée avec succès");
+
+		// Affichage des collections et de leur nombre de documents
+		const collections = await mongoose.connection.db
+			.listCollections()
+			.toArray();
+		for (const collection of collections) {
+			const count = await mongoose.connection.db
+				.collection(collection.name)
+				.countDocuments();
+			console.log(`Collection: ${collection.name}, count: ${count}`);
+		}
 
 		return true;
 	} catch (err) {
@@ -50,6 +62,7 @@ function runServer() {
 	});
 
 	app.use("/api/grocery-items", groceryItemRoutes);
+	app.use("/api/recipes", recipesRoutes);
 
 	// Démarrer le serveur
 	const PORT = process.env.PORT || 3000;
