@@ -33,9 +33,27 @@ router.get("/get", async (req, res, next) => {
 		if (category) {
 			recipes = await Recipe.find({
 				_id: { $in: category.recipes },
-			});
+			}).populate([
+				{
+					path: "category",
+					select: "name description",
+				},
+				{
+					path: "ingredients.item",
+					select: "name description",
+				},
+			]);
 		} else {
-			recipes = await Recipe.find();
+			recipes = await Recipe.find().populate([
+				{
+					path: "category",
+					select: "name description",
+				},
+				{
+					path: "ingredients.item",
+					select: "name description",
+				},
+			]);
 		}
 
 		if (!recipes || recipes.length === 0) {
