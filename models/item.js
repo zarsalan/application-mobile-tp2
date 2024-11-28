@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const groceryItemSchema = new mongoose.Schema({
 	category: {
-		type: String,
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "ItemCategory",
 		required: true,
 	},
 	name: {

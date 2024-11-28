@@ -1,8 +1,8 @@
 import express from "express";
 const router = express.Router();
 
-import GroceryItem from "../models/grocery-item.js";
-import Category from "../models/category.js";
+import GroceryItem from "../models/item.js";
+import Category from "../models/item-category.js";
 // -- REQUÊTE --------------------------------------------------------------------------
 router.get("/get", async (req, res, next) => {
 	try {

@@ -1,4 +1,4 @@
-export default Categories = [
+const itemCategories = [
 	{
 		name: "Fruits",
 		description: "Catégorie comprenant tous les types de fruits frais.",
@@ -322,3 +322,5 @@ export default Categories = [
 		description: "Sauces et épices rares pour des recettes uniques.",
 	},
 ];
+
+export default itemCategories;

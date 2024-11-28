@@ -1,18 +1,5 @@
 import mongoose from "mongoose";
 
-const ingredient = new mongoose.Schema({
-	name: {
-		type: String,
-		required: true,
-	},
-	quantity: {
-		type: String,
-	},
-	unit: {
-		type: String,
-	},
-});
-
 const recipeSchema = new mongoose.Schema({
 	name: {
 		type: String,
@@ -25,8 +12,13 @@ const recipeSchema = new mongoose.Schema({
 	},
 	ingredients: [
 		{
-			type: ingredient,
-			required: true,
+			item: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "GroceryItem",
+			},
+			quantity: {
+				type: String,
+			},
 		},
 	],
 	steps: [
@@ -35,12 +27,9 @@ const recipeSchema = new mongoose.Schema({
 			required: true,
 		},
 	],
-	preparationTime: {
-		type: Number,
-		required: true,
-	},
-	cookingTime: {
-		type: Number,
+	category: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "RecipeCategory",
 		required: true,
 	},
 });

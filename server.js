@@ -7,7 +7,7 @@ import cors from "cors";
 
 import groceryItemRoutes from "./routes/grocery-item.js";
 
-import populate from "./utils/populate.js";
+import populate from "./utils/populate/populate.js";
 
 const MONGO_DB_URI = process.env.MONGO_DB_URI;
 
