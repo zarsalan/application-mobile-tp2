@@ -3,6 +3,10 @@ const router = express.Router();
 
 import GroceryItem from "../models/item.js";
 import Category from "../models/item-category.js";
+
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const Fuse = require("fuse.js");
 // -- REQUÊTE --------------------------------------------------------------------------
 router.get("/get", async (req, res, next) => {
 	try {
@@ -24,19 +28,28 @@ router.get("/get", async (req, res, next) => {
 			}
 		}
 
-		// Obtention des items
-		if (category && name) {
-			groceryItems = await GroceryItem.find({ category, name });
-		} else if (category) {
+		// Obtention des items de la catégorie
+		if (category) {
 			groceryItems = await GroceryItem.find({
-				category,
-			});
-		} else if (name) {
-			groceryItems = await GroceryItem.find({
-				name,
+				_id: { $in: category.items },
 			});
 		} else {
 			groceryItems = await GroceryItem.find();
+		}
+
+		if (!groceryItems || groceryItems.length === 0) {
+			return res.status(404).json({
+				message: "Aucun item trouvé",
+			});
+		}
+
+		// Obtention des items par nom
+		if (name) {
+			const fuse = new Fuse(groceryItems, {
+				keys: ["name"],
+				threshold: 0.3,
+			});
+			groceryItems = fuse.search(name).map((result) => result.item);
 		}
 
 		if (!groceryItems || groceryItems.length === 0) {

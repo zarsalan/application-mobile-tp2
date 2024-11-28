@@ -3,6 +3,10 @@ const router = express.Router();
 
 import Recipe from "../models/recipe.js";
 import Category from "../models/recipe-category.js";
+
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const Fuse = require("fuse.js");
 // -- REQUÊTE --------------------------------------------------------------------------
 router.get("/get", async (req, res, next) => {
 	try {
@@ -25,21 +29,29 @@ router.get("/get", async (req, res, next) => {
 			}
 		}
 
-		// Obtention des recettes
-		if (category && name) {
+		// Obtention des recettes de la catégorie
+		if (category) {
 			recipes = await Recipe.find({
 				_id: { $in: category.recipes },
-				name: name,
-			});
-		} else if (category) {
-			recipes = await category.populate("recipes");
-		} else if (name) {
-			recipes = await Recipe.find({
-				name,
 			});
 		} else {
 			recipes = await Recipe.find();
-			const count = await Recipe.countDocuments();
+		}
+
+		if (!recipes || recipes.length === 0) {
+			console.log("Aucun item trouvé");
+			return res.status(404).json({
+				message: "Aucun item trouvé",
+			});
+		}
+
+		// Obtention des recettes par nom
+		if (name) {
+			const fuse = new Fuse(recipes, {
+				keys: ["name"],
+				threshold: 0.3,
+			});
+			recipes = fuse.search(name).map((result) => result.item);
 		}
 
 		if (!recipes || recipes.length === 0) {
