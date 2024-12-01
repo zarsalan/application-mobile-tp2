@@ -39,45 +39,52 @@ async function connectToDatabase() {
 		return false;
 	}
 }
+// -- MIDDLEWARE ET ROUTES --------------------------------------------------------------------------
+app.use(cors());
+app.use(express.json());
 
-function runServer() {
-	app.use(cors());
-	app.use(express.json());
+// Middleware pour valider la clé API
+// app.use((req, res, next) => {
+// 	const apiKey = req.header("api-key");
+// 	if (apiKey !== process.env.API_KEY) {
+// 		return res.status(403).json({ message: "La clé api est invalide" });
+// 	}
+// 	next();
+// });
 
-	// Middleware to validate API key
-	// app.use((req, res, next) => {
-	// 	const apiKey = req.header("api-key");
-	// 	if (apiKey !== process.env.API_KEY) {
-	// 		return res.status(403).json({ message: "La clé api est invalide" });
-	// 	}
-	// 	next();
-	// });
+// Middleware de gestion des erreurs
+app.use((error, req, res, next) => {
+	const status = error.status || 500;
+	const message = error.message || "Quelque chose s'est mal passé.";
+	console.error(`Error: ${message}\nStack: ${error.stack}`);
+	res.status(status).json({ message: message });
+});
 
-	// Middleware de gestion des erreurs
-	app.use((error, req, res, next) => {
-		const status = error.status || 500;
-		const message = error.message || "Quelque chose s'est mal passé.";
-		console.error(error.stack);
-		res.status(status).json({ message: message });
-	});
+// Routes
+app.use("/api/grocery-items", groceryItemRoutes);
+app.use("/api/recipes", recipesRoutes);
 
-	app.use("/api/grocery-items", groceryItemRoutes);
-	app.use("/api/recipes", recipesRoutes);
-
-	// Démarrer le serveur
-	const PORT = process.env.PORT || 3000;
-	app.listen(PORT, () => {
-		console.log(`Le serveur est lancé sur le port ${PORT}`);
-	});
-
-	// Ajout des données dans la bd
-	// populate();
-}
+export default app;
 // -- EXÉCUTION DES FONCTIONS --------------------------------------------------------------------------
 connectToDatabase()
 	.then((result) => {
+		const PORT = process.env.PORT || 3000;
 		if (result) {
-			runServer();
+			// On démarre le serveur seulement si on est en mode développement
+			if (process.env.NODE_ENV === "development") {
+				app.listen(PORT, () => {
+					console.log(`Le serveur est lancé sur le port ${PORT}`);
+				});
+
+				// Ajout des données dans la bd
+				// populate();
+			} else {
+				app.listen(PORT, () => {
+					console.log(
+						`Le serveur roule en mode production sur le port ${PORT}`
+					);
+				});
+			}
 		}
 	})
 	.catch((error) => {
