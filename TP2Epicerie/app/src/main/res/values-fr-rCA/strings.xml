@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TP1-Epicerie</string>
+    <string name="app_name">TP2-Epicerie</string>
     <string name="addlist_button">Créer la liste</string>
     <string name="addlist_toast">Liste ajouté</string>
     <string name="addlist_update">Mettre à jour la liste</string>

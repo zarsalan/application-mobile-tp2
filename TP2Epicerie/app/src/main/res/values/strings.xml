@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TP1-Epicerie</string>
+    <string name="app_name">TP2-Epicerie</string>
     <string name="addlist_button">Create the list</string>
     <string name="addlist_toast">List added</string>
     <string name="addlist_update">Update the list</string>

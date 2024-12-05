@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.tp1_epicerie"
+    namespace = "com.example.tp2_epicerie"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.tp1_epicerie"
+        applicationId = "com.example.tp2_epicerie"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -64,6 +64,11 @@ dependencies {
 
     // Pour les images
     implementation(libs.coil.compose)
+
+    // Pour les requêtes HTTP
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson.converter)
+    implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
