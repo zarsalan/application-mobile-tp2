@@ -42,6 +42,12 @@ android {
 }
 
 dependencies {
+    //Bcrypt(cryptage pwd)
+    implementation("org.mindrot:jbcrypt:0.4")
+
+    //Firebase
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
     // Compose
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

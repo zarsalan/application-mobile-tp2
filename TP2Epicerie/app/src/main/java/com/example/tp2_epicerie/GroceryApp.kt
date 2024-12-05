@@ -1,13 +1,26 @@
 package com.example.tp2_epicerie
 
 import android.app.Application
+import android.content.Context
 
-// On crée une classe GroceryApp qui hérite de Application et qui va nous permettre d'initialiser le graph
+// Classe GroceryApp pour initialiser le graph
 class GroceryApp : Application() {
+
+    companion object {
+        lateinit var instance: GroceryApp
+            private set
+
+        val context: Context
+            get() = instance.applicationContext
+    }
+
     override fun onCreate() {
         super.onCreate()
 
-        // On initialise le graph
+        // Initialisation de l'instance
+        instance = this
+
+        // Initialisation du graph
         Graph.provide(this)
     }
 }
