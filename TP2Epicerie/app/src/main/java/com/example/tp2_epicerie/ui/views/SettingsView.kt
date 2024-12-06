@@ -1,5 +1,6 @@
 package com.example.tp2_epicerie.ui.views
 
+import GroceryViewModel
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement

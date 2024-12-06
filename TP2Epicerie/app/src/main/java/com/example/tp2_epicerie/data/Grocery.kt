@@ -41,3 +41,33 @@ data class ListConnexion(
     var listId: String = "",
     var permission: String = "" //Reader, Modifier, Admin, Founder
 )
+
+data class Recipe(
+    val name: String,
+    val description: String,
+    val ingredients: List<Ingredient>,
+    val steps: List<String>,
+    val category: String
+)
+
+data class Ingredient(
+    val name: String,
+    val quantity: String,
+    val category: String
+)
+
+data class RecipeCategory(
+    val name: String,
+    val description: String
+)
+
+data class GroceryItem(
+    val name: String,
+    val category: String,
+    val description: String
+)
+
+data class ItemCategory(
+    val name: String,
+    val description: String
+)

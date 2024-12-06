@@ -1,6 +1,11 @@
 package com.example.tp1_epicerie.data
 
 import android.net.Uri
+import com.example.tp2_epicerie.data.GroceryList
+import com.example.tp2_epicerie.data.ListConnexion
+import com.example.tp2_epicerie.data.ListItem
+import com.example.tp2_epicerie.data.Settings
+import com.example.tp2_epicerie.data.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage

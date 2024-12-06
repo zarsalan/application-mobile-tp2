@@ -1,13 +1,16 @@
 import android.net.Uri
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tp1_epicerie.GroceryApp
-import com.example.tp1_epicerie.data.GroceryDatabase
-import com.example.tp1_epicerie.data.GroceryList
-import com.example.tp1_epicerie.data.ListConnexion
-import com.example.tp1_epicerie.data.ListItem
-import com.example.tp1_epicerie.data.Settings
-import com.example.tp1_epicerie.data.User
+import com.example.tp2_epicerie.Graph.groceryRepository
+import com.example.tp2_epicerie.GroceryApp
+import com.example.tp2_epicerie.data.GroceryDatabase
+import com.example.tp2_epicerie.data.GroceryList
+import com.example.tp2_epicerie.data.ListConnexion
+import com.example.tp2_epicerie.data.ListItem
+import com.example.tp2_epicerie.data.Settings
+import com.example.tp2_epicerie.data.User
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -175,4 +178,26 @@ class GroceryViewModel(
             }
         }
     }
+/*
+    // Dark mode, on initialise et obtient la valeur _isDarkTheme ----
+    private val _isDarkTheme = mutableStateOf(false)
+    val isDarkTheme: State<Boolean> = _isDarkTheme
+
+    init {
+        viewModelScope.launch {
+            groceryRepository.getSettings()
+                .map { settings -> settings?.darkMode == 1 }
+                .collect { isDark -> _isDarkTheme.value = isDark }
+        }
+    }
+
+    fun updateDarkMode(enabled: Boolean) {
+        viewModelScope.launch {
+            val currentSettings = groceryRepository.getSettings().first() ?: Settings()
+            groceryRepository.updateSettings(
+                currentSettings.copy(darkMode = if (enabled) 1 else 0)
+            )
+        }
+    }
+ */
 }

@@ -1,6 +1,11 @@
 package com.example.tp2_epicerie.data
 
 import android.content.Context
+import com.example.tp1_epicerie.data.GroceryListBD
+import com.example.tp1_epicerie.data.ListConnexionBD
+import com.example.tp1_epicerie.data.ListItemBD
+import com.example.tp1_epicerie.data.SettingsBD
+import com.example.tp1_epicerie.data.UserBD
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.CoroutineScope
