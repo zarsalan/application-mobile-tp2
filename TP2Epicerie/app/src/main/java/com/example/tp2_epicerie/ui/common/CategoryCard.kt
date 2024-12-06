@@ -1,5 +1,6 @@
 package com.example.tp2_epicerie.ui.common
 
+import GroceryViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -27,14 +28,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.tp2_epicerie.GroceryViewModel
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
-import com.example.tp2_epicerie.data.Category
+import com.example.tp2_epicerie.data.ItemCategory
 
 data class CustomCategoryCardInfo(
     val categoryId: Long = 0L,
-    val category: Category,
+    val category: ItemCategory,
     val title: String,
     val onClick: () -> Unit,
     val containerColor: Color,

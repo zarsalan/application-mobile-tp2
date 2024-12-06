@@ -15,7 +15,6 @@ import com.example.tp2_epicerie.ui.theme.TP1EpicerieTheme
 
 // L'activité principale de l'application
 class MainActivity : ComponentActivity() {
-    private val settingsViewModel: GroceryViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

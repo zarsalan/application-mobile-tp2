@@ -147,5 +147,3 @@ fun AddEditListView(
         }
     }
 }
-
-

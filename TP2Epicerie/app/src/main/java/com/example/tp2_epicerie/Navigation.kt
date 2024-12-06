@@ -10,14 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.tp2_epicerie.ui.views.AddEditCategoryView
-import com.example.tp2_epicerie.ui.views.AddEditItemView
-import com.example.tp2_epicerie.ui.views.AddEditListView
-import com.example.tp2_epicerie.ui.views.HomeView
-import com.example.tp2_epicerie.ui.views.CategoriesView
-import com.example.tp2_epicerie.ui.views.CustomGroceryListView
-import com.example.tp2_epicerie.ui.views.GroceryItemsView
-import com.example.tp2_epicerie.ui.views.SettingsView
+import com.example.tp2_epicerie.ui.views.ConnexionView
+
 
 @Composable
 fun Navigation(
@@ -32,7 +26,7 @@ fun Navigation(
     ) {
         // Page principal
         composable(Screen.HomeScreen.route) {
-            HomeView(viewModel, navHostController)
+            ConnexionView(viewModel, navHostController)
         }
 
         // Affichage de tous les articles
@@ -97,5 +91,6 @@ fun Navigation(
         composable(Screen.Settings.route) {
             SettingsView(viewModel, navHostController)
         }
+
     }
 }

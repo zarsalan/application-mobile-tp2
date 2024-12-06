@@ -6,6 +6,8 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+// Les classes de firebase
+
 data class ListItem(
     var id: String = "",
     var groceryItem: String = "",
@@ -22,7 +24,7 @@ data class GroceryList(
 )
 
 data class Settings(
-    var id: String = "app_settings",
+    var id: String = "",
     var userId: String = "",
     var darkMode: Boolean = false,
     var language: String = "fr"
@@ -41,6 +43,8 @@ data class ListConnexion(
     var listId: String = "",
     var permission: String = "" //Reader, Modifier, Admin, Founder
 )
+
+//Les classes de l'api
 
 data class Recipe(
     val name: String,

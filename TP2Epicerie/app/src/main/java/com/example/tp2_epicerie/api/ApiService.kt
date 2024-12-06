@@ -1,6 +1,7 @@
 package com.example.tp2_epicerie.api
 
 import com.example.tp2_epicerie.data.GroceryItem
+import com.example.tp2_epicerie.data.Recipe
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

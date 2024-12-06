@@ -65,4 +65,5 @@
     <string name="add_list">Ajouter à une liste d\'épicerie</string>
     <string name="text_categories">Les catégories</string>
     <string name="text_theme">Thème</string>
+    <string name="connexion_screen_title">Connexion</string>
 </resources>

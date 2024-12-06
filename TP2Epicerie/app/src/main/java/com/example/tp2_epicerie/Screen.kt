@@ -16,6 +16,12 @@ sealed class Screen(val route: String) {
         override fun title() = stringResource(R.string.home_screen_title)
     }
 
+    // Page de connexion
+    object ConnexionScreen : Screen("connexion_screen") {
+        @Composable
+        override fun title() = stringResource(R.string.connexion_screen_title)
+    }
+
     object AddEditListScreen : Screen("add_edit_list_screen") {
         @Composable
         override fun title() = stringResource(R.string.add_list_title)

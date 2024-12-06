@@ -1,5 +1,6 @@
 package com.example.tp2_epicerie.ui.views
 
+import GroceryViewModel
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,6 +34,7 @@ import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.Category
 import com.example.tp2_epicerie.data.GroceryItem
+import com.example.tp2_epicerie.data.ItemCategory
 import com.example.tp2_epicerie.ui.common.AppBarMenu
 import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
 import com.example.tp2_epicerie.ui.common.AppBarView
@@ -49,11 +51,11 @@ fun GroceryItemsView(
     mode: Boolean
 ) {
     val groceryItemsList = remember { mutableStateListOf<GroceryItem>() }
-    var itemsByCategory by remember { mutableStateOf(mapOf<Category, List<GroceryItem>>()) }
+    var itemsByCategory by remember { mutableStateOf(mapOf<ItemCategory, List<GroceryItem>>()) }
 
     // On met à jour les items par catégorie
     suspend fun updateItemsByCategory() {
-        val updatedItemsByCategory = mutableMapOf<Category, MutableList<GroceryItem>>()
+        val updatedItemsByCategory = mutableMapOf<ItemCategory, MutableList<GroceryItem>>()
         groceryItemsList
             .forEach { groceryItem ->
                 val category = viewModel.getCategoryById(groceryItem.categoryId ?: 1L).first()

@@ -1,5 +1,6 @@
 package com.example.tp2_epicerie.ui.views
 
+import GroceryViewModel
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,10 +24,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.tp2_epicerie.GroceryViewModel
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
-import com.example.tp2_epicerie.data.Category
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomTextField
 import com.example.tp2_epicerie.ui.theme.submitButtonColors

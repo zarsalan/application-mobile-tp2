@@ -3,7 +3,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tp2_epicerie.Graph.groceryRepository
 import com.example.tp2_epicerie.GroceryApp
 import com.example.tp2_epicerie.data.GroceryDatabase
 import com.example.tp2_epicerie.data.GroceryList
@@ -178,7 +177,6 @@ class GroceryViewModel(
             }
         }
     }
-/*
     // Dark mode, on initialise et obtient la valeur _isDarkTheme ----
     private val _isDarkTheme = mutableStateOf(false)
     val isDarkTheme: State<Boolean> = _isDarkTheme
@@ -199,5 +197,5 @@ class GroceryViewModel(
             )
         }
     }
- */
+
 }

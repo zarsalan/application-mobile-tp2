@@ -221,5 +221,3 @@ fun CustomGroceryListView(
         }
     }
 }
-
-
