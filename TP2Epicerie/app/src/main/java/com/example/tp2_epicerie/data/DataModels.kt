@@ -62,17 +62,15 @@ data class RecipeList(
 
 // Entités venant de l'API et modifié par l'utilisateur
 data class GroceryItemUser(
-    var id: String = "", // Idée unique générée par UUID
-    var idApi: String = "",
-    var categoryName: String = "", // Référence au nom de catégorie GroceryItemCategoryUser
+    var id: String = "", // Idée unique de l'api ou générée par UUID
+    var categoryId: String = "", // Référence au id de GroceryItemCategoryUser
     var name: String = "",
     var description: String = "",
     var isFavorite: Boolean = false,
 )
 
 data class GroceryItemCategoryUser(
-    var id: String = "", // Idée unique générée par UUID
-    var idApi: String = "",
+    var id: String = "", // Idée unique de l'api ou générée par UUID
     val name: String = "",
     val description: String = "",
 )
@@ -92,8 +90,8 @@ data class GroceryItemCategoryAPI(
 )
 
 data class Recipe(
-    var id: String = "",
-    var idApi: String = "",
+    var id: String = "", // Idée unique générée par UUID
+    var idApi: String = "", // Idée unique de l'api
     var name: String,
     var description: String,
     var ingredients: List<Ingredient>,
