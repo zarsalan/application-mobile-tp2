@@ -34,7 +34,6 @@ data class User(
     var id: String = "",
     var username: String = "",
     var password: String = "", // Stocke le mot de passe haché de bcrypt
-    var iconUrl: String = "" // URL de l'image stockée dans Firebase Storage
 )
 
 data class ListConnexion(
@@ -47,31 +46,32 @@ data class ListConnexion(
 //Les classes de l'api
 
 data class Recipe(
-    val name: String,
-    val description: String,
-    val ingredients: List<Ingredient>,
-    val steps: List<String>,
-    val category: String
+    var id: String = "",
+    var name: String,
+    var description: String,
+    var ingredients: List<Ingredient>,
+    var steps: List<String>,
+    var category: String
 )
 
 data class Ingredient(
-    val name: String,
-    val quantity: String,
-    val category: String
+    var name: String,
+    var quantity: String,
+    var category: String
 )
 
 data class RecipeCategory(
-    val name: String,
-    val description: String
+    var name: String,
+    var description: String
 )
 
 data class GroceryItem(
-    val name: String,
-    val category: String,
-    val description: String
+    var name: String,
+    var category: String,
+    var description: String
 )
 
 data class ItemCategory(
-    val name: String,
-    val description: String
+    var name: String,
+    var description: String
 )

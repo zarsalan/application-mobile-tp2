@@ -48,15 +48,10 @@ class UserBD(private val db: FirebaseFirestore, private val storage: FirebaseSto
 
     suspend fun createUser(user: User, password: String, imageUri: Uri) {
         val hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt())
-        val iconRef = storage.reference.child("userIcons/${user.id}.jpg")
 
         try {
-            // 1. Télécharge l'image
-            iconRef.putFile(imageUri).await()
-            val iconUrl = iconRef.downloadUrl.await().toString()
-
-            // 2. Crée un utilisateur avec le mot de passe haché et l'URL d'image
-            val newUser = user.copy(password = hashedPassword, iconUrl = iconUrl)
+            // 2. Crée un utilisateur avec le mot de passe haché
+            val newUser = user.copy(password = hashedPassword)
             db.collection("users").document(newUser.id).set(newUser).await()
         } catch (e: Exception) {
             throw Exception("Erreur lors de la création de l'utilisateur : ${e.message}")

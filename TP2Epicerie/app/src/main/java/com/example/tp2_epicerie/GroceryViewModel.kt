@@ -97,18 +97,15 @@ class GroceryViewModel(
     }
 
     // Section Settings -------------------------------------------------
-    private val _settings = MutableStateFlow<Settings?>(null)
-    val settings: StateFlow<Settings?> = _settings
+    private val _settings = MutableStateFlow<Settings>(Settings())
+    val settings: StateFlow<Settings> = _settings
 
     // Récupération des paramètres de l'utilisateur actuel
-    fun fetchSettings(userId: String) {
+    fun fetchSettings() {
         viewModelScope.launch {
-            try {
-                val settings = settingsBD.getSettings(userId)
-                _settings.value = settings
-                _isDarkTheme.value = settings?.darkMode ?: false
-            } catch (e: Exception) {
-                println("Erreur lors de la récupération des paramètres : ${e.message}")
+            currentUser.value?.id?.let { userId ->
+                val userSettings = settingsBD.getSettings(userId) ?: Settings(userId = userId)
+                _settings.value = userSettings
             }
         }
     }
@@ -117,6 +114,7 @@ class GroceryViewModel(
         viewModelScope.launch {
             try {
                 settingsBD.createOrUpdateSettings(settings)
+                _settings.value = settings
             } catch (e: Exception) {
                 println("Erreur lors de la mise à jour des paramètres : ${e.message}")
             }
@@ -209,7 +207,7 @@ class GroceryViewModel(
         viewModelScope.launch {
             _currentUser.collect { user ->
                 if (user != null) {
-                    fetchSettings(user.id)
+                    fetchSettings()
                 } else {
                     _isDarkTheme.value = false // Valeur par défaut
                 }

@@ -29,10 +29,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.tp2_epicerie.GroceryViewModel
+
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
-import com.example.tp2_epicerie.data.Category
+
 import com.example.tp2_epicerie.data.GroceryItem
 import com.example.tp2_epicerie.data.ItemCategory
 import com.example.tp2_epicerie.ui.common.AppBarMenu

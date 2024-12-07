@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.tp2_epicerie.GroceryViewModel
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.Settings
@@ -33,98 +33,93 @@ import com.example.tp2_epicerie.ui.common.CustomDropdownMenus
 @Composable
 fun SettingsView(viewModel: GroceryViewModel, navHostController: NavHostController) {
     val context = LocalContext.current
+    val currentUser by viewModel.currentUser.collectAsState()
+    val settings by viewModel.settings.collectAsState()
 
-    var darkMode by remember { mutableStateOf(false) }
+    // Variables locales pour l'état des paramètres
+    var darkMode by remember { mutableStateOf(settings.darkMode) }
+    var language by remember { mutableStateOf(settings.language) }
 
-    val textLanguageFr: String = stringResource(R.string.language_french)
-    val textLanguageEng: String = stringResource(R.string.language_english)
-    var language by remember { mutableStateOf(textLanguageFr) }
-    val currentContext = LocalContext.current
-
-    val settings = viewModel.getSettings().collectAsState(initial = Settings()).value ?: Settings()
-
-    darkMode = settings.darkMode == 1
-    language = settings.language
+    // Chargement des paramètres utilisateur
+    LaunchedEffect(currentUser) {
+        if (currentUser != null) {
+            viewModel.fetchSettings()
+        }
+    }
 
     Log.d("SettingsView", "darkMode: $darkMode, language: $language")
 
-    Scaffold(topBar = {
-        AppBarView(
-            title = Screen.AddEditCategory.title(),
-            navHostController = navHostController
-        )
-    }
-    ) {
+    Scaffold(
+        topBar = {
+            AppBarView(
+                title = Screen.AddEditCategory.title(),
+                navHostController = navHostController
+            )
+        }
+    ) { padding ->
         Column(
             modifier = Modifier
-                .padding(it)
+                .padding(padding)
                 .padding(top = 15.dp, bottom = 15.dp)
                 .wrapContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            val textsettingUpdated: String = stringResource(R.string.settings_toast)
-            /*
+            val textSettingUpdated: String = stringResource(R.string.settings_toast)
+
+            // Dropdown pour le choix de la langue
             CustomDropdownMenu(
                 modifier = Modifier.padding(start = 25.dp, top = 10.dp, end = 25.dp),
                 label = stringResource(R.string.text_language),
                 value = language,
                 customDropdownMenus = CustomDropdownMenus(
                     menus = listOf(
-                        textLanguageFr,
-                        textLanguageEng
+                        stringResource(R.string.language_french),
+                        stringResource(R.string.language_english)
                     ).map { it ->
                         CustomDropdownMenu(
                             text = it,
                             onClick = {
                                 language = it
-                                viewModel.upsertSettings(
+                                viewModel.updateSettings(
                                     Settings(
-                                        darkMode = if (darkMode) 1 else 0,
+                                        darkMode = darkMode,
                                         language = language
                                     )
                                 )
-
-                                Toast.makeText(
-                                    currentContext,
-                                    textsettingUpdated,
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(context, textSettingUpdated, Toast.LENGTH_SHORT).show()
                             }
                         )
-                    },
+                    }
                 )
-            )*/
-            
+            )
+
+            // Dropdown pour le mode sombre
             CustomDropdownMenu(
                 modifier = Modifier.padding(start = 25.dp, top = 10.dp, end = 25.dp),
                 label = stringResource(R.string.text_theme),
-                labelColor = MaterialTheme.colorScheme.primary,
                 value = if (darkMode) "Sombre" else "Clair",
                 customDropdownMenus = CustomDropdownMenus(
-                    menus = listOf(
-                        "Clair",
-                        "Sombre"
-                    ).map { theme ->
+                    menus = listOf("Clair", "Sombre").map { theme ->
                         CustomDropdownMenu(
                             text = theme,
                             onClick = {
                                 darkMode = theme == "Sombre"
-                                viewModel.upsertSettings(
+                                viewModel.updateSettings(
                                     Settings(
-                                        darkMode = if (theme == "Sombre") 1 else 0,
+                                        darkMode = darkMode,
                                         language = language
                                     )
                                 )
-                                viewModel.updateDarkMode(if (theme == "Sombre") true else false)
+                                viewModel.updateDarkMode(darkMode)
                                 Toast.makeText(
-                                    currentContext,
+                                    context,
                                     "Vos paramètres ont été mis à jour",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
                         )
-                    },
+                    }
                 )
             )
         }

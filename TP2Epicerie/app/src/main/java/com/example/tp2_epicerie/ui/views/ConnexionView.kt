@@ -41,14 +41,6 @@ fun ConnexionView(viewModel: GroceryViewModel, navHostController: NavHostControl
     val isSignUp = remember { mutableStateOf(false) }
     val username = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
-    val imageUri = remember { mutableStateOf<Uri?>(null) }
-
-    // Lanceur pour le sélecteur d'image
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        imageUri.value = uri
-    }
 
     Column(
         modifier = Modifier
@@ -82,17 +74,6 @@ fun ConnexionView(viewModel: GroceryViewModel, navHostController: NavHostControl
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        if (isSignUp.value) {
-            Button(
-                onClick = { imagePickerLauncher.launch("image/*") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Choisir une image ${if (imageUri.value != null) "(Image sélectionnée)" else ""}")
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
         Button(
             onClick = {
                 if (isSignUp.value) {
@@ -104,11 +85,10 @@ fun ConnexionView(viewModel: GroceryViewModel, navHostController: NavHostControl
                         id = UUID.randomUUID().toString(),
                         username = username.value,
                         password = "", // Le mot de passe sera haché dans `createUser`
-                        iconUrl = "" // L'URL sera remplie après le téléchargement
                     )
                     coroutineScope.launch {
                         try {
-                            viewModel.createUser(user, password.value, imageUri.value!!)
+                            viewModel.createUser(user, password.value)
                             Toast.makeText(context, "Compte créé avec succès", Toast.LENGTH_SHORT).show()
                             isSignUp.value = false // Retour à l'écran de connexion
                         } catch (e: Exception) {
