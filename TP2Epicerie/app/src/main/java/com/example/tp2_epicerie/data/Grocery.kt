@@ -6,72 +6,79 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-// Les classes de firebase
-
-data class ListItem(
+data class User(
     var id: String = "",
-    var groceryItem: String = "",
-    var groceryListId: String = "",
-    var quantity: Int = 0,
-    var isCrossed: Boolean = false,
-    var userId: String = ""
+    var username: String = "",
+    var password: String = "", // Stocke le mot de passe haché de bcrypt
+    var settings: Settings = Settings(),
+    var groceryLists: List<GroceryList> = emptyList(),
+    var recipeLists: List<RecipeList> = emptyList(),
+)
+
+data class Settings(
+    var id: String = "",
+    var darkMode: Boolean = false,
+    var language: String = "fr"
 )
 
 data class GroceryList(
     var id: String = "",
     var title: String = "",
-    var description: String = ""
+    var description: String = "",
+    var listItems: List<ListItem> = emptyList(),
 )
 
-data class Settings(
+data class ListItem(
     var id: String = "",
-    var userId: String = "",
-    var darkMode: Boolean = false,
-    var language: String = "fr"
+    var groceryListId: String = "", // Référence à la liste GroceryList
+    var groceryItemId: String = "", // Référence à l'item d'épicerie
+    var quantity: Int = 0,
+    var isCrossed: Boolean = false,
+    var isFavorite: Boolean = false,
 )
 
-data class User(
+// Entités venant de l'API (modifiable par l'utilisateur)
+data class GroceryItem(
     var id: String = "",
-    var username: String = "",
-    var password: String = "", // Stocke le mot de passe haché de bcrypt
+    var idApi: String = "",
+    var categoryId: String = "", // Référence à la catégorie GroceryItemCategory
+    var name: String = "",
+    var description: String = "",
 )
 
-data class ListConnexion(
+data class GroceryItemCategory(
     var id: String = "",
-    var userId: String = "",
-    var listId: String = "",
-    var permission: String = "" //Reader, Modifier, Admin, Founder
+    var idApi: String = "",
+    val name: String = "",
+    val description: String = "",
 )
 
-//Les classes de l'api
+data class RecipeList(
+    var id: String = "",
+    var title: String = "",
+    var description: String = "",
+    var recipes: List<Recipe> = emptyList(),
+)
 
+// Entités venant de l'API (NON modifiable par l'utilisateur)
 data class Recipe(
     var id: String = "",
+    var idApi: String = "",
     var name: String,
     var description: String,
     var ingredients: List<Ingredient>,
     var steps: List<String>,
-    var category: String
-)
-
-data class Ingredient(
-    var name: String,
-    var quantity: String,
-    var category: String
+    var category: RecipeCategory,
 )
 
 data class RecipeCategory(
+    var id: String = "",
+    var idApi: String = "",
     var name: String,
     var description: String
 )
 
-data class GroceryItem(
-    var name: String,
-    var category: String,
-    var description: String
-)
-
-data class ItemCategory(
-    var name: String,
-    var description: String
+data class Ingredient(
+    var groceryItem: GroceryItem,
+    var quantity: Int,
 )
