@@ -1,6 +1,6 @@
 package com.example.tp2_epicerie.ui.views
 
-import GroceryViewModel
+import com.example.tp2_epicerie.viewModels.GroceryViewModel
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth

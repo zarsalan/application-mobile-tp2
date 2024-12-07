@@ -1,31 +1,33 @@
 package com.example.tp2_epicerie.api
 
-import com.example.tp2_epicerie.data.GroceryItem
+import com.example.tp2_epicerie.data.GroceryItemAPI
+import com.example.tp2_epicerie.data.GroceryItemCategoryAPI
 import com.example.tp2_epicerie.data.Recipe
+import com.example.tp2_epicerie.data.RecipeCategory
 
 class ApiRepository {
     // Requêttes pour les items -----------------------------------------------------
-    suspend fun getGroceryItemsByName(name: String) : List<GroceryItem> {
+    suspend fun getGroceryItemsByName(name: String) : List<GroceryItemAPI> {
         return RetrofitInstance.apiService.getGroceryItemsByName(name)
     }
 
-    suspend fun getGroceryItemsByCategory(categoryName: String) : List<GroceryItem> {
+    suspend fun getGroceryItemsByCategory(categoryName: String) : List<GroceryItemAPI> {
         return RetrofitInstance.apiService.getGroceryItemsByCategory(categoryName)
     }
 
-    suspend fun getGroceryItemsByCategoryAndName(categoryName: String, name: String) : List<GroceryItem> {
+    suspend fun getGroceryItemsByCategoryAndName(categoryName: String, name: String) : List<GroceryItemAPI> {
         return RetrofitInstance.apiService.getGroceryItemsByCategoryAndName(categoryName, name)
     }
 
-    suspend fun getGroceryItemById(id: String) : GroceryItem {
+    suspend fun getGroceryItemById(id: String) : GroceryItemAPI {
         return RetrofitInstance.apiService.getGroceryItemById(id)
     }
 
-    suspend fun getAllGroceryItems() : List<GroceryItem> {
+    suspend fun getAllGroceryItems() : List<GroceryItemAPI> {
         return RetrofitInstance.apiService.getAllGroceryItems()
     }
 
-    suspend fun getGroceryCategories() : List<String> {
+    suspend fun getGroceryCategories() : List<GroceryItemCategoryAPI> {
         return RetrofitInstance.apiService.getGroceryCategories()
     }
 
@@ -42,7 +44,7 @@ class ApiRepository {
         return RetrofitInstance.apiService.getAllRecipes()
     }
 
-    suspend fun getRecipeCategories() : List<String> {
+    suspend fun getRecipeCategories() : List<RecipeCategory> {
         return RetrofitInstance.apiService.getRecipeCategories()
     }
 }

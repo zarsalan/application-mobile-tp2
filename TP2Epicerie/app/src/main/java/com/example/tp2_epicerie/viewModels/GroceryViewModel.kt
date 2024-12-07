@@ -1,12 +1,12 @@
+package com.example.tp2_epicerie.viewModels
+
 import android.net.Uri
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tp2_epicerie.Graph
 import com.example.tp2_epicerie.GroceryApp
 import com.example.tp2_epicerie.data.GroceryDatabase
 import com.example.tp2_epicerie.data.GroceryList
-import com.example.tp2_epicerie.data.ListConnexion
 import com.example.tp2_epicerie.data.ListItem
 import com.example.tp2_epicerie.data.Settings
 import com.example.tp2_epicerie.data.User
@@ -14,113 +14,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class GroceryViewModel(
-    private val database: GroceryDatabase = GroceryDatabase.getDatabase(GroceryApp.context)
 ) : ViewModel() {
-
-    private val userBD = database.userBD
-    private val listConnexionBD = database.listConnexionBD
-    private val settingsBD = database.settingsBD
-    private val groceryListBD = database.groceryListBD
-    private val listItemBD = database.listItemBD
-
-
-    // Stockage de l'utilisateur connecté
-    private val _currentUser = MutableStateFlow<User?>(null)
-    val currentUser: StateFlow<User?> = _currentUser
-
-    // Connexion utilisateur
-    fun loginUser(username: String, password: String, onResult: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val success = userBD.loginUser(username, password)
-                if (success) {
-                    // Récupérer les informations de l'utilisateur connecté
-                    val userSnapshot = userBD.getUserByUsername(username)
-                    _currentUser.value = userSnapshot
-                }
-                onResult(success)
-            } catch (e: Exception) {
-                println("Erreur lors de la connexion : ${e.message}")
-                onResult(false)
-            }
-        }
-    }
-
-    // Création d'utilisateur
-    fun createUser(user: User, password: String, imageUri: Uri, onResult: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            try {
-                userBD.createUser(user, password, imageUri)
-                _currentUser.value = user // Sauvegarde de l'utilisateur nouvellement créé
-                onResult(true)
-            } catch (e: Exception) {
-                println("Erreur lors de la création de l'utilisateur : ${e.message}")
-                onResult(false)
-            }
-        }
-    }
-
-    // Déconnexion utilisateur
-    fun logoutUser() {
-        _currentUser.value = null // Réinitialisation de l'utilisateur connecté
-    }
-
-    // Section ListConnexion -------------------------------------------------
-    fun createListConnexion(connexion: ListConnexion) {
-        viewModelScope.launch {
-            try {
-                listConnexionBD.createListConnexion(connexion)
-            } catch (e: Exception) {
-                println("Erreur lors de la création de la connexion : ${e.message}")
-            }
-        }
-    }
-
-    fun updateListConnexionPermission(connexionId: String, newPermission: String) {
-        viewModelScope.launch {
-            try {
-                listConnexionBD.updateListConnexionPermission(connexionId, newPermission)
-            } catch (e: Exception) {
-                println("Erreur lors de la mise à jour de la permission : ${e.message}")
-            }
-        }
-    }
-
-    fun deleteListConnexion(connexionId: String) {
-        viewModelScope.launch {
-            try {
-                listConnexionBD.deleteListConnexion(connexionId)
-            } catch (e: Exception) {
-                println("Erreur lors de la suppression de la connexion : ${e.message}")
-            }
-        }
-    }
-
-    // Section Settings -------------------------------------------------
-    private val _settings = MutableStateFlow<Settings>(Settings())
-    val settings: StateFlow<Settings> = _settings
-
-    // Récupération des paramètres de l'utilisateur actuel
-    fun fetchSettings() {
-        viewModelScope.launch {
-            currentUser.value?.id?.let { userId ->
-                val userSettings = settingsBD.getSettings(userId) ?: Settings(userId = userId)
-                _settings.value = userSettings
-            }
-        }
-    }
-
-    fun updateSettings(settings: Settings) {
-        viewModelScope.launch {
-            try {
-                settingsBD.createOrUpdateSettings(settings)
-                _settings.value = settings
-            } catch (e: Exception) {
-                println("Erreur lors de la mise à jour des paramètres : ${e.message}")
-            }
-        }
-    }
-
     // Section GroceryList -------------------------------------------------
     private val _userGroceryLists = MutableStateFlow<List<GroceryList>>(emptyList())
     val userGroceryLists: StateFlow<List<GroceryList>> = _userGroceryLists

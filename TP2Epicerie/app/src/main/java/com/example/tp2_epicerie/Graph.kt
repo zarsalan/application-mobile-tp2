@@ -11,22 +11,14 @@ import kotlinx.coroutines.SupervisorJob
 object Graph {
     private lateinit var database: GroceryDatabase
 
-    // Firebase initialisation
-    val firebaseFirestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-    val firebaseStorage: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
-
-    // API initialisation
+    // Initialisation de l'API
     val apiRepository: ApiRepository by lazy { ApiRepository() }
 
-    // DAOs from GroceryDatabase
-    val userDao by lazy { database.userBD }
-    val listConnexionDao by lazy { database.listConnexionBD }
-    val settingsDao by lazy { database.settingsBD }
-    val groceryListDao by lazy { database.groceryListBD }
-    val listItemDao by lazy { database.listItemBD }
+    // Base de données UserDB
+    val userDB by lazy { database.userDB }
 
-    // Initialise the database
+    // Initialisation de la base de données
     fun provide(context: Context) {
-        database = GroceryDatabase.getDatabase(context)
+        database = GroceryDatabase.getDatabase()
     }
 }

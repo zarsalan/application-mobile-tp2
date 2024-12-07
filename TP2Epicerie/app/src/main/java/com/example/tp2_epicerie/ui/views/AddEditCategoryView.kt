@@ -1,6 +1,6 @@
 package com.example.tp2_epicerie.ui.views
 
-import GroceryViewModel
+import com.example.tp2_epicerie.viewModels.GroceryViewModel
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

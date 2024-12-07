@@ -1,13 +1,12 @@
 package com.example.tp2_epicerie.ui.views
 
-import GroceryViewModel
+import com.example.tp2_epicerie.viewModels.GroceryViewModel
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

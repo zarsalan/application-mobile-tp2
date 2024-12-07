@@ -1,6 +1,6 @@
 package com.example.tp2_epicerie
 
-import GroceryViewModel
+import com.example.tp2_epicerie.viewModels.GroceryViewModel
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
