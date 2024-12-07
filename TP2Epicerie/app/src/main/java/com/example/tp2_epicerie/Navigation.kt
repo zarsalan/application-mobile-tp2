@@ -10,7 +10,14 @@ import androidx.navigation.compose.composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.tp2_epicerie.ui.views.AddEditCategoryView
+import com.example.tp2_epicerie.ui.views.AddEditItemView
+import com.example.tp2_epicerie.ui.views.AddEditListView
+import com.example.tp2_epicerie.ui.views.CategoriesView
 import com.example.tp2_epicerie.ui.views.ConnexionView
+import com.example.tp2_epicerie.ui.views.CustomGroceryListView
+import com.example.tp2_epicerie.ui.views.GroceryItemsView
+import com.example.tp2_epicerie.ui.views.SettingsView
 
 
 @Composable

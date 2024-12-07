@@ -23,27 +23,46 @@ class GroceryViewModel(
     private val groceryListBD = database.groceryListBD
     private val listItemBD = database.listItemBD
 
-    // Section User -------------------------------------------------
-    fun createUser(user: User, password: String, imageUri: Uri) {
-        viewModelScope.launch {
-            try {
-                userBD.createUser(user, password, imageUri)
-            } catch (e: Exception) {
-                println("Erreur lors de la création de l'utilisateur : ${e.message}")
-            }
-        }
-    }
 
+    // Stockage de l'utilisateur connecté
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> = _currentUser
+
+    // Connexion utilisateur
     fun loginUser(username: String, password: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
                 val success = userBD.loginUser(username, password)
+                if (success) {
+                    // Récupérer les informations de l'utilisateur connecté
+                    val userSnapshot = userBD.getUserByUsername(username)
+                    _currentUser.value = userSnapshot
+                }
                 onResult(success)
             } catch (e: Exception) {
                 println("Erreur lors de la connexion : ${e.message}")
                 onResult(false)
             }
         }
+    }
+
+    // Création d'utilisateur
+    fun createUser(user: User, password: String, imageUri: Uri, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                userBD.createUser(user, password, imageUri)
+                _currentUser.value = user // Sauvegarde de l'utilisateur nouvellement créé
+                onResult(true)
+            } catch (e: Exception) {
+                println("Erreur lors de la création de l'utilisateur : ${e.message}")
+                onResult(false)
+            }
+        }
+    }
+
+    // Déconnexion utilisateur
+    fun logoutUser() {
+        _currentUser.value = null // Réinitialisation de l'utilisateur connecté
     }
 
     // Section ListConnexion -------------------------------------------------
@@ -177,24 +196,34 @@ class GroceryViewModel(
             }
         }
     }
-    // Dark mode, on initialise et obtient la valeur _isDarkTheme ----
-    private val _isDarkTheme = mutableStateOf(false)
-    val isDarkTheme: State<Boolean> = _isDarkTheme
+
+
+    // État actuel du mode sombre
+    private val _isDarkTheme = MutableStateFlow(false)
+    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme
 
     init {
+        // Initialiser le mode sombre à partir des paramètres de Firebase
         viewModelScope.launch {
-            groceryRepository.getSettings()
-                .map { settings -> settings?.darkMode == 1 }
-                .collect { isDark -> _isDarkTheme.value = isDark }
+            val userId = getCurrentUserId()
+            val settings = settingsBD.getSettings(userId)
+            _isDarkTheme.value = settings?.darkMode ?: false
         }
     }
 
+    // Mise à jour du mode sombre
     fun updateDarkMode(enabled: Boolean) {
         viewModelScope.launch {
-            val currentSettings = groceryRepository.getSettings().first() ?: Settings()
-            groceryRepository.updateSettings(
-                currentSettings.copy(darkMode = if (enabled) 1 else 0)
-            )
+            val userId =
+            val currentSettings = settingsBD.getSettings(userId) ?: Settings(userId = userId)
+            val updatedSettings = currentSettings.copy(darkMode = enabled)
+
+            try {
+                settingsBD.createOrUpdateSettings(updatedSettings)
+                _isDarkTheme.value = enabled
+            } catch (e: Exception) {
+                println("Erreur lors de la mise à jour du mode sombre : ${e.message}")
+            }
         }
     }
 

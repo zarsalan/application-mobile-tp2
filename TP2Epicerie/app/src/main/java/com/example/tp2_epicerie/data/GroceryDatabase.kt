@@ -78,6 +78,22 @@ class UserBD(private val db: FirebaseFirestore, private val storage: FirebaseSto
         }
         return false
     }
+
+    suspend fun getUserByUsername(username: String): User? {
+        return try {
+            val snapshot = db.collection("users")
+                .whereEqualTo("username", username)
+                .get().await()
+
+            if (!snapshot.isEmpty) {
+                snapshot.documents[0].toObject<User>()
+            } else {
+                null // Aucun utilisateur trouvé
+            }
+        } catch (e: Exception) {
+            throw Exception("Erreur lors de la récupération de l'utilisateur : ${e.message}")
+        }
+    }
 }
 
 class ListConnexionBD(private val db: FirebaseFirestore) {
