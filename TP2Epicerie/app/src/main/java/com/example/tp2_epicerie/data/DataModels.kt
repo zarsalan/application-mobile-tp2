@@ -5,7 +5,7 @@ data class User(
     var username: String = "",
     var password: String = "", // Stocke le mot de passe haché de bcrypt
     var settings: Settings = Settings(),
-    var groceryCategories: MutableMap<String, GroceryItemCategoryUser> = mutableMapOf(),
+    var groceryCategories: MutableMap<String, GroceryItemCategory> = mutableMapOf(),
     var groceryItems: MutableMap<String, GroceryItemUser> = mutableMapOf(),
     var groceryLists: MutableMap<String, GroceryList> = mutableMapOf(
         "1" to GroceryList(
@@ -63,13 +63,13 @@ data class RecipeList(
 // Entités venant de l'API et modifié par l'utilisateur
 data class GroceryItemUser(
     var id: String = "", // Idée unique de l'api ou générée par UUID
-    var categoryId: String = "", // Référence au id de GroceryItemCategoryUser
+    var categoryId: String = "", // Référence au id de GroceryItemCategory
     var name: String = "",
     var description: String = "",
     var isFavorite: Boolean = false,
 )
 
-data class GroceryItemCategoryUser(
+data class GroceryItemCategory(
     var id: String = "", // Idée unique de l'api ou générée par UUID
     val name: String = "",
     val description: String = "",
@@ -78,15 +78,9 @@ data class GroceryItemCategoryUser(
 // Entités venant de l'API (NON modifiable par l'utilisateur)
 data class GroceryItemAPI(
     var id: String = "",
-    var category: GroceryItemCategoryAPI,
+    var category: GroceryItemCategory,
     var name: String = "",
     var description: String = "",
-)
-
-data class GroceryItemCategoryAPI(
-    var id: String = "",
-    val name: String = "",
-    val description: String = "",
 )
 
 data class Recipe(

@@ -100,7 +100,7 @@ class UserDB(private val db: FirebaseFirestore) {
         }
     }
 
-    suspend fun updateGroceryCategory(category: GroceryItemCategoryUser) {
+    suspend fun updateGroceryCategory(category: GroceryItemCategory) {
         try {
             val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
             db.collection("users").document(user.id).update("groceryCategories.${category.id}", category).await()
@@ -109,7 +109,7 @@ class UserDB(private val db: FirebaseFirestore) {
         }
     }
 
-    suspend fun deleteGroceryCategory(category: GroceryItemCategoryUser) {
+    suspend fun deleteGroceryCategory(category: GroceryItemCategory) {
         try {
             val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
             db.collection("users").document(user.id).update("groceryCategories.${category.id}", null).await()
