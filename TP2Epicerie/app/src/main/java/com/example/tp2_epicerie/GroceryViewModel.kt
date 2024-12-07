@@ -100,11 +100,13 @@ class GroceryViewModel(
     private val _settings = MutableStateFlow<Settings?>(null)
     val settings: StateFlow<Settings?> = _settings
 
+    // Récupération des paramètres de l'utilisateur actuel
     fun fetchSettings(userId: String) {
         viewModelScope.launch {
             try {
-                val userSettings = settingsBD.getSettings(userId)
-                _settings.value = userSettings
+                val settings = settingsBD.getSettings(userId)
+                _settings.value = settings
+                _isDarkTheme.value = settings?.darkMode ?: false
             } catch (e: Exception) {
                 println("Erreur lors de la récupération des paramètres : ${e.message}")
             }
@@ -202,19 +204,28 @@ class GroceryViewModel(
     private val _isDarkTheme = MutableStateFlow(false)
     val isDarkTheme: StateFlow<Boolean> = _isDarkTheme
 
+    // Initialisation du thème en fonction des paramètres
     init {
-        // Initialiser le mode sombre à partir des paramètres de Firebase
         viewModelScope.launch {
-            val userId = getCurrentUserId()
-            val settings = settingsBD.getSettings(userId)
-            _isDarkTheme.value = settings?.darkMode ?: false
+            _currentUser.collect { user ->
+                if (user != null) {
+                    fetchSettings(user.id)
+                } else {
+                    _isDarkTheme.value = false // Valeur par défaut
+                }
+            }
         }
     }
 
     // Mise à jour du mode sombre
     fun updateDarkMode(enabled: Boolean) {
         viewModelScope.launch {
-            val userId =
+            val userId = _currentUser.value?.id
+            if (userId == null) {
+                println("Impossible de mettre à jour le mode sombre : Aucun utilisateur connecté")
+                return@launch
+            }
+
             val currentSettings = settingsBD.getSettings(userId) ?: Settings(userId = userId)
             val updatedSettings = currentSettings.copy(darkMode = enabled)
 
