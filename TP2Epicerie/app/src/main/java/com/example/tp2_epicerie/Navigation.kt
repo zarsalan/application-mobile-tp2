@@ -42,7 +42,7 @@ fun Navigation(
     ) {
         // Page de connexion
         composable(Screen.ConnexionScreen.route) {
-            ConnexionView(userViewModel, navHostController)
+            ConnexionView(userViewModel, groceryCategoriesViewModel, navHostController)
         }
 
         // Page principal
@@ -64,10 +64,10 @@ fun Navigation(
         composable(
             Screen.GroceryList.route + "/{id}",
             arguments = listOf(navArgument("id") {
-                type = NavType.LongType; defaultValue = 0L; nullable
+                type = NavType.StringType; defaultValue = ""; nullable
             })
         ) {
-            val id = it.arguments?.getLong("id") ?: 0L
+            val id = it.arguments?.getString("id") ?: ""
             CustomGroceryListView(id, groceryItemsViewModel, groceryCategoriesViewModel, groceryListsViewModel, navHostController)
         }
 
@@ -75,10 +75,10 @@ fun Navigation(
         composable(
             Screen.AddEditListScreen.route + "/{id}",
             arguments = listOf(navArgument("id") {
-                type = NavType.LongType; defaultValue = 0L; nullable
+                type = NavType.StringType; defaultValue = ""; nullable
             })
         ) {
-            val id = it.arguments?.getLong("id") ?: 0L
+            val id = it.arguments?.getString("id") ?: ""
             AddEditListView(id, groceryListsViewModel, navHostController)
         }
 
@@ -86,20 +86,20 @@ fun Navigation(
         composable(
             Screen.AddEditItem.route + "/{id}",
             arguments = listOf(navArgument("id") {
-                type = NavType.LongType; defaultValue = 0L; nullable
+                type = NavType.StringType; defaultValue = ""; nullable
             })
         ) {
-            val id = it.arguments?.getLong("id") ?: 0L
+            val id = it.arguments?.getString("id") ?: ""
             AddEditItemView(id, groceryItemsViewModel, navHostController)
         }
 
         // Ajout ou modification d'une catégorie
         composable(Screen.AddEditCategory.route + "/{id}",
             arguments = listOf(navArgument("id") {
-                type = NavType.LongType; defaultValue = 0L; nullable
+                type = NavType.StringType; defaultValue = ""; nullable
             })
         ) {
-            val id = it.arguments?.getLong("id") ?: 0L
+            val id = it.arguments?.getString("id") ?: ""
             AddEditCategoryView(id, groceryCategoriesViewModel, navHostController)
         }
 

@@ -51,7 +51,7 @@ import kotlinx.coroutines.flow.firstOrNull
 // La vue pour afficher une liste d'épicerie (liste d'articles à acheter)
 @Composable
 fun CustomGroceryListView(
-    id: Long,
+    id: String,
     groceryItemViewModel: GroceryItemsViewModel,
     groceryCategoriesViewModel: GroceryCategoriesViewModel,
     groceryListsViewModel: GroceryListsViewModel,

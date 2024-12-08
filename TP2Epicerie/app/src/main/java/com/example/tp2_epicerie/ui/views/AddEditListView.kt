@@ -33,7 +33,7 @@ import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 // La page pour ajouter ou modifier une liste
 @Composable
 fun AddEditListView(
-    id: Long = 0L,
+    id: String = "",
     groceryListsViewModel: GroceryListsViewModel,
     navHostController: NavHostController
 ) {

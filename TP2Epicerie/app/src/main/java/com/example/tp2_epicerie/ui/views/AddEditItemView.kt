@@ -59,7 +59,7 @@ import com.example.tp2_epicerie.ui.theme.submitButtonColors
 // La page pour ajouter ou modifier un item
 @Composable
 fun AddEditItemView(
-    id: Long = 0L,
+    id: String = "",
     groceryItemViewModel: GroceryItemsViewModel,
     navHostController: NavHostController
 ) {

@@ -33,7 +33,7 @@ import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
 // La page pour ajouter ou modifier une catégorie
 @Composable
 fun AddEditCategoryView(
-    id: Long = 0L,
+    id: String = "",
     groceryCategoriesViewModel: GroceryCategoriesViewModel,
     navHostController: NavHostController
 ) {
