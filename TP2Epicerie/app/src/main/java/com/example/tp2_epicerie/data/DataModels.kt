@@ -11,7 +11,7 @@ data class User(
     var groceryItems: MutableMap<String, GroceryItemUser> = mutableMapOf(),
     var groceryLists: MutableMap<String, GroceryList> = mutableMapOf(
         "1" to GroceryList(
-            id = "2",
+            id = "1",
             title = "Liste d'épicerie",
             description = "Liste d'épicerie",
         )
@@ -19,7 +19,7 @@ data class User(
     var favoriteRecipes: MutableMap<String, Boolean> = mutableMapOf(), // Id de la recette et si elle est favorite
     var recipeLists: MutableMap<String, RecipeList> = mutableMapOf(
         "1" to RecipeList(
-            id = "2",
+            id = "1",
             title = "Liste de recettes",
             description = "Liste de recettes",
         )

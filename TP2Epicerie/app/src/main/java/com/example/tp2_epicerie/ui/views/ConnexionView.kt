@@ -24,6 +24,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.User
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
 import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
@@ -123,6 +124,7 @@ fun ConnexionView(
                                     Toast.makeText(context, "Connexion réussie", Toast.LENGTH_SHORT)
                                         .show()
                                     // Redirigez vers la page principale
+                                    navHostController.navigate(Screen.HomeScreen.route)
                                 } else {
                                     Toast.makeText(
                                         context,
