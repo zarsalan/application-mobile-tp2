@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +58,7 @@ fun GroceryItemsView(
     // Récupération des données d'items et de catégories
     val groceryItems by groceryItemsViewModel.finalItems.collectAsState()
     val groceryCategories by groceryCategoriesViewModel.finalCategories.collectAsState()
+    val isLoading by groceryItemsViewModel.isLoading.collectAsState()
 
     val addEditItemRoute = remember { Screen.AddEditItem.route }
 
@@ -104,33 +106,43 @@ fun GroceryItemsView(
             }
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 8.dp, vertical = 8.dp)
-        ) {
-            itemsByCategory.forEach { (categoryName, items) ->
-                item {
-                    Text(
-                        text = categoryName,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    )
-                }
-                items(items, key = {it.id}) { groceryItem ->
-                    GroceryItemCard(
-                        groceryItemsViewModel = groceryItemsViewModel,
-                        groceryListsViewModel = groceryListsViewModel,
-                        cardInfo = GroceryItemCardInfo(
-                            groceryItem = groceryItem,
-                            onClick = { navHostController.navigate( "$addEditItemRoute/${groceryItem.id}") },
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                color = MaterialTheme.colorScheme.primary
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
+            ) {
+                itemsByCategory.forEach { (categoryName, items) ->
+                    item {
+                        Text(
+                            text = categoryName,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 22.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
                         )
-                    )
+                    }
+                    items(items, key = {it.id}) { groceryItem ->
+                        GroceryItemCard(
+                            groceryItemsViewModel = groceryItemsViewModel,
+                            groceryListsViewModel = groceryListsViewModel,
+                            cardInfo = GroceryItemCardInfo(
+                                groceryItem = groceryItem,
+                                onClick = { navHostController.navigate( "$addEditItemRoute/${groceryItem.id}") },
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            )
+                        )
+                    }
                 }
             }
         }
