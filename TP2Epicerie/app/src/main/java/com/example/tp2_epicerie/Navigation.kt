@@ -42,7 +42,13 @@ fun Navigation(
     ) {
         // Page de connexion
         composable(Screen.ConnexionScreen.route) {
-            ConnexionView(userViewModel, groceryCategoriesViewModel, navHostController)
+            ConnexionView(
+                userViewModel,
+                groceryCategoriesViewModel,
+                groceryListsViewModel,
+                recipeListsViewModel,
+                navHostController
+            )
         }
 
         // Page principal
@@ -52,12 +58,22 @@ fun Navigation(
 
         // Affichage de tous les articles
         composable(Screen.AllItems.route) {
-            GroceryItemsView(groceryItemsViewModel, groceryCategoriesViewModel, navHostController, true)
+            GroceryItemsView(
+                groceryItemsViewModel,
+                groceryCategoriesViewModel,
+                navHostController,
+                true
+            )
         }
 
         // Affichage des articles favoris
         composable(Screen.Favorites.route) {
-            GroceryItemsView(groceryItemsViewModel, groceryCategoriesViewModel, navHostController, false)
+            GroceryItemsView(
+                groceryItemsViewModel,
+                groceryCategoriesViewModel,
+                navHostController,
+                false
+            )
         }
 
         // Affichage d'une liste custom
@@ -68,7 +84,12 @@ fun Navigation(
             })
         ) {
             val id = it.arguments?.getString("id") ?: ""
-            CustomGroceryListView(id, groceryItemsViewModel, groceryCategoriesViewModel, groceryListsViewModel, navHostController)
+            CustomGroceryListView(
+                id,
+                groceryListsViewModel,
+                groceryItemsViewModel,
+                navHostController
+            )
         }
 
         // Ajout ou modification d'une liste
@@ -94,7 +115,8 @@ fun Navigation(
         }
 
         // Ajout ou modification d'une catégorie
-        composable(Screen.AddEditCategory.route + "/{id}",
+        composable(
+            Screen.AddEditCategory.route + "/{id}",
             arguments = listOf(navArgument("id") {
                 type = NavType.StringType; defaultValue = ""; nullable
             })

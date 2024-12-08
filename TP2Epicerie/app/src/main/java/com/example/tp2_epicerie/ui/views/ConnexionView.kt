@@ -26,13 +26,21 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.data.User
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
+import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
+import com.example.tp2_epicerie.viewModels.RecipeListsViewModel
 import com.example.tp2_epicerie.viewModels.UserViewModel
 
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 @Composable
-fun ConnexionView(userViewModel: UserViewModel, categoriesViewModel: GroceryCategoriesViewModel, navHostController: NavHostController) {
+fun ConnexionView(
+    userViewModel: UserViewModel,
+    categoriesViewModel: GroceryCategoriesViewModel,
+    groceryListsViewModel: GroceryListsViewModel,
+    recipeListsViewModel: RecipeListsViewModel,
+    navHostController: NavHostController
+) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -85,12 +93,17 @@ fun ConnexionView(userViewModel: UserViewModel, categoriesViewModel: GroceryCate
                                 if (success) {
                                     // Exécution des fonctions fetch des données
                                     categoriesViewModel.fetchCategories()
-                                    Toast.makeText(context, "Compte créé avec succès", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Compte créé avec succès",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                             isSignUp.value = false // Retour à l'écran de connexion
                         } catch (e: Exception) {
-                            Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 } else {
@@ -100,14 +113,23 @@ fun ConnexionView(userViewModel: UserViewModel, categoriesViewModel: GroceryCate
                                 if (success) {
                                     // Exécution des fonctions fetch des données
                                     categoriesViewModel.fetchCategories()
-                                    Toast.makeText(context, "Connexion réussie", Toast.LENGTH_SHORT).show()
+                                    groceryListsViewModel.loadGroceryLists()
+                                    recipeListsViewModel.loadRecipeLists()
+
+                                    Toast.makeText(context, "Connexion réussie", Toast.LENGTH_SHORT)
+                                        .show()
                                     // Redirigez vers la page principale
                                 } else {
-                                    Toast.makeText(context, "Nom ou mot de passe incorrect", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Nom ou mot de passe incorrect",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         } catch (e: Exception) {
-                            Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 }

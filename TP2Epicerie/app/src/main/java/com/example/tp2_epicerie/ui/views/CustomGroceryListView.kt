@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
+import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.data.GroceryList
 import com.example.tp2_epicerie.data.ListItem
 import com.example.tp2_epicerie.ui.common.AppBarMenu
@@ -52,67 +53,34 @@ import kotlinx.coroutines.flow.firstOrNull
 @Composable
 fun CustomGroceryListView(
     id: String,
-    groceryItemViewModel: GroceryItemsViewModel,
-    groceryCategoriesViewModel: GroceryCategoriesViewModel,
     groceryListsViewModel: GroceryListsViewModel,
+    groceryItemsViewModel: GroceryItemsViewModel,
     navHostController: NavHostController
 ) {
     // On obtient les informations de la liste
-    val groceryList = viewModel.getGroceryListById(id).collectAsState(initial = GroceryList()).value
-    val groceryListItems = viewModel.getGroceryListItems(id)
-        .collectAsState(initial = listOf(ListItem())).value
+    LaunchedEffect(id) { groceryListsViewModel.loadCurrentGroceryListItems(id) }
 
-    val crossedItems = remember { mutableStateListOf<MutableState<ListItem>>() }
-    val nonCrossedItems = remember { mutableStateListOf<MutableState<ListItem>>() }
-    var itemsByCategory by remember { mutableStateOf(mapOf<Category, List<MutableState<ListItem>>>()) }
+    // Collections des états de la liste d'épicerie et des items de la liste
+    val currentGroceryList = groceryListsViewModel.currentGroceryList.collectAsState().value
+    val currentGroceryItems =
+        groceryListsViewModel.currentGroceryItems.collectAsState().value
 
+    // État pour l'affichage des items cochés ou non cochés
     var indexCrossed by remember { mutableStateOf(false) }
-    val itemsToShow = if (indexCrossed) crossedItems else nonCrossedItems
 
-    // Mise à jour des items par catégorie
-    suspend fun updateItemsByCategory() {
-        val updatedItemsByCategory = mutableMapOf<Category, MutableList<MutableState<ListItem>>>()
+    // Filtrage des items dépendamment de l'état indexCrossed
+    val itemsToShow = currentGroceryList.listItems.filter { it.isChecked == indexCrossed }
 
-        itemsToShow
-            .filter { it.value.isChecked == if (indexCrossed) 1 else 0 }
-            .forEach { listItem ->
-                val groceryItem = viewModel.getGroceryItemById(listItem.value.groceryItemId).firstOrNull()
-
-                if (groceryItem != null) {
-                    val category = viewModel.getCategoryById(groceryItem.categoryId ?: 1L).first()
-                    updatedItemsByCategory.getOrPut(category) { mutableListOf() }.add(listItem)
-                }
-            }
-
-        itemsByCategory = updatedItemsByCategory
-    }
-
-    // Mise à jour des listes d'items au changement de la liste groceryListItems
-    LaunchedEffect(groceryListItems) {
-        crossedItems.clear()
-        nonCrossedItems.clear()
-
-        groceryListItems.forEach { listItem ->
-            val statefulListItem = mutableStateOf(listItem)
-            if (listItem.isChecked == 1) {
-                crossedItems.add(statefulListItem)
-            } else {
-                nonCrossedItems.add(statefulListItem)
-            }
-        }
-
-        updateItemsByCategory()
-    }
-
-    // Mise à jour des items par catégorie au changement d'indexCrossed
-    LaunchedEffect(itemsToShow, indexCrossed) {
-        updateItemsByCategory()
+    // Groupage des items par catégorie
+    val listItemsByCategory = itemsToShow.groupBy { listItem ->
+        currentGroceryItems.find { it.id == listItem.groceryItemId }?.category?.name
+            ?: ""
     }
 
     Scaffold(
         topBar = {
             AppBarView(
-                title = groceryList.title,
+                title = currentGroceryList.title,
                 navHostController = navHostController,
                 appBarMenuInfo = AppBarMenuInfo(menus = listOf(
                     AppBarMenu(
@@ -121,16 +89,16 @@ fun CustomGroceryListView(
                     ),
                     AppBarMenu(
                         title = stringResource(R.string.menu_modifyThisList),
-                        onClick = { navHostController.navigate(Screen.AddEditListScreen.route + "/${groceryList.id ?: 1L}") }
+                        onClick = { navHostController.navigate(Screen.AddEditListScreen.route + "/${currentGroceryList.id}") }
                     ),
                 ))
             )
         }
-    ) {
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(paddingValues)
         ) {
             // Section de sélection de liste coché / non cochées
             Row(
@@ -147,7 +115,7 @@ fun CustomGroceryListView(
                         .weight(1f)
                 ) {
                     Text(
-                        text = stringResource(R.string.text_unchecked) + " (${nonCrossedItems.size})",
+                        text = stringResource(R.string.text_unchecked) + " (${currentGroceryList.listItems.count { !it.isChecked }})",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         modifier = Modifier
@@ -166,7 +134,7 @@ fun CustomGroceryListView(
                         .weight(1f)
                 ) {
                     Text(
-                        text = stringResource(R.string.text_checked)+ " (${crossedItems.size})",
+                        text = stringResource(R.string.text_checked) + " (${currentGroceryList.listItems.count { it.isChecked }})",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         modifier = Modifier
@@ -198,10 +166,10 @@ fun CustomGroceryListView(
                     .fillMaxSize()
                     .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
             ) {
-                itemsByCategory.forEach { (category, items) ->
+                listItemsByCategory.forEach { (categoryName, listItems) ->
                     item {
                         Text(
-                            text = category.title,
+                            text = if (categoryName == "") stringResource(R.string.text_category_other) else categoryName,
                             fontWeight = FontWeight.Bold,
                             fontSize = 22.sp,
                             modifier = Modifier
@@ -209,12 +177,13 @@ fun CustomGroceryListView(
                                 .fillMaxWidth()
                         )
                     }
-                    items(items) { listItem ->
+                    items(listItems) { listItem ->
                         ListItemCard(
-                            viewModel = viewModel,
-                            cardInfo = ListItemCardInfo(
+                            groceryListsViewModel = groceryListsViewModel,
+                            groceryItemsViewModel = groceryItemsViewModel,
+                            listItemCardInfo = ListItemCardInfo(
                                 listItem = listItem,
-                                onClick = {navHostController.navigate(Screen.AddEditItem.route + "/${listItem.value.groceryItemId}")},
+                                onClick = { navHostController.navigate(Screen.AddEditItem.route + "/${listItem.groceryItemId}") },
                                 containerColor = MaterialTheme.colorScheme.primaryContainer
                             )
                         )

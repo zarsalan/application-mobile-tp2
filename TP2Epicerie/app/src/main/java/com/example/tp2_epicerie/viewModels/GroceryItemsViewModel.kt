@@ -26,6 +26,9 @@ class GroceryItemsViewModel : ViewModel() {
     private val _finalItems = MutableStateFlow<List<GroceryItem>>(emptyList())
     val finalItems = _finalItems
 
+    private val _currentGroceryItem = MutableStateFlow(GroceryItem())
+    val currentGroceryItem: StateFlow<GroceryItem> = _currentGroceryItem
+
     // Récupération des items d'épicerie à partir de l'API et des items de l'utilisateur connecté
     fun fetchGroceryItems(name: String = "", category: String = "") {
         viewModelScope.launch {
@@ -86,11 +89,20 @@ class GroceryItemsViewModel : ViewModel() {
         _finalItems.value = items.toList()
     }
 
+    private fun groceryItemChanged(groceryItem: GroceryItem) {
+        if (_currentGroceryItem.value.id.isBlank() || groceryItem.id != _currentGroceryItem.value.id) {
+            return
+        }
+
+        getCurrentGroceryItem(_currentGroceryItem.value.id)
+    }
+
     // Ajout/modification d'un item à l'utilisateur connecté
     fun updateUserGroceryItem(item: GroceryItem) {
         viewModelScope.launch {
             groceryRepository.addUserGroceryItem(item)
             updateGroceryItems()
+            groceryItemChanged(item)
         }
     }
 
@@ -107,5 +119,17 @@ class GroceryItemsViewModel : ViewModel() {
 
             updateGroceryItems()
         }
+    }
+
+    fun getCurrentGroceryItem(itemId: String) {
+        val user = CurrentUserCache.user ?: return
+        val item = user.groceryItems[itemId] ?: return
+        _currentGroceryItem.value = GroceryItem(
+            id = item.id,
+            name = item.name,
+            description = item.description,
+            isFavorite = item.isFavorite,
+            category = user.groceryCategories[item.categoryId] ?: GroceryItemCategory(),
+        )
     }
 }

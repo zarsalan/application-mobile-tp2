@@ -21,14 +21,14 @@ class GroceryListsViewModel : ViewModel() {
     val groceryLists : StateFlow<List<GroceryList>> = _groceryLists
 
     // L'id de la liste d'épicerie courante
-    private val _currentGroceryListId = MutableStateFlow<String?>(null)
-    val currentGroceryListId: StateFlow<String?> = _currentGroceryListId
+    private val _currentGroceryList = MutableStateFlow(GroceryList())
+    val currentGroceryList: StateFlow<GroceryList> = _currentGroceryList
 
     // Les items de la liste d'épicerie courante
-    private val _currentGroceryListItems = MutableStateFlow<List<GroceryItem>>(emptyList())
-    val currentGroceryListItems: StateFlow<List<GroceryItem>> = _currentGroceryListItems
+    private val _currentGroceryItems = MutableStateFlow<List<GroceryItem>>(emptyList())
+    val currentGroceryItems: StateFlow<List<GroceryItem>> = _currentGroceryItems
 
-    private fun updateGroceryList(groceryList: GroceryList) {
+    private fun saveGroceryList(groceryList: GroceryList) {
         viewModelScope.launch {
             try {
                 userDB.updateGroceryList(groceryList)
@@ -45,9 +45,10 @@ class GroceryListsViewModel : ViewModel() {
     }
 
     // Chargement des items de la liste d'épicerie spécifiée
-    fun loadGroceryListItems(groceryList : GroceryList) {
+    fun loadCurrentGroceryListItems(groceryListId: String) {
         val user = CurrentUserCache.user ?: return
-        _currentGroceryListId.value = groceryList.id
+        val groceryList = user.groceryLists[groceryListId] ?: return
+        _currentGroceryList.value = groceryList
         val items = mutableListOf<GroceryItem>()
 
         // On obtient les GroceryItem de la liste
@@ -63,13 +64,13 @@ class GroceryListsViewModel : ViewModel() {
             items.add(groceryItem)
         }
 
-        _currentGroceryListItems.value = items
+        _currentGroceryItems.value = items
     }
 
     // Rechargement des items de la liste si la liste actuel a été modifiée
     private fun groceryListUpdated(groceryList: GroceryList) {
-        if (_currentGroceryListId.value == groceryList.id) {
-            loadGroceryListItems(groceryList)
+        if (_currentGroceryList.value.id == groceryList.id) {
+            loadCurrentGroceryListItems(groceryList.id)
         }
     }
 
@@ -80,11 +81,11 @@ class GroceryListsViewModel : ViewModel() {
         user.groceryLists[newList.id] = newList
         loadGroceryLists()
 
-        updateGroceryList(newList)
+        saveGroceryList(newList)
     }
 
     // Mise à jour des détails d'une liste
-    fun updateGroceryList(listId: String, title: String, description: String) {
+    fun saveGroceryList(listId: String, title: String, description: String) {
         val user = CurrentUserCache.user ?: return
         val list = user.groceryLists[listId] ?: return
         list.title = title
@@ -92,7 +93,7 @@ class GroceryListsViewModel : ViewModel() {
         user.groceryLists[listId] = list
         loadGroceryLists()
 
-        updateGroceryList(list)
+        saveGroceryList(list)
     }
 
     // Suppression d'une liste
@@ -121,7 +122,7 @@ class GroceryListsViewModel : ViewModel() {
             list.listItems.add(newItem)
             groceryListUpdated(list)
 
-            updateGroceryList(list)
+            saveGroceryList(list)
         }
     }
 
@@ -134,7 +135,7 @@ class GroceryListsViewModel : ViewModel() {
             list.listItems[itemIndex] = listItem
             groceryListUpdated(list)
 
-            updateGroceryList(list)
+            saveGroceryList(list)
         }
     }
 
@@ -145,6 +146,6 @@ class GroceryListsViewModel : ViewModel() {
         list.listItems.removeIf { it.id == listItem.id }
         groceryListUpdated(list)
 
-        updateGroceryList(list)
+        saveGroceryList(list)
     }
 }

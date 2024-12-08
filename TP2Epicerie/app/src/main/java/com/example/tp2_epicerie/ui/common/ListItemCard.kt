@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,7 +50,7 @@ import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
 import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 
 data class ListItemCardInfo(
-    val listItem: MutableState<ListItem>,
+    val listItem: ListItem,
     val onClick: () -> Unit,
     val containerColor: Color
 )
@@ -58,22 +59,25 @@ data class ListItemCardInfo(
 fun ListItemCard(
     groceryListsViewModel: GroceryListsViewModel,
     groceryItemsViewModel: GroceryItemsViewModel,
-    cardInfo: ListItemCardInfo
+    listItemCardInfo: ListItemCardInfo
 ) {
-    val listItem = cardInfo.listItem.value
-    val groceryItem: GroceryItem = viewModel.getGroceryItemById(listItem.groceryItemId)
-        .collectAsState(initial = GroceryItem()).value
+    LaunchedEffect(listItemCardInfo.listItem.groceryItemId){
+        groceryItemsViewModel.getCurrentGroceryItem(listItemCardInfo.listItem.groceryItemId)
+    }
+
+    val groceryItem = groceryItemsViewModel.currentGroceryItem.collectAsState().value
+    val listItem = listItemCardInfo.listItem
+
     var showDeleteDialog by remember { mutableStateOf(false) }
-    val currentContext = LocalContext.current
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 6.dp, start = 3.dp, end = 3.dp)
-            .clickable { cardInfo.onClick() },
+            .clickable { listItemCardInfo.onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp, pressedElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = cardInfo.containerColor,
+            containerColor = listItemCardInfo.containerColor,
             contentColor = Color.Black
         )
     ) {
@@ -113,22 +117,6 @@ fun ListItemCard(
                     )
                 }
 
-                // Image de l'item
-                if (groceryItem.imagePath != null) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(currentContext)
-                            .data(groceryItem.imagePath)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(50.dp)
-                            .padding(end = 10.dp),
-                        placeholder = painterResource(R.drawable.baseline_image_24),
-                        error = painterResource(R.drawable.baseline_broken_image_24)
-                    )
-                }
-
                 // Colonne pour afficher la quantité et les boutons de modification
                 Row(
                     modifier = Modifier.fillMaxHeight(),
@@ -144,7 +132,7 @@ fun ListItemCard(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         IconButton(onClick = {
-                            viewModel.updateListItem(listItem.copy(quantity = listItem.quantity + 1))
+                            groceryListsViewModel.updateGroceryListItem(listItem.copy(quantity = listItem.quantity + 1))
                         }) {
                             Icon(
                                 imageVector = Icons.Default.KeyboardArrowUp,
@@ -155,7 +143,7 @@ fun ListItemCard(
                         Text(text = listItem.quantity.toString())
                         IconButton(onClick = {
                             if (listItem.quantity > 1) {
-                                viewModel.updateListItem(listItem.copy(quantity = listItem.quantity - 1))
+                                groceryListsViewModel.updateGroceryListItem(listItem.copy(quantity = listItem.quantity - 1))
                             }
                         }) {
                             Icon(
@@ -168,10 +156,10 @@ fun ListItemCard(
 
                     // Icône pour marquer/cocher l'item
                     IconButton(onClick = {
-                        viewModel.updateListItemCrossedState(listItem)
+                        groceryListsViewModel.updateGroceryListItem(listItem.copy(isChecked = !listItem.isChecked))
                     }) {
                         Icon(
-                            imageVector = if (listItem.isChecked > 0) Icons.Filled.CheckCircle else Icons.Filled.Check,
+                            imageVector = if (listItem.isChecked) Icons.Filled.CheckCircle else Icons.Filled.Check,
                             contentDescription = "Checkmark",
                             tint = colorResource(id = R.color.check_mark)
                         )
@@ -179,20 +167,16 @@ fun ListItemCard(
 
                     // Icône pour marquer l'item comme favori
                     IconButton(onClick = {
-                        if (groceryItem.isFavorite > 0) {
-                            viewModel.updateGroceryItem(groceryItem.copy(isFavorite = 0))
-                        } else {
-                            viewModel.updateGroceryItem(groceryItem.copy(isFavorite = 1))
-                        }
+                        groceryItemsViewModel.updateUserGroceryItem(groceryItem.copy(isFavorite = !groceryItem.isFavorite))
                     }) {
                         Icon(
-                            imageVector = if (groceryItem.isFavorite > 0) {
+                            imageVector = if (groceryItem.isFavorite) {
                                 Icons.Filled.Favorite
                             } else {
                                 Icons.Default.FavoriteBorder
                             },
                             contentDescription = "Favorite",
-                            tint = if (groceryItem.isFavorite > 0) Color.Red else Color.Black,
+                            tint = if (groceryItem.isFavorite) Color.Red else Color.Black,
                         )
                     }
 
@@ -218,7 +202,7 @@ fun ListItemCard(
             title = stringResource(R.string.text_removeItem) + " ${groceryItem.name}?",
             message = stringResource(R.string.text_delete_from_list_verification),
             onYes = {
-                viewModel.deleteListItem(listItem)
+                groceryListsViewModel.deleteGroceryListItem(listItem)
                 showDeleteDialog = false
             },
             onNo = {

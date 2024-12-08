@@ -81,7 +81,7 @@ data class GroceryItemCategory(
 
 data class GroceryItem(
     var id: String = "",
-    var category: GroceryItemCategory,
+    var category: GroceryItemCategory = GroceryItemCategory(),
     var name: String = "",
     var description: String = "",
     var isFavorite: Boolean = false,
