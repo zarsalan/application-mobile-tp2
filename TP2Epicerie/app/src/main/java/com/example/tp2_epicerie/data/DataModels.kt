@@ -1,5 +1,6 @@
 package com.example.tp2_epicerie.data
 
+import com.google.gson.annotations.SerializedName
 import java.util.UUID
 
 data class User(
@@ -47,7 +48,7 @@ data class ListItem(
 )
 
 data class RecipeList(
-    var id: String = UUID.randomUUID().toString(), // Idée unique générée par UUID
+    @SerializedName("_id") var id: String = UUID.randomUUID().toString(), // Idée unique générée par UUID
     var title: String = "",
     var description: String = "",
     var recipes: MutableList<Recipe> = mutableListOf(),
@@ -63,14 +64,14 @@ data class GroceryItemUser(
 )
 
 data class GroceryItemCategory(
-    var id: String = "", // Idée unique de l'api ou générée par UUID
+    @SerializedName("_id") var id: String = "", // Idée unique de l'api ou générée par UUID
     val userCreated: Boolean = false, // Si la catégorie a été créée par l'utilisateur
     val name: String = "",
     val description: String = "",
 )
 
 data class GroceryItem(
-    var id: String = "",
+    @SerializedName("_id") var id: String = "",
     var userCreated: Boolean = false, // Si l'item a été créé par l'utilisateur
     var category: GroceryItemCategory = GroceryItemCategory(),
     var name: String = "",
@@ -90,7 +91,7 @@ data class GroceryItem(
 
 // Entités venant de l'API (NON modifiable par l'utilisateur)
 data class Recipe(
-    var id: String = "", // Idée unique de l'api
+    @SerializedName("_id") var id: String = "", // Idée unique de l'api
     var name: String,
     var description: String,
     var ingredients: List<Ingredient>,
@@ -100,7 +101,7 @@ data class Recipe(
 )
 
 data class RecipeCategory(
-    var id: String = "",
+    @SerializedName("_id") var id: String = "",
     var name: String,
     var description: String
 )

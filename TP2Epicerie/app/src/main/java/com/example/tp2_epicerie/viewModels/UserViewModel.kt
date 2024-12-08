@@ -31,6 +31,8 @@ class UserViewModel : ViewModel() {
                         // Récupérer les informations de l'utilisateur connecté
                         _currentUser.value = user
                         onResult(true)
+                    } else {
+                        onResult(false)
                     }
                 }, _isLoading)
             } catch (e: Exception) {

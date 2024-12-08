@@ -120,7 +120,6 @@ fun ConnexionView(
                                     groceryListsViewModel.loadGroceryLists()
                                     recipeListsViewModel.loadRecipeLists()
 
-
                                     Toast.makeText(context, "Connexion réussie", Toast.LENGTH_SHORT)
                                         .show()
                                     // Redirigez vers la page principale
