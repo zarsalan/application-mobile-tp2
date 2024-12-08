@@ -31,6 +31,9 @@ class RecipeLists : ViewModel() {
     private val _currentRecipe = MutableStateFlow<Recipe?>(null)
     val currentRecipe: StateFlow<Recipe?> = _currentRecipe
 
+    private val _ingredientRecipes = MutableStateFlow<List<Recipe>>(emptyList())
+    val ingredientRecipes: StateFlow<List<Recipe>> = _ingredientRecipes
+
     private fun recipeListUpdated(recipeList: RecipeList) {
         if (_currentRecipeList.value?.id == recipeList.id) {
             _currentRecipeList.value = recipeList
@@ -52,11 +55,11 @@ class RecipeLists : ViewModel() {
         }
     }
 
-    private fun setCurrentRecipes(recipes: List<Recipe>) {
+    private fun setCurrentRecipes(recipes: List<Recipe>, recipesList: MutableStateFlow<List<Recipe>>) {
         val user = CurrentUserCache.user
 
         if (user == null) {
-            _currentRecipes.value = recipes
+            recipesList.value = recipes
         }
         else {
             for (recipe in recipes) {
@@ -65,7 +68,7 @@ class RecipeLists : ViewModel() {
                 }
             }
 
-            _currentRecipes.value = recipes
+            recipesList.value = recipes
         }
     }
 
@@ -75,7 +78,7 @@ class RecipeLists : ViewModel() {
         _isLoading.value = true
 
         val recipes = apiRepository.getRecipes(categoryName, recipeName)
-        setCurrentRecipes(recipes)
+        setCurrentRecipes(recipes, _currentRecipes)
 
         _isLoading.value = false
     }
@@ -85,7 +88,7 @@ class RecipeLists : ViewModel() {
         _isLoading.value = true
 
         val recipes = apiRepository.getRecipesByIds(ids)
-        setCurrentRecipes(recipes)
+        setCurrentRecipes(recipes, _currentRecipes)
 
         _isLoading.value = false
     }
@@ -96,6 +99,16 @@ class RecipeLists : ViewModel() {
 
         val recipe = apiRepository.getRecipeById(id)
         setCurrentRecipe(recipe)
+
+        _isLoading.value = false
+    }
+
+    // Récupération des recettes contenant un item à partir de l'API
+    suspend fun fetchRecipesByIngredient(ingredientId: String) {
+        _isLoading.value = true
+
+        val recipes = apiRepository.getRecipesContainingIngredient(ingredientId)
+        setCurrentRecipes(recipes, _ingredientRecipes)
 
         _isLoading.value = false
     }

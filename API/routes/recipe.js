@@ -153,7 +153,7 @@ router.get("/get-recipes", async (req, res, next) => {
 	}
 });
 
-router.get("/get-recipes-that-contains-ingredient", async (req, res, next) => {
+router.get("/get-recipes-containing-ingredient", async (req, res, next) => {
 	try {
 		const ingredientId = req.query.ingredientId;
 		if (!ingredientId) {

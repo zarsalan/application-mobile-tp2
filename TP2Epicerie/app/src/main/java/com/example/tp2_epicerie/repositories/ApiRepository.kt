@@ -49,6 +49,10 @@ class ApiRepository {
         return RetrofitInstance.apiService.getAllRecipes()
     }
 
+    suspend fun getRecipesContainingIngredient(ingredientId: String) : List<Recipe> {
+        return RetrofitInstance.apiService.getRecipesContainingIngredient(ingredientId)
+    }
+
     suspend fun getRecipeCategories() : List<RecipeCategory> {
         return RetrofitInstance.apiService.getRecipeCategories()
     }

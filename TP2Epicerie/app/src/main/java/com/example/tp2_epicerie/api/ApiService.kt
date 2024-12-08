@@ -57,6 +57,11 @@ interface ApiService {
     @GET("recipes/get-recipes")
     suspend fun getAllRecipes(): List<Recipe>
 
+    @GET("recipes/get-recipes-containing-ingredient")
+    suspend fun getRecipesContainingIngredient(
+        @Query("ingredientId") ingredientId: String
+    ): List<Recipe>
+
     @GET("recipes/get-categories")
     suspend fun getRecipeCategories(): List<RecipeCategory>
 }
