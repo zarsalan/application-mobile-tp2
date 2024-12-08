@@ -31,9 +31,41 @@ class RecipeLists : ViewModel() {
     private val _currentRecipe = MutableStateFlow<Recipe?>(null)
     val currentRecipe: StateFlow<Recipe?> = _currentRecipe
 
-    private fun recipeListUpdated(recipeList : RecipeList) {
+    private fun recipeListUpdated(recipeList: RecipeList) {
         if (_currentRecipeList.value?.id == recipeList.id) {
             _currentRecipeList.value = recipeList
+        }
+    }
+
+    private fun setCurrentRecipe(recipe: Recipe) {
+        val user = CurrentUserCache.user
+
+        if (user == null) {
+            _currentRecipe.value = recipe
+        }
+        else {
+            if (user.favoriteRecipes.containsKey(recipe.id)) {
+                recipe.isFavorite = true
+            }
+
+            _currentRecipe.value = recipe
+        }
+    }
+
+    private fun setCurrentRecipes(recipes: List<Recipe>) {
+        val user = CurrentUserCache.user
+
+        if (user == null) {
+            _currentRecipes.value = recipes
+        }
+        else {
+            for (recipe in recipes) {
+                if (user.favoriteRecipes.containsKey(recipe.id)) {
+                    recipe.isFavorite = true
+                }
+            }
+
+            _currentRecipes.value = recipes
         }
     }
 
@@ -42,8 +74,18 @@ class RecipeLists : ViewModel() {
     suspend fun fetchRecipes(categoryName: String = "", recipeName: String = "") {
         _isLoading.value = true
 
-        val lists = apiRepository.getRecipes(categoryName, recipeName)
-        _currentRecipes.value = lists
+        val recipes = apiRepository.getRecipes(categoryName, recipeName)
+        setCurrentRecipes(recipes)
+
+        _isLoading.value = false
+    }
+
+    // Récupération de plusieurs recettes par id
+    private suspend fun fetchRecipesByIds(ids: List<String>) {
+        _isLoading.value = true
+
+        val recipes = apiRepository.getRecipesByIds(ids)
+        setCurrentRecipes(recipes)
 
         _isLoading.value = false
     }
@@ -53,7 +95,7 @@ class RecipeLists : ViewModel() {
         _isLoading.value = true
 
         val recipe = apiRepository.getRecipeById(id)
-        _currentRecipe.value = recipe
+        setCurrentRecipe(recipe)
 
         _isLoading.value = false
     }
@@ -133,5 +175,26 @@ class RecipeLists : ViewModel() {
         recipeListUpdated(user.recipeLists[recipeList.id]!!)
         _recipeLists.value = user.recipeLists.values.toList()
         userDB.updateRecipeList(user.recipeLists[recipeList.id]!!)
+    }
+
+    // Recettes favorites de l'utilisateur ---------------------------------------------------------
+    suspend fun addFavoriteRecipe(recipe: Recipe) {
+        val user = CurrentUserCache.user ?: return
+        user.favoriteRecipes[recipe.id] = true
+
+        userDB.addFavoriteRecipe(recipe)
+    }
+
+    suspend fun removeFavoriteRecipe(recipe: Recipe) {
+        val user = CurrentUserCache.user ?: return
+        user.favoriteRecipes.remove(recipe.id)
+
+        userDB.removeFavoriteRecipe(recipe)
+    }
+
+    suspend fun loadFavoriteRecipes() {
+        val user = CurrentUserCache.user ?: return
+
+        fetchRecipesByIds(user.favoriteRecipes.keys.toList())
     }
 }

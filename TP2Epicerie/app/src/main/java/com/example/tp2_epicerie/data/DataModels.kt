@@ -21,6 +21,7 @@ data class User(
             description = "Liste d'épicerie",
         )
     ),
+    var favoriteRecipes: MutableMap<String, Boolean> = mutableMapOf(), // Id de la recette et si elle est favorite
     var recipeLists: MutableMap<String, RecipeList> = mutableMapOf(
         "1" to RecipeList(
             id = "1",
@@ -49,8 +50,8 @@ data class GroceryList(
 
 data class ListItem(
     var id: String = UUID.randomUUID().toString(), // Idée unique générée par UUID
-    var groceryListId: String = "", // Référence à la liste GroceryList
-    var groceryItemId: String = "", // Référence à l'item d'épicerie
+    var groceryListId: String = "", // Référence à l'id de GroceryList
+    var groceryItemId: String = "", // Référence à l'id de GroceryItemUser
     var quantity: Int = 0,
     var isChecked: Boolean = false,
 )
@@ -87,13 +88,13 @@ data class GroceryItem(
 
 // Entités venant de l'API (NON modifiable par l'utilisateur)
 data class Recipe(
-    var id: String = "", // Idée unique générée par UUID
-    var idApi: String = "", // Idée unique de l'api
+    var id: String = "", // Idée unique de l'api
     var name: String,
     var description: String,
     var ingredients: List<Ingredient>,
     var steps: List<String>,
     var category: RecipeCategory,
+    var isFavorite: Boolean = false,
 )
 
 data class RecipeCategory(

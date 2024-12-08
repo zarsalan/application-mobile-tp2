@@ -201,4 +201,32 @@ class UserDB(private val db: FirebaseFirestore) {
             throw Exception("Erreur lors de la suppression de la liste de recettes : ${e.message}")
         }
     }
+
+    // Recettes favoris ----------------------------------------------------------------------------
+    suspend fun updateFavoriteRecipes() {
+        try {
+            val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
+            db.collection("users").document(user.id).update("favoriteRecipes", user.favoriteRecipes).await()
+        } catch (e: Exception) {
+            throw Exception("Erreur lors de la mise à jour des recettes favorites : ${e.message}")
+        }
+    }
+
+    suspend fun addFavoriteRecipe(recipe: Recipe) {
+        try {
+            val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
+            db.collection("users").document(user.id).update("favoriteRecipes.${recipe.id}", true).await()
+        } catch (e: Exception) {
+            throw Exception("Erreur lors de l'ajout de la recette favorite : ${e.message}")
+        }
+    }
+
+    suspend fun removeFavoriteRecipe(recipe: Recipe) {
+        try {
+            val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
+            db.collection("users").document(user.id).update("favoriteRecipes.${recipe.id}", null).await()
+        } catch (e: Exception) {
+            throw Exception("Erreur lors de la suppression de la recette favorite : ${e.message}")
+        }
+    }
 }

@@ -1,7 +1,7 @@
 package com.example.tp2_epicerie.api
 
-import com.example.tp2_epicerie.data.GroceryItemAPI
-import com.example.tp2_epicerie.data.GroceryItemCategoryAPI
+import com.example.tp2_epicerie.data.GroceryItem
+import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.data.Recipe
 import com.example.tp2_epicerie.data.RecipeCategory
 import retrofit2.http.GET
@@ -13,29 +13,29 @@ interface ApiService {
     @GET("grocery-items/get")
     suspend fun getGroceryItemsByName(
         @Query("name") name: String
-    ): List<GroceryItemAPI>
+    ): List<GroceryItem>
 
     @GET("grocery-items/get")
     suspend fun getGroceryItemsByCategory(
         @Query("categoryName") categoryName: String
-    ): List<GroceryItemAPI>
+    ): List<GroceryItem>
 
     @GET("grocery-items/get")
     suspend fun getGroceryItemsByCategoryAndName(
         @Query("categoryName") categoryName: String,
         @Query("name") name: String
-    ): List<GroceryItemAPI>
+    ): List<GroceryItem>
 
     @GET("grocery-items/get/{id}")
     suspend fun getGroceryItemById(
         @Path("id") id: String
-    ): GroceryItemAPI
+    ): GroceryItem
 
     @GET("grocery-items/get-items")
-    suspend fun getAllGroceryItems(): List<GroceryItemAPI>
+    suspend fun getAllGroceryItems(): List<GroceryItem>
 
     @GET("grocery-items/get-categories")
-    suspend fun getGroceryCategories(): List<GroceryItemCategoryAPI>
+    suspend fun getGroceryCategories(): List<GroceryItemCategory>
 
     // Routes pour les recettes ----------------------------------------------
     @GET("recipes/get")
@@ -48,6 +48,11 @@ interface ApiService {
     suspend fun getRecipeById(
         @Path("id") id: String
     ): Recipe
+
+    @GET("recipes/get-recipes")
+    suspend fun getRecipesByIds(
+        @Query("ids") ids: List<String>
+    ): List<Recipe>
 
     @GET("recipes/get-recipes")
     suspend fun getAllRecipes(): List<Recipe>
