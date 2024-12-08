@@ -1,6 +1,7 @@
 package com.example.tp2_epicerie.viewModels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.tp2_epicerie.CurrentUserCache
 import com.example.tp2_epicerie.Graph
 import com.example.tp2_epicerie.data.Recipe
@@ -9,6 +10,7 @@ import com.example.tp2_epicerie.data.RecipeList
 import com.example.tp2_epicerie.utilities.loadingFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class RecipeListsViewModel : ViewModel() {
     private val userDB = Graph.userDB
@@ -75,43 +77,53 @@ class RecipeListsViewModel : ViewModel() {
 
     // Récupération par l'API ----------------------------------------------------------------------
     // Récupération des recettes à partir de l'API
-    suspend fun fetchRecipes(categoryName: String = "", recipeName: String = "") {
-        loadingFlow({
-            val recipes = apiRepository.getRecipes(categoryName, recipeName)
-            setCurrentRecipes(recipes, _currentRecipes)
-        }, _isLoading)
+    fun fetchRecipes(categoryName: String = "", recipeName: String = "") {
+        viewModelScope.launch {
+            loadingFlow({
+                val recipes = apiRepository.getRecipes(categoryName, recipeName)
+                setCurrentRecipes(recipes, _currentRecipes)
+            }, _isLoading)
+        }
     }
 
     // Récupération de plusieurs recettes par id
-    private suspend fun fetchRecipesByIds(ids: List<String>) {
-        loadingFlow({
-            val recipes = apiRepository.getRecipesByIds(ids)
-            setCurrentRecipes(recipes, _currentRecipes)
-        }, _isLoading)
+    private fun fetchRecipesByIds(ids: List<String>) {
+        viewModelScope.launch {
+            loadingFlow({
+                val recipes = apiRepository.getRecipesByIds(ids)
+                setCurrentRecipes(recipes, _currentRecipes)
+            }, _isLoading)
+        }
     }
 
     // Récupération d'une recette à partir de l'API
-    suspend fun fetchRecipeById(id: String) {
-        loadingFlow({
-            val recipe = apiRepository.getRecipeById(id)
-            setCurrentRecipe(recipe)
-        }, _isLoading)
+    fun fetchRecipeById(id: String) {
+        viewModelScope.launch {
+            loadingFlow({
+                val recipe = apiRepository.getRecipeById(id)
+                setCurrentRecipe(recipe)
+            }, _isLoading)
+        }
     }
 
     // Récupération des recettes contenant un item à partir de l'API
-    suspend fun fetchRecipesByIngredient(ingredientId: String) {
-        loadingFlow({
-            val recipes = apiRepository.getRecipesContainingIngredient(ingredientId)
-            setCurrentRecipes(recipes, _ingredientRecipes)
-        }, _isLoading)
+    fun fetchRecipesByIngredient(ingredientId: String) {
+        viewModelScope.launch {
+            loadingFlow({
+                val recipes = apiRepository.getRecipesContainingIngredient(ingredientId)
+                setCurrentRecipes(recipes, _ingredientRecipes)
+            }, _isLoading)
+        }
     }
 
     // Récupération des catégories de recettes à partir de l'API
-    suspend fun fetchRecipeCategories() {
-        loadingFlow({
-            val categories = apiRepository.getRecipeCategories()
-            _recipeCategories.value = categories
-        }, _isLoading)
+    fun fetchRecipeCategories() {
+        viewModelScope.launch {
+            loadingFlow({
+                val categories = apiRepository.getRecipeCategories()
+                _recipeCategories.value = categories
+            }, _isLoading)
+        }
     }
 
     // Listes de recettes de l'utilisateur ---------------------------------------------------------
@@ -134,69 +146,88 @@ class RecipeListsViewModel : ViewModel() {
     }
 
     // Ajout de liste de recettes à l'utilisateur connecté
-    suspend fun addRecipeList(recipeList: RecipeList) {
+    fun addRecipeList(recipeList: RecipeList) {
         val user = CurrentUserCache.user ?: return
         user.recipeLists[recipeList.id] = recipeList
 
         _recipeLists.value = user.recipeLists.values.toList()
-        userDB.updateRecipeList(recipeList)
+
+        viewModelScope.launch {
+            userDB.updateRecipeList(recipeList)
+        }
     }
 
     // Suppression de liste de recettes de l'utilisateur connecté
-    suspend fun deleteRecipeList(recipeList: RecipeList) {
+    fun deleteRecipeList(recipeList: RecipeList) {
         val user = CurrentUserCache.user ?: return
         user.recipeLists.remove(recipeList.id)
 
         _recipeLists.value = user.recipeLists.values.toList()
-        userDB.deleteRecipeList(recipeList)
+
+        viewModelScope.launch {
+            userDB.deleteRecipeList(recipeList)
+        }
     }
 
     // Mise à jour de liste de recettes de l'utilisateur connecté
-    suspend fun updateRecipeList(recipeList: RecipeList) {
+    fun updateRecipeList(recipeList: RecipeList) {
         val user = CurrentUserCache.user ?: return
         user.recipeLists[recipeList.id] = recipeList
 
         recipeListUpdated(recipeList)
         _recipeLists.value = user.recipeLists.values.toList()
-        userDB.updateRecipeList(recipeList)
+
+        viewModelScope.launch {
+            userDB.updateRecipeList(recipeList)
+        }
     }
 
     // Ajout de recette à une liste de recettes de l'utilisateur connecté
-    suspend fun addRecipeToList(recipe: Recipe, recipeList: RecipeList) {
+    fun addRecipeToList(recipe: Recipe, recipeList: RecipeList) {
         val user = CurrentUserCache.user ?: return
         user.recipeLists[recipeList.id]?.recipes?.add(recipe)
 
         recipeListUpdated(user.recipeLists[recipeList.id]!!)
         _recipeLists.value = user.recipeLists.values.toList()
-        userDB.updateRecipeList(user.recipeLists[recipeList.id]!!)
+
+        viewModelScope.launch {
+            userDB.updateRecipeList(user.recipeLists[recipeList.id]!!)
+        }
     }
 
     // Suppression de recette d'une liste de recettes de l'utilisateur connecté
-    suspend fun removeRecipeFromList(recipe: Recipe, recipeList: RecipeList) {
+    fun removeRecipeFromList(recipe: Recipe, recipeList: RecipeList) {
         val user = CurrentUserCache.user ?: return
         user.recipeLists[recipeList.id]?.recipes?.remove(recipe)
 
         recipeListUpdated(user.recipeLists[recipeList.id]!!)
         _recipeLists.value = user.recipeLists.values.toList()
-        userDB.updateRecipeList(user.recipeLists[recipeList.id]!!)
+
+        viewModelScope.launch {
+            userDB.updateRecipeList(user.recipeLists[recipeList.id]!!)
+        }
     }
 
     // Recettes favorites de l'utilisateur ---------------------------------------------------------
-    suspend fun addFavoriteRecipe(recipe: Recipe) {
+    fun addFavoriteRecipe(recipe: Recipe) {
         val user = CurrentUserCache.user ?: return
         user.favoriteRecipes[recipe.id] = true
 
-        userDB.addFavoriteRecipe(recipe)
+        viewModelScope.launch {
+            userDB.addFavoriteRecipe(recipe)
+        }
     }
 
-    suspend fun removeFavoriteRecipe(recipe: Recipe) {
+    fun removeFavoriteRecipe(recipe: Recipe) {
         val user = CurrentUserCache.user ?: return
         user.favoriteRecipes.remove(recipe.id)
 
-        userDB.removeFavoriteRecipe(recipe)
+        viewModelScope.launch {
+            userDB.removeFavoriteRecipe(recipe)
+        }
     }
 
-    suspend fun loadFavoriteRecipes() {
+    fun loadFavoriteRecipes() {
         val user = CurrentUserCache.user ?: return
 
         fetchRecipesByIds(user.favoriteRecipes.keys.toList())

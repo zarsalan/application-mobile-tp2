@@ -1,6 +1,7 @@
 package com.example.tp2_epicerie.viewModels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.tp2_epicerie.CurrentUserCache
 import com.example.tp2_epicerie.Graph
 import com.example.tp2_epicerie.data.GroceryItem
@@ -9,6 +10,7 @@ import com.example.tp2_epicerie.data.GroceryList
 import com.example.tp2_epicerie.data.ListItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class GroceryListsViewModel : ViewModel() {
     private val userDB = Graph.userDB
@@ -26,11 +28,13 @@ class GroceryListsViewModel : ViewModel() {
     private val _currentGroceryListItems = MutableStateFlow<List<GroceryItem>>(emptyList())
     val currentGroceryListItems: StateFlow<List<GroceryItem>> = _currentGroceryListItems
 
-    private suspend fun updateGroceryList(groceryList: GroceryList) {
-        try {
-            userDB.updateGroceryList(groceryList)
-        } catch (e: Exception) {
-            throw Exception("Erreur lors de la mise à jour de la liste d'épicerie : ${e.message}")
+    private fun updateGroceryList(groceryList: GroceryList) {
+        viewModelScope.launch {
+            try {
+                userDB.updateGroceryList(groceryList)
+            } catch (e: Exception) {
+                throw Exception("Erreur lors de la mise à jour de la liste d'épicerie : ${e.message}")
+            }
         }
     }
 
@@ -70,7 +74,7 @@ class GroceryListsViewModel : ViewModel() {
     }
 
     // Ajout d'une liste
-    suspend fun addGroceryList(title: String, description: String) {
+    fun addGroceryList(title: String, description: String) {
         val user = CurrentUserCache.user ?: return
         val newList = GroceryList(title = title, description = description)
         user.groceryLists[newList.id] = newList
@@ -80,7 +84,7 @@ class GroceryListsViewModel : ViewModel() {
     }
 
     // Mise à jour des détails d'une liste
-    suspend fun updateGroceryList(listId: String, title: String, description: String) {
+    fun updateGroceryList(listId: String, title: String, description: String) {
         val user = CurrentUserCache.user ?: return
         val list = user.groceryLists[listId] ?: return
         list.title = title
@@ -92,32 +96,37 @@ class GroceryListsViewModel : ViewModel() {
     }
 
     // Suppression d'une liste
-    suspend fun deleteGroceryList(listId: String) {
+    fun deleteGroceryList(listId: String) {
         val user = CurrentUserCache.user ?: return
         user.groceryLists.remove(listId)
         loadGroceryLists()
 
-        try {
-            userDB.deleteGroceryList(listId)
-        } catch (e: Exception) {
-            throw Exception("Erreur lors de la suppression de la liste d'épicerie : ${e.message}")
+        viewModelScope.launch {
+            try {
+                userDB.deleteGroceryList(listId)
+            } catch (e: Exception) {
+                throw Exception("Erreur lors de la suppression de la liste d'épicerie : ${e.message}")
+            }
         }
     }
 
     // Ajout d'un ListItem à la liste d'épicerie
-    suspend fun addGroceryListItem(listItem: ListItem, groceryItem: GroceryItem) {
+    fun addGroceryListItem(listItem: ListItem, groceryItem: GroceryItem) {
         val user = CurrentUserCache.user ?: return
         val list = user.groceryLists[listItem.groceryListId] ?: return
-        val groceryItemUser = groceryRepository.addUserGroceryItem(groceryItem)
-        val newItem = listItem.copy(groceryItemId = groceryItemUser.id)
-        list.listItems.add(newItem)
-        groceryListUpdated(list)
 
-        updateGroceryList(list)
+        viewModelScope.launch {
+            val groceryItemUser = groceryRepository.addUserGroceryItem(groceryItem)
+            val newItem = listItem.copy(groceryItemId = groceryItemUser.id)
+            list.listItems.add(newItem)
+            groceryListUpdated(list)
+
+            updateGroceryList(list)
+        }
     }
 
     // Mise à jour d'un ListItem de la liste d'épicerie
-    suspend fun updateGroceryListItem(listItem: ListItem) {
+    fun updateGroceryListItem(listItem: ListItem) {
         val user = CurrentUserCache.user ?: return
         val list = user.groceryLists[listItem.groceryListId] ?: return
         val itemIndex = list.listItems.indexOfFirst { it.id == listItem.id }
@@ -130,7 +139,7 @@ class GroceryListsViewModel : ViewModel() {
     }
 
     // Suppression d'un ListItem de la liste d'épicerie
-    suspend fun deleteGroceryListItem(listItem: ListItem) {
+    fun deleteGroceryListItem(listItem: ListItem) {
         val user = CurrentUserCache.user ?: return
         val list = user.groceryLists[listItem.groceryListId] ?: return
         list.listItems.removeIf { it.id == listItem.id }

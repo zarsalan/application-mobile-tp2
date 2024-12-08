@@ -74,6 +74,7 @@ data class GroceryItemUser(
 
 data class GroceryItemCategory(
     var id: String = "", // Idée unique de l'api ou générée par UUID
+    val userCreated: Boolean = false, // Si la catégorie a été créée par l'utilisateur
     val name: String = "",
     val description: String = "",
 )

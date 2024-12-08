@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,9 +23,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
+import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomTextField
 import com.example.tp2_epicerie.ui.theme.submitButtonColors
@@ -37,17 +40,9 @@ fun AddEditCategoryView(
     groceryCategoriesViewModel: GroceryCategoriesViewModel,
     navHostController: NavHostController
 ) {
-    var title by remember { mutableStateOf("") }
-    val category = viewModel.getCategoryById(id)
-        .takeIf { id != 0L }
-        ?.collectAsState(Category())
-        ?.value
-
-    title = ""
-
-    category?.let {
-        title = it.title
-    }
+    val categoriesList = groceryCategoriesViewModel.finalCategories.collectAsState(emptyList()).value
+    val category = categoriesList.find { it.id == id }
+    var name by remember { mutableStateOf(category?.name ?: "") }
 
     Scaffold(
         topBar = {
@@ -68,24 +63,24 @@ fun AddEditCategoryView(
             // Champ de texte pour la catégorie
             CustomTextField(
                 label = "Titre",
-                value = title,
+                value = name,
                 labelColor = MaterialTheme.colorScheme.primary,
                 onValueChanged = { newValue ->
-                    title = newValue
+                    name = newValue
                 }
             )
 
             // Bouton pour ajouter ou modifier la catégorie
-            if (id != 0L) {
+            if (id != "") {
                 val textCategoryUpdated: String = stringResource(R.string.text_categoryUpdated)
                 val textCategoryNotFound: String = stringResource(R.string.text_categoryNotFound)
                 Button(modifier = Modifier.padding(top = 15.dp),
                     onClick = {
                         if (category != null) {
-                            viewModel.updateCategory(
-                                Category(
+                            groceryCategoriesViewModel.updateUserGroceryCategory(
+                                GroceryItemCategory(
                                     id = category.id,
-                                    title = title.trim(),
+                                    name = name.trim()
                                 )
                             )
                             Toast.makeText(
@@ -115,9 +110,9 @@ fun AddEditCategoryView(
                 Button(modifier = Modifier.padding(top = 15.dp),
                     colors = ButtonDefaults.submitButtonColors(),
                     onClick = {
-                        viewModel.upsertCategory(
-                            Category(
-                                title = title.trim(),
+                        groceryCategoriesViewModel.updateUserGroceryCategory(
+                            GroceryItemCategory(
+                                name = name.trim()
                             )
                         )
                         Toast.makeText(

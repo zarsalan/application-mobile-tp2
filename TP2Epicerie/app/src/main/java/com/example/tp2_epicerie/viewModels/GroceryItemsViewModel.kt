@@ -1,6 +1,7 @@
 package com.example.tp2_epicerie.viewModels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.tp2_epicerie.CurrentUserCache
 import com.example.tp2_epicerie.Graph
 import com.example.tp2_epicerie.data.GroceryItem
@@ -9,6 +10,7 @@ import com.example.tp2_epicerie.data.GroceryItemUser
 import com.example.tp2_epicerie.utilities.loadingFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class GroceryItemsViewModel : ViewModel() {
     private val userDB = Graph.userDB
@@ -25,14 +27,16 @@ class GroceryItemsViewModel : ViewModel() {
     val finalItems = _finalItems
 
     // Récupération des items d'épicerie à partir de l'API et des items de l'utilisateur connecté
-    suspend fun fetchGroceryItems(name: String = "", category: String = "") {
-        try {
-            loadingFlow({
-                _groceryItemsAPI.value = apiRepository.getGroceryItemsByCategoryAndName(name, category)
-                updateGroceryItems(name, category)
-            }, _isLoading)
-        } catch (e: Exception) {
-            println("Erreur lors de la récupération des items d'épicerie : ${e.message}")
+    fun fetchGroceryItems(name: String = "", category: String = "") {
+        viewModelScope.launch {
+            try {
+                loadingFlow({
+                    _groceryItemsAPI.value = apiRepository.getGroceryItemsByCategoryAndName(name, category)
+                    updateGroceryItems(name, category)
+                }, _isLoading)
+            } catch (e: Exception) {
+                println("Erreur lors de la récupération des items d'épicerie : ${e.message}")
+            }
         }
     }
 
@@ -83,21 +87,25 @@ class GroceryItemsViewModel : ViewModel() {
     }
 
     // Ajout/modification d'un item à l'utilisateur connecté
-    suspend fun updateUserGroceryItem(item: GroceryItem) {
-        groceryRepository.addUserGroceryItem(item)
-        updateGroceryItems()
+    fun updateUserGroceryItem(item: GroceryItem) {
+        viewModelScope.launch {
+            groceryRepository.addUserGroceryItem(item)
+            updateGroceryItems()
+        }
     }
 
-    suspend fun removeUserGroceryItem(item: GroceryItemUser) {
+    fun removeUserGroceryItem(item: GroceryItemUser) {
         val user = CurrentUserCache.user ?: return
 
         if (item.id.isBlank()) {
             return
         }
 
-        user.groceryItems.remove(item.id)
-        userDB.deleteGroceryItem(item.id)
+        viewModelScope.launch {
+            user.groceryItems.remove(item.id)
+            userDB.deleteGroceryItem(item.id)
 
-        updateGroceryItems()
+            updateGroceryItems()
+        }
     }
 }

@@ -22,7 +22,7 @@ class GroceryRepository(private val userDB: UserDB = Graph.userDB){
 
         // On ajoute un id à la catégorie si manquant
         val categoryWithId = if (category.id.isBlank()) {
-            category.copy(id = UUID.randomUUID().toString())
+            category.copy(id = UUID.randomUUID().toString(), userCreated = true)
         } else {
             category
         }
@@ -67,11 +67,11 @@ class GroceryRepository(private val userDB: UserDB = Graph.userDB){
     }
 
     // Suppression des items d'épicerie de l'utilisateur dépendant de la catégorie
-    suspend fun removeGroceryItemsByCategory(category: GroceryItemCategory) {
+    suspend fun removeGroceryItemsByCategory(categoryId: String) {
         val user = CurrentUserCache.user ?: throw Exception("L'utilisateur n'est pas connecté")
 
         // Suppression des items d'épicerie de la catégorie
-        val itemsToDelete = user.groceryItems.values.filter { it.categoryId == category.id }
+        val itemsToDelete = user.groceryItems.values.filter { it.categoryId == categoryId }
         for (item in itemsToDelete) {
             user.groceryItems.remove(item.id)
         }

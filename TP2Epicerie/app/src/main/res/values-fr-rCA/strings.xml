@@ -66,4 +66,6 @@
     <string name="text_categories">Les catégories</string>
     <string name="text_theme">Thème</string>
     <string name="connexion_screen_title">Connexion</string>
+
+    <string name="text_category_from_api">Cette catégorie provient de l'API</string>
 </resources>

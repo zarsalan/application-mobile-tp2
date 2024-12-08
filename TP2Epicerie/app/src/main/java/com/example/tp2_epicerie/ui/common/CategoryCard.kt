@@ -26,22 +26,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
+import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
+import kotlinx.coroutines.launch
 
 data class CustomCategoryCardInfo(
-    val categoryId: Long = 0L,
-    val category: ItemCategory,
-    val title: String,
+    val groceryItemCategory: GroceryItemCategory,
     val onClick: () -> Unit,
     val containerColor: Color,
 )
 
 // Carte pour afficher les catégories
 @Composable
-fun CustomCategoryCard(
+fun CategoryCard(
     groceryCategoriesViewModel: GroceryCategoriesViewModel,
     navHostController: NavHostController,
     cardInfo: CustomCategoryCardInfo
@@ -68,7 +69,7 @@ fun CustomCategoryCard(
         ) {
             // Affichage du titre de la catégorie
             Text(
-                text = cardInfo.title,
+                text = cardInfo.groceryItemCategory.name,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 20.sp,
                 modifier = Modifier
@@ -81,7 +82,7 @@ fun CustomCategoryCard(
             // Affichage des boutons pour modifier et supprimer la catégorie
             Row(modifier = Modifier.padding(end = 3.dp), horizontalArrangement = Arrangement.End) {
                 IconButton(onClick = {
-                    navHostController.navigate(Screen.AddEditCategory.route + "/${cardInfo.categoryId}")
+                    navHostController.navigate(Screen.AddEditCategory.route + "/${cardInfo.groceryItemCategory.id}")
                 }) {
                     Icon(
                         imageVector = Icons.Default.Edit,
@@ -89,12 +90,20 @@ fun CustomCategoryCard(
                         tint = Color.Black
                     )
                 }
-                IconButton(onClick = { showDeleteDialog = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete Icon",
-                        tint = Color.Black
+                if (cardInfo.groceryItemCategory.userCreated) {
+                    Text(
+                        text = stringResource(R.string.text_category_from_api),
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(end = 3.dp)
                     )
+                } else {
+                    IconButton(onClick = { showDeleteDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete Icon",
+                            tint = Color.Black
+                        )
+                    }
                 }
             }
         }
@@ -104,10 +113,10 @@ fun CustomCategoryCard(
     CustomYesNoDialog(
         visible = showDeleteDialog,
         onDismissRequest = { showDeleteDialog = false },
-        title = stringResource(R.string.text_removeCategory) + " ${cardInfo.title}?",
+        title = stringResource(R.string.text_removeCategory) + " ${cardInfo.groceryItemCategory.name}?",
         message = stringResource(R.string.text_categoryVerification),
         onYes = {
-            viewModel.deleteCategory(cardInfo.category)
+            groceryCategoriesViewModel.removeUserGroceryCategory(cardInfo.groceryItemCategory.id)
             showDeleteDialog = false
         },
         onNo = {

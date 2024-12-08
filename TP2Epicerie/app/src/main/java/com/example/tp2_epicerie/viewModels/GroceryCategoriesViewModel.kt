@@ -55,26 +55,30 @@ class GroceryCategoriesViewModel : ViewModel() {
     }
 
     // Ajout/modification d'une catégorie à l'utilisateur connecté
-    suspend fun updateUserGroceryCategory(category: GroceryItemCategory) {
-        groceryRepository.addUserCategory(category)
-        updateGroceryCategories()
+    fun updateUserGroceryCategory(category: GroceryItemCategory) {
+        viewModelScope.launch {
+            groceryRepository.addUserCategory(category)
+            updateGroceryCategories()
+        }
     }
 
     // Suppression d'une catégorie de l'utilisateur connecté
-    suspend fun removeUserGroceryCategory(category: GroceryItemCategory) {
+    fun removeUserGroceryCategory(categoryId : String) {
         val user = CurrentUserCache.user ?: return
 
-        if (category.id.isBlank()) {
+        if (categoryId.isBlank()) {
             return
         }
 
-        // Suppression des items de cette catégorie
-        groceryRepository.removeGroceryItemsByCategory(category)
+        viewModelScope.launch {
+            // Suppression des items de cette catégorie
+            groceryRepository.removeGroceryItemsByCategory(categoryId)
 
-        // Suppression de la catégorie de l'utilisateur
-        user.groceryCategories.remove(category.id)
+            // Suppression de la catégorie de l'utilisateur
+            user.groceryCategories.remove(categoryId)
 
-        userDB.deleteGroceryCategory(category.id)
-        updateGroceryCategories()
+            userDB.deleteGroceryCategory(categoryId)
+            updateGroceryCategories()
+        }
     }
 }

@@ -24,7 +24,7 @@ import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.ui.common.AppBarView
-import com.example.tp2_epicerie.ui.common.CustomCategoryCard
+import com.example.tp2_epicerie.ui.common.CategoryCard
 import com.example.tp2_epicerie.ui.common.CustomCategoryCardInfo
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
 
@@ -82,15 +82,13 @@ fun CategoriesView(
                         .padding(it)
                         .padding(top = 6.dp)
                 ) {
-                    items(categoriesList) { category ->
-                        CustomCategoryCard(
+                    items(categoriesList) { groceryItemCategory ->
+                        CategoryCard(
                             groceryCategoriesViewModel = groceryCategoriesViewModel,
                             navHostController = navHostController,
                             cardInfo = CustomCategoryCardInfo(
-                                categoryId = category.id,
-                                category = category,
-                                title = category.title,
-                                onClick = { navHostController.navigate(Screen.AddEditCategory.route + "/${category.id}") },
+                                groceryItemCategory = groceryItemCategory,
+                                onClick = { navHostController.navigate(Screen.AddEditCategory.route + "/${groceryItemCategory.id}") },
                                 containerColor = MaterialTheme.colorScheme.primaryContainer
                             )
                         )
