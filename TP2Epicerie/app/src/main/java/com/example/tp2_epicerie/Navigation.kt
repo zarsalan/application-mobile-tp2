@@ -90,7 +90,7 @@ fun Navigation(
             })
         ) {
             val id = it.arguments?.getString("id") ?: ""
-            AddEditItemView(id, groceryItemsViewModel, navHostController)
+            AddEditItemView(id, groceryItemsViewModel, groceryCategoriesViewModel, navHostController)
         }
 
         // Ajout ou modification d'une catégorie

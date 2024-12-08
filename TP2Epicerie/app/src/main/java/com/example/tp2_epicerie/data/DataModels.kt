@@ -85,7 +85,17 @@ data class GroceryItem(
     var name: String = "",
     var description: String = "",
     var isFavorite: Boolean = false,
-)
+) {
+    fun toUserItem(): GroceryItemUser {
+        return GroceryItemUser(
+            id = this.id,
+            categoryId = this.category.id,
+            name = this.name,
+            description = this.description,
+            isFavorite = this.isFavorite
+        )
+    }
+}
 
 // Entités venant de l'API (NON modifiable par l'utilisateur)
 data class Recipe(
