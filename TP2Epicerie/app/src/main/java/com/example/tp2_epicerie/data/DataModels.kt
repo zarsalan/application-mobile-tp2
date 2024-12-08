@@ -75,14 +75,15 @@ data class GroceryItemCategory(
     val description: String = "",
 )
 
-// Entités venant de l'API (NON modifiable par l'utilisateur)
-data class GroceryItemAPI(
+data class GroceryItem(
     var id: String = "",
     var category: GroceryItemCategory,
     var name: String = "",
     var description: String = "",
+    var isFavorite: Boolean = false,
 )
 
+// Entités venant de l'API (NON modifiable par l'utilisateur)
 data class Recipe(
     var id: String = "", // Idée unique générée par UUID
     var idApi: String = "", // Idée unique de l'api
@@ -100,6 +101,6 @@ data class RecipeCategory(
 )
 
 data class Ingredient(
-    var groceryItem: GroceryItemAPI,
+    var groceryItem: GroceryItem,
     var quantity: Int,
 )

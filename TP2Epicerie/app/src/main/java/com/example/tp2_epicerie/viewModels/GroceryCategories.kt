@@ -4,15 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tp2_epicerie.CurrentUserCache
 import com.example.tp2_epicerie.Graph
-import com.example.tp2_epicerie.api.ApiRepository
 import com.example.tp2_epicerie.data.GroceryItemCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class GroceryCategories : ViewModel() {
-    private val apiRepository = ApiRepository()
     private val userDB = Graph.userDB
+    private val apiRepository = Graph.apiRepository
+    private val groceryRepository = Graph.groceryRepository
+
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
 
     private val _groceryCategoriesAPI = MutableStateFlow<List<GroceryItemCategory>>(emptyList())
     val groceryCategoriesAPI: StateFlow<List<GroceryItemCategory>> = _groceryCategoriesAPI
@@ -20,23 +24,19 @@ class GroceryCategories : ViewModel() {
     private val _finalCategories = MutableStateFlow<List<GroceryItemCategory>>(emptyList())
     val finalCategories: StateFlow<List<GroceryItemCategory>> = _finalCategories
 
-    private val _loading = MutableStateFlow(false)
-    val loading: StateFlow<Boolean> = _loading
-
     // Récupération des catégories à partir de l'API et des catégories de l'utilisateur connecté
     fun refreshCategories() {
         viewModelScope.launch {
+            _loading.value = true
             try {
-                _loading.value = true
-
                 val categories = apiRepository.getGroceryCategories()
                 _groceryCategoriesAPI.value = categories
 
                 updateGroceryCategories()
-
-                _loading.value = false
             } catch (e: Exception) {
                 println("Erreur lors de la récupération des catégories d'épicerie : ${e.message}")
+            } finally {
+                _loading.value = false
             }
         }
     }
@@ -63,16 +63,24 @@ class GroceryCategories : ViewModel() {
 
     // Ajout/modification d'une catégorie à l'utilisateur connecté
     suspend fun updateUserGroceryCategory(category: GroceryItemCategory) {
-        val user = CurrentUserCache.user ?: return
-        user.groceryCategories[category.id] = category
-        userDB.updateGroceryCategory(category)
+        groceryRepository.addUserCategory(category)
         updateGroceryCategories()
     }
 
     // Suppression d'une catégorie de l'utilisateur connecté
     suspend fun removeUserGroceryCategory(category: GroceryItemCategory) {
         val user = CurrentUserCache.user ?: return
+
+        if (category.id.isBlank()) {
+            return
+        }
+
+        // Suppression des items de cette catégorie
+        groceryRepository.removeGroceryItemsByCategory(category)
+
+        // Suppression de la catégorie de l'utilisateur
         user.groceryCategories.remove(category.id)
+
         userDB.deleteGroceryCategory(category)
         updateGroceryCategories()
     }

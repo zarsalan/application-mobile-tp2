@@ -1,33 +1,34 @@
-package com.example.tp2_epicerie.api
+package com.example.tp2_epicerie.repositories
 
-import com.example.tp2_epicerie.data.GroceryItemAPI
-import com.example.tp2_epicerie.data.GroceryItemCategoryAPI
+import com.example.tp2_epicerie.api.RetrofitInstance
+import com.example.tp2_epicerie.data.GroceryItem
+import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.data.Recipe
 import com.example.tp2_epicerie.data.RecipeCategory
 
 class ApiRepository {
     // Requêttes pour les items -----------------------------------------------------
-    suspend fun getGroceryItemsByName(name: String) : List<GroceryItemAPI> {
+    suspend fun getGroceryItemsByName(name: String) : List<GroceryItem> {
         return RetrofitInstance.apiService.getGroceryItemsByName(name)
     }
 
-    suspend fun getGroceryItemsByCategory(categoryName: String) : List<GroceryItemAPI> {
+    suspend fun getGroceryItemsByCategory(categoryName: String) : List<GroceryItem> {
         return RetrofitInstance.apiService.getGroceryItemsByCategory(categoryName)
     }
 
-    suspend fun getGroceryItemsByCategoryAndName(categoryName: String, name: String) : List<GroceryItemAPI> {
+    suspend fun getGroceryItemsByCategoryAndName(categoryName: String, name: String) : List<GroceryItem> {
         return RetrofitInstance.apiService.getGroceryItemsByCategoryAndName(categoryName, name)
     }
 
-    suspend fun getGroceryItemById(id: String) : GroceryItemAPI {
+    suspend fun getGroceryItemById(id: String) : GroceryItem {
         return RetrofitInstance.apiService.getGroceryItemById(id)
     }
 
-    suspend fun getAllGroceryItems() : List<GroceryItemAPI> {
+    suspend fun getAllGroceryItems() : List<GroceryItem> {
         return RetrofitInstance.apiService.getAllGroceryItems()
     }
 
-    suspend fun getGroceryCategories() : List<GroceryItemCategoryAPI> {
+    suspend fun getGroceryCategories() : List<GroceryItemCategory> {
         return RetrofitInstance.apiService.getGroceryCategories()
     }
 

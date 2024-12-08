@@ -1,18 +1,16 @@
 package com.example.tp2_epicerie
 
 import android.content.Context
-import com.example.tp2_epicerie.api.ApiRepository
+import com.example.tp2_epicerie.repositories.ApiRepository
 import com.example.tp2_epicerie.data.GroceryDatabase
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
+import com.example.tp2_epicerie.repositories.GroceryRepository
 
 object Graph {
     private lateinit var database: GroceryDatabase
 
-    // Initialisation de l'API
+    // Initialisation des repositories
     val apiRepository: ApiRepository by lazy { ApiRepository() }
+    val groceryRepository: GroceryRepository by lazy { GroceryRepository() }
 
     // Base de données UserDB
     val userDB by lazy { database.userDB }
