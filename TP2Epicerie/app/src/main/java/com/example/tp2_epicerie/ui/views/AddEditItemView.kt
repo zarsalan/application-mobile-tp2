@@ -1,10 +1,6 @@
 package com.example.tp2_epicerie.ui.views
 
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,22 +9,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,18 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.GroceryItem
-import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
 import com.example.tp2_epicerie.ui.common.AppBarMenu
 import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
@@ -56,7 +44,6 @@ import com.example.tp2_epicerie.ui.common.CustomDropdownMenu
 import com.example.tp2_epicerie.ui.common.CustomDropdownMenus
 import com.example.tp2_epicerie.ui.common.CustomTextField
 import com.example.tp2_epicerie.ui.common.CustomYesNoDialog
-import com.example.tp2_epicerie.ui.theme.submitButtonColors
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
 import java.util.UUID
 
@@ -76,29 +63,21 @@ fun AddEditItemView(
     val textDeleteVerification = stringResource(R.string.text_deleteVerification)
     val textItemDeleted = stringResource(R.string.text_itemDeleted)
 
-    // Champs liés aux données de l'item
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var categoryId by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("") }
-    var isFavorite by remember { mutableStateOf(false) }
+    // État pour afficher le dialog de suppression
     var showDeleteDialog by remember { mutableStateOf(false) }
 
+    // État pour afficher les données de l'item
     val context = LocalContext.current
-    val groceryItems by groceryItemViewModel.finalItems.collectAsState(initial = emptyList())
+    val groceryItems by groceryItemViewModel.finalItems.collectAsState()
     val groceryItem = groceryItems.find { it.id == id }
-    val categories by groceryCategoriesViewModel.finalCategories.collectAsState(initial = emptyList())
+    val categories by groceryCategoriesViewModel.finalCategories.collectAsState()
 
-    // Initialiser les champs si l'item existe (mode "Modifier")
-    LaunchedEffect(groceryItem) {
-        groceryItem?.let {
-            name = it.name
-            description = it.description
-            categoryId = it.category.id
-            selectedCategory = it.category.name
-            isFavorite = it.isFavorite
-        }
-    }
+    // Champs liés aux données de l'item
+    var name by remember { mutableStateOf(groceryItem?.name ?: "") }
+    var description by remember { mutableStateOf(groceryItem?.description ?: "") }
+    var categoryId by remember { mutableStateOf(groceryItem?.category?.id ?: "") }
+    var selectedCategory by remember { mutableStateOf(groceryItem?.category?.name ?: "") }
+    var isFavorite by remember { mutableStateOf(groceryItem?.isFavorite ?: false) }
 
     val scrollState = rememberScrollState()
 
@@ -200,19 +179,25 @@ fun AddEditItemView(
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
+                        val category = categories.find { it.id == categoryId }
+                        if (category == null) {
+                            Toast.makeText(
+                                context,
+                                textAlert,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Button
+                        }
+
                         val newItem = GroceryItem(
-                            id = groceryItem?.id ?: UUID.randomUUID().toString(),
+                            id = id.ifEmpty { UUID.randomUUID().toString() },
                             name = name.trim(),
                             description = description.trim(),
-                            category = categories.find { it.id == categoryId } ?: GroceryItemCategory(),
+                            category = category,
                             isFavorite = isFavorite
                         )
 
-                        if (groceryItem == null) {
-                            groceryItemViewModel.updateUserGroceryItem(newItem)
-                        } else {
-                            groceryItemViewModel.updateUserGroceryItem(newItem)
-                        }
+                        groceryItemViewModel.updateUserGroceryItem(newItem)
 
                         Toast.makeText(
                             context,
@@ -234,19 +219,17 @@ fun AddEditItemView(
     }
 
     // Dialog pour confirmer la suppression
-    if (showDeleteDialog) {
-        CustomYesNoDialog(
-            visible = showDeleteDialog,
-            onDismissRequest = { showDeleteDialog = false },
-            title = "$textRemoveItem $name?",
-            message = textDeleteVerification,
-            onYesWithContext = { context ->
-                groceryItem?.let { groceryItemViewModel.removeUserGroceryItem(it.toUserItem())}
-                showDeleteDialog = false
-                navHostController.popBackStack()
-                Toast.makeText(context, textItemDeleted, Toast.LENGTH_SHORT).show()
-            },
-            onNo = { showDeleteDialog = false }
-        )
-    }
+    CustomYesNoDialog(
+        visible = showDeleteDialog,
+        onDismissRequest = { showDeleteDialog = false },
+        title = "$textRemoveItem $name?",
+        message = textDeleteVerification,
+        onYesWithContext = { ctx ->
+            groceryItem?.let { groceryItemViewModel.removeUserGroceryItem(it.toUserItem())}
+            showDeleteDialog = false
+            navHostController.popBackStack()
+            Toast.makeText(ctx, textItemDeleted, Toast.LENGTH_SHORT).show()
+        },
+        onNo = { showDeleteDialog = false }
+    )
 }
