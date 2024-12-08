@@ -71,7 +71,7 @@ fun CustomGroceryListView(
         val updatedItemsByCategory = mutableMapOf<Category, MutableList<MutableState<ListItem>>>()
 
         itemsToShow
-            .filter { it.value.isCrossed == if (indexCrossed) 1 else 0 }
+            .filter { it.value.isChecked == if (indexCrossed) 1 else 0 }
             .forEach { listItem ->
                 val groceryItem = viewModel.getGroceryItemById(listItem.value.groceryItemId).firstOrNull()
 
@@ -91,7 +91,7 @@ fun CustomGroceryListView(
 
         groceryListItems.forEach { listItem ->
             val statefulListItem = mutableStateOf(listItem)
-            if (listItem.isCrossed == 1) {
+            if (listItem.isChecked == 1) {
                 crossedItems.add(statefulListItem)
             } else {
                 nonCrossedItems.add(statefulListItem)

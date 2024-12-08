@@ -109,10 +109,10 @@ class UserDB(private val db: FirebaseFirestore) {
         }
     }
 
-    suspend fun deleteGroceryCategory(category: GroceryItemCategory) {
+    suspend fun deleteGroceryCategory(categoryId: String) {
         try {
             val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
-            db.collection("users").document(user.id).update("groceryCategories.${category.id}", null).await()
+            db.collection("users").document(user.id).update("groceryCategories.${categoryId}", null).await()
         } catch (e: Exception) {
             throw Exception("Erreur lors de la suppression de la catégorie d'item d'épicerie : ${e.message}")
         }
@@ -137,10 +137,10 @@ class UserDB(private val db: FirebaseFirestore) {
         }
     }
 
-    suspend fun deleteGroceryItem(item: GroceryItemUser) {
+    suspend fun deleteGroceryItem(itemId: String) {
         try {
             val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
-            db.collection("users").document(user.id).update("groceryItems.${item.id}", null).await()
+            db.collection("users").document(user.id).update("groceryItems.${itemId}", null).await()
         } catch (e: Exception) {
             throw Exception("Erreur lors de la suppression de l'item d'épicerie : ${e.message}")
         }
@@ -165,10 +165,10 @@ class UserDB(private val db: FirebaseFirestore) {
         }
     }
 
-    suspend fun deleteGroceryList(list: GroceryList) {
+    suspend fun deleteGroceryList(listId: String) {
         try {
             val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
-            db.collection("users").document(user.id).update("groceryLists.${list.id}", null).await()
+            db.collection("users").document(user.id).update("groceryLists.${listId}", null).await()
         } catch (e: Exception) {
             throw Exception("Erreur lors de la suppression de la liste d'items d'épicerie : ${e.message}")
         }

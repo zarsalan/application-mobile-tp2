@@ -50,7 +50,7 @@ data class ListItem(
     var groceryListId: String = "", // Référence à la liste GroceryList
     var groceryItemId: String = "", // Référence à l'item d'épicerie
     var quantity: Int = 0,
-    var isCrossed: Boolean = false,
+    var isChecked: Boolean = false,
 )
 
 data class RecipeList(

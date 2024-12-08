@@ -168,7 +168,7 @@ fun ListItemCard(
                         viewModel.updateListItemCrossedState(listItem)
                     }) {
                         Icon(
-                            imageVector = if (listItem.isCrossed > 0) Icons.Filled.CheckCircle else Icons.Filled.Check,
+                            imageVector = if (listItem.isChecked > 0) Icons.Filled.CheckCircle else Icons.Filled.Check,
                             contentDescription = "Checkmark",
                             tint = colorResource(id = R.color.check_mark)
                         )

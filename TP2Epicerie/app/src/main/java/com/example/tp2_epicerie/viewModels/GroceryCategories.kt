@@ -15,8 +15,8 @@ class GroceryCategories : ViewModel() {
     private val apiRepository = Graph.apiRepository
     private val groceryRepository = Graph.groceryRepository
 
-    private val _loading = MutableStateFlow(false)
-    val loading: StateFlow<Boolean> = _loading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _groceryCategoriesAPI = MutableStateFlow<List<GroceryItemCategory>>(emptyList())
     val groceryCategoriesAPI: StateFlow<List<GroceryItemCategory>> = _groceryCategoriesAPI
@@ -27,7 +27,7 @@ class GroceryCategories : ViewModel() {
     // Récupération des catégories à partir de l'API et des catégories de l'utilisateur connecté
     fun refreshCategories() {
         viewModelScope.launch {
-            _loading.value = true
+            _isLoading.value = true
             try {
                 val categories = apiRepository.getGroceryCategories()
                 _groceryCategoriesAPI.value = categories
@@ -36,7 +36,7 @@ class GroceryCategories : ViewModel() {
             } catch (e: Exception) {
                 println("Erreur lors de la récupération des catégories d'épicerie : ${e.message}")
             } finally {
-                _loading.value = false
+                _isLoading.value = false
             }
         }
     }
@@ -47,7 +47,7 @@ class GroceryCategories : ViewModel() {
         val categories = mutableListOf<GroceryItemCategory>()
 
         // Insertion des catégories venant de l'api
-        _loading.value = true
+        _isLoading.value = true
 
         for (category in _groceryCategoriesAPI.value) {
             if (user.groceryCategories.contains(category.id)) {
@@ -58,7 +58,7 @@ class GroceryCategories : ViewModel() {
         }
         _finalCategories.value = categories.toList()
 
-        _loading.value = false
+        _isLoading.value = false
     }
 
     // Ajout/modification d'une catégorie à l'utilisateur connecté
@@ -81,7 +81,7 @@ class GroceryCategories : ViewModel() {
         // Suppression de la catégorie de l'utilisateur
         user.groceryCategories.remove(category.id)
 
-        userDB.deleteGroceryCategory(category)
+        userDB.deleteGroceryCategory(category.id)
         updateGroceryCategories()
     }
 }

@@ -14,8 +14,8 @@ class GroceryItems : ViewModel() {
     private val apiRepository = Graph.apiRepository
     private val groceryRepository = Graph.groceryRepository
 
-    private val _loading = MutableStateFlow(false)
-    val loading: StateFlow<Boolean> = _loading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _groceryItemsAPI = MutableStateFlow<List<GroceryItem>>(emptyList())
     val groceryItemsAPI = _groceryItemsAPI
@@ -25,7 +25,7 @@ class GroceryItems : ViewModel() {
 
     // Récupération des items d'épicerie à partir de l'API et des items de l'utilisateur connecté
     suspend fun fetchGroceryItems(name: String = "", category: String = "") {
-        _loading.value = true
+        _isLoading.value = true
 
         try {
             val items = apiRepository.getGroceryItemsByCategoryAndName(name, category)
@@ -34,7 +34,7 @@ class GroceryItems : ViewModel() {
         } catch (e: Exception) {
             println("Erreur lors de la récupération des items d'épicerie : ${e.message}")
         } finally {
-            _loading.value = false
+            _isLoading.value = false
         }
     }
 
@@ -42,7 +42,7 @@ class GroceryItems : ViewModel() {
         val user = CurrentUserCache.user ?: return
         val items = mutableListOf<GroceryItem>()
 
-        _loading.value = true
+        _isLoading.value = true
 
         // Ajout des items de l'API et des items de l'utilisateur
         for (apiItem in _groceryItemsAPI.value) {
@@ -84,7 +84,7 @@ class GroceryItems : ViewModel() {
         }
 
         _finalItems.value = items.toList()
-        _loading.value = false
+        _isLoading.value = false
     }
 
     // Ajout/modification d'un item à l'utilisateur connecté
@@ -101,7 +101,7 @@ class GroceryItems : ViewModel() {
         }
 
         user.groceryItems.remove(item.id)
-        userDB.deleteGroceryItem(item)
+        userDB.deleteGroceryItem(item.id)
 
         updateGroceryItems()
     }
