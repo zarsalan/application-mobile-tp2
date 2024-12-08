@@ -47,7 +47,7 @@ fun Navigation(
 
         // Page principal
         composable(Screen.HomeScreen.route) {
-            HomeView(userViewModel, groceryListsViewModel, navHostController)
+            HomeView(userViewModel, groceryListsViewModel, groceryItemsViewModel, navHostController)
         }
 
         // Affichage de tous les articles

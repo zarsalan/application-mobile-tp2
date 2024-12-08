@@ -36,7 +36,7 @@ import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 
 // Carte personnalisée
 data class CustomListCardInfo(
-    val listId: Long = 0L,
+    val listId: String = "",
     val title: String,
     val description: String,
     val onClick: () -> Unit,
