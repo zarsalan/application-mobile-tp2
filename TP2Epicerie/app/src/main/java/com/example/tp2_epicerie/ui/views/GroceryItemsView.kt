@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,91 +50,66 @@ import kotlinx.coroutines.flow.first
 fun GroceryItemsView(
     groceryItemsViewModel: GroceryItemsViewModel,
     groceryListsViewModel: GroceryListsViewModel,
+    groceryCategoriesViewModel: GroceryCategoriesViewModel,
     navHostController: NavHostController,
-    mode: Boolean
+    mode: Boolean // true pour "Tous les items", false pour "Favoris"
 ) {
-    val groceryItemsList = remember { mutableStateListOf<GroceryItem>() }
-    var itemsByCategory by remember { mutableStateOf(mapOf<ItemCategory, List<GroceryItem>>()) }
+    // Récupération des données d'items et de catégories
+    val groceryItems by groceryItemsViewModel.finalItems.collectAsState(initial = emptyList())
+    val groceryCategories by groceryCategoriesViewModel.finalCategories.collectAsState(initial = emptyList())
 
-    // On met à jour les items par catégorie
-    suspend fun updateItemsByCategory() {
-        val updatedItemsByCategory = mutableMapOf<ItemCategory, MutableList<GroceryItem>>()
-        groceryItemsList
-            .forEach { groceryItem ->
-                val category = viewModel.getCategoryById(groceryItem.categoryId ?: 1L).first()
-                updatedItemsByCategory.getOrPut(category) { mutableListOf() }.add(groceryItem)
-            }
-        itemsByCategory = updatedItemsByCategory
-    }
+    // Chaîne pour la catégorie "Autres"
+    val otherCategoryLabel = stringResource(R.string.text_category_other)
 
-    // On obtient les items de l'épicerie selon le mode et on les trie par catégorie
-    LaunchedEffect(mode) {
-        Log.d("OBTAINED1", "itemsByCategory: $itemsByCategory")
-        if (mode) {
-            viewModel.getAllGroceryItems.collectLatest { items ->
-                groceryItemsList.clear()
-                groceryItemsList.addAll(items)
-                updateItemsByCategory()
-            }
-        } else {
-            viewModel.getFavoriteGroceryItems.collectLatest { items ->
-                groceryItemsList.clear()
-                groceryItemsList.addAll(items)
-                updateItemsByCategory()
-            }
+    // Regroupement des items par catégorie
+    val itemsByCategory = groceryItems
+        .filter { it.isFavorite == mode || mode } // Filtrer par favoris si nécessaire
+        .groupBy { item ->
+            groceryCategories.find { it.id == item.category.id }?.name ?: otherCategoryLabel
         }
-    }
 
     Scaffold(
         topBar = {
             AppBarView(
                 title = if (mode) Screen.AllItems.title() else Screen.Favorites.title(),
                 navHostController = navHostController,
-                appBarMenuInfo = if (mode) AppBarMenuInfo(menus = listOf(
-                    AppBarMenu(
-                        title = stringResource(R.string.menu_addItem),
-                        onClick = { navHostController.navigate(Screen.AddEditItem.route + "/0L") }
+                appBarMenuInfo = AppBarMenuInfo(
+                    menus = listOf(
+                        AppBarMenu(
+                            title = stringResource(R.string.menu_addItem),
+                            onClick = { navHostController.navigate(Screen.AddEditItem.route + "/0L") }
+                        )
                     )
-                )) else AppBarMenuInfo(menus = listOf(
-                    AppBarMenu(
-                        title = stringResource(R.string.menu_addItem),
-                        onClick = { navHostController.navigate(Screen.AllItems.route) }
-                    )
-                ))
+                )
             )
         },
-        // Boutton flottant pour ajouter un article
         floatingActionButton = {
             if (mode) {
                 FloatingActionButton(
-                    modifier = Modifier.padding(all = 20.dp),
-                    contentColor = Color.White,
-                    containerColor = colorResource(id = R.color.app_bar),
-                    onClick = {
-                        navHostController.navigate(Screen.AddEditItem.route + "/0L")
-                    }
+                    onClick = { navHostController.navigate(Screen.AddEditItem.route + "/0L") },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
                 ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
+                    Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.text_add))
                 }
             }
-        },
-    ) {
-        // Affichage des items dans un LazyColumn (comme recyclerView mais bien meilleur)
+        }
+    ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
-                .padding(top = 6.dp)
+                .padding(paddingValues)
+                .padding(horizontal = 8.dp, vertical = 8.dp)
         ) {
-            itemsByCategory.forEach { (category, items) ->
+            itemsByCategory.forEach { (categoryName, items) ->
                 item {
                     Text(
-                        text = category.title,
+                        text = categoryName,
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp,
                         modifier = Modifier
-                            .padding(start = 8.dp, end = 8.dp, top = 20.dp, bottom = 4.dp)
                             .fillMaxWidth()
+                            .padding(vertical = 8.dp)
                     )
                 }
                 items(items) { groceryItem ->

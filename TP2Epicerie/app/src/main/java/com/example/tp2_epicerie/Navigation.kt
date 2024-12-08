@@ -61,6 +61,7 @@ fun Navigation(
             GroceryItemsView(
                 groceryItemsViewModel,
                 groceryListsViewModel,
+                groceryCategoriesViewModel,
                 navHostController,
                 true
             )
@@ -71,6 +72,7 @@ fun Navigation(
             GroceryItemsView(
                 groceryItemsViewModel,
                 groceryListsViewModel,
+                groceryCategoriesViewModel,
                 navHostController,
                 false
             )
