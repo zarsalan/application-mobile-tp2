@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -46,6 +47,7 @@ import coil.request.ImageRequest
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.GroceryItem
+import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
 import com.example.tp2_epicerie.ui.common.AppBarMenu
 import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
@@ -55,62 +57,62 @@ import com.example.tp2_epicerie.ui.common.CustomDropdownMenus
 import com.example.tp2_epicerie.ui.common.CustomTextField
 import com.example.tp2_epicerie.ui.common.CustomYesNoDialog
 import com.example.tp2_epicerie.ui.theme.submitButtonColors
+import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
+import java.util.UUID
 
 // La page pour ajouter ou modifier un item
 @Composable
 fun AddEditItemView(
     id: String = "",
     groceryItemViewModel: GroceryItemsViewModel,
+    groceryCategoriesViewModel: GroceryCategoriesViewModel,
     navHostController: NavHostController
 ) {
+    // Précharger les ressources de chaîne
+    val textAlert = stringResource(R.string.addItem_alert)
+    val textItemSaved = stringResource(R.string.text_saveItem)
+    val textSave = stringResource(R.string.text_save)
+    val textRemoveItem = stringResource(R.string.text_removeItem)
+    val textDeleteVerification = stringResource(R.string.text_deleteVerification)
+    val textItemDeleted = stringResource(R.string.text_itemDeleted)
+
+    // Champs liés aux données de l'item
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var categoryId by remember { mutableLongStateOf(0L) }
+    var categoryId by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("") }
     var isFavorite by remember { mutableStateOf(false) }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val groceryItem = viewModel.getGroceryItemById(id)
-        .takeIf { id != 0L }
-        ?.collectAsState(GroceryItem())
-        ?.value
-    val categories = viewModel.getAllCategories.collectAsState(initial = emptyList()).value
     var showDeleteDialog by remember { mutableStateOf(false) }
-    val currentContext = LocalContext.current
 
-    val itemDeletedText = stringResource(R.string.text_itemDeleted)
+    val context = LocalContext.current
+    val groceryItems by groceryItemViewModel.finalItems.collectAsState(initial = emptyList())
+    val groceryItem = groceryItems.find { it.id == id }
+    val categories by groceryCategoriesViewModel.finalCategories.collectAsState(initial = emptyList())
 
-    groceryItem?.let {
-        name = it.name
-        description = it.description
-        categoryId = it.categoryId
-        selectedCategory = categories.find { category -> category.id == it.categoryId }?.title ?: ""
-        isFavorite = it.isFavorite == 1
-        imageUri = it.imagePath?.let { imagePath -> Uri.parse(imagePath) }
+    // Initialiser les champs si l'item existe (mode "Modifier")
+    LaunchedEffect(groceryItem) {
+        groceryItem?.let {
+            name = it.name
+            description = it.description
+            categoryId = it.category.id
+            selectedCategory = it.category.name
+            isFavorite = it.isFavorite
+        }
     }
 
-    // Launcher pour récupérer une image
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-        onResult = { uri: Uri? ->
-            uri?.let {
-                imageUri = it
-                currentContext.contentResolver.takePersistableUriPermission(
-                    it,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION
-                )
-            }
-        }
-    )
-
-    // ScrollState pour le scroll vertical si l'écran est trop petit
     val scrollState = rememberScrollState()
+
     Scaffold(
         topBar = {
             AppBarView(
-                title = if (id == 0L) Screen.AddEditItem.title() else Screen.AddEditItem.title2(),
+                title = if (id.isEmpty()) {
+                    Screen.AddEditItem.title()
+                } else {
+                    Screen.AddEditItem.title2()
+                },
                 navHostController = navHostController,
                 appBarMenuInfo = AppBarMenuInfo(
-                    menus = if (id != 0L) {
+                    menus = if (id.isNotEmpty()) {
                         listOf(
                             AppBarMenu(
                                 title = stringResource(R.string.menu_delete_this_item),
@@ -123,54 +125,49 @@ fun AddEditItemView(
                 )
             )
         }
-    ) {
+    ) { padding ->
         Column(
             modifier = Modifier
-                .padding(it)
+                .padding(padding)
                 .fillMaxWidth()
                 .verticalScroll(scrollState),
-
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Colonne pour afficher le nom et la description de l'item
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(3.dp, Alignment.CenterVertically)
-            ) {
-                CustomTextField(
-                    stringResource(R.string.text_name),
-                    labelColor = MaterialTheme.colorScheme.primary,
-                    name,
-                    onValueChanged = { newValue -> name = newValue })
-                CustomTextField(
-                    stringResource(R.string.text_description),
-                    labelColor = MaterialTheme.colorScheme.primary,
-                    description,
-                    onValueChanged = { newValue -> description = newValue })
-            }
+            // Champs Nom et Description
+            CustomTextField(
+                label = stringResource(R.string.text_name),
+                value = name,
+                onValueChanged = { name = it },
+                labelColor = MaterialTheme.colorScheme.primary
+            )
+            CustomTextField(
+                label = stringResource(R.string.text_description),
+                value = description,
+                onValueChanged = { description = it },
+                labelColor = MaterialTheme.colorScheme.primary
+            )
 
-            // Dropdown pour sélectionner la catégorie
+            // Sélection de la catégorie
             CustomDropdownMenu(
                 modifier = Modifier
-                    .width(300.dp)
+                    .fillMaxWidth()
                     .padding(top = 8.dp),
-                label = stringResource(R.string.text_category) + ":",
-                labelColor = MaterialTheme.colorScheme.primary,
+                label = stringResource(R.string.text_category),
                 value = selectedCategory,
                 customDropdownMenus = CustomDropdownMenus(
                     menus = categories.map { category ->
                         CustomDropdownMenu(
-                            text = category.title,
+                            text = category.name,
                             onClick = {
+                                selectedCategory = category.name
                                 categoryId = category.id
-                                selectedCategory = category.title
                             }
                         )
-                    })
+                    }
+                )
             )
 
-            // Row pour ajouter ou retirer l'item des favoris
+            // Gestion des favoris
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -180,158 +177,76 @@ fun AddEditItemView(
             ) {
                 Text(
                     text = stringResource(R.string.addEdit_favorite),
-                    modifier = Modifier
-                        .padding(end = 8.dp),
+                    modifier = Modifier.padding(end = 8.dp),
                     fontSize = 18.sp
-
                 )
                 Icon(
                     imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(start = 8.dp)
                         .size(40.dp)
-                        .clickable {
-                            isFavorite = !isFavorite
-                            if (groceryItem != null) {
-                                viewModel.updateGroceryItem(
-                                    GroceryItem(
-                                        id = id,
-                                        name = name.trim(),
-                                        description = description.trim(),
-                                        categoryId = categoryId,
-                                        isFavorite = isFavorite.compareTo(false),
-                                        imagePath = imageUri?.toString()
-                                    )
-                                )
-                            }
-                        },
+                        .clickable { isFavorite = !isFavorite },
                     tint = if (isFavorite) colorResource(id = R.color.app_bar) else MaterialTheme.colorScheme.primary
                 )
             }
 
-            // Colonne pour ajouter ou supprimer une image ainsi que le bouton pour sauvegarder l'item
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
-            ) {
-                // Boutton pour ajouter ou supprimer une image
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        10.dp,
-                        Alignment.CenterHorizontally
-                    )
-                ) {
-                    Button(
-                        onClick = { imagePickerLauncher.launch(arrayOf("image/*")) },
-                    ) {
-                        Text(text =  stringResource(R.string.text_selectImage))
-                    }
-                    if (imageUri != null) {
-                        Button(
-                            onClick = {
-                                imageUri = null
-                                if (groceryItem != null) {
-                                    viewModel.updateGroceryItem(groceryItem.copy(imagePath = null))
-                                }
-                            },
-                        ) {
-                            Text(stringResource(R.string.text_deleteImage))
-                        }
-                    }
-                }
+            // Bouton pour sauvegarder l'item
+            Button(
+                onClick = {
+                    if (name.isEmpty() || description.isEmpty() || categoryId.isEmpty()) {
+                        Toast.makeText(
+                            context,
+                            textAlert,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        val newItem = GroceryItem(
+                            id = groceryItem?.id ?: UUID.randomUUID().toString(),
+                            name = name.trim(),
+                            description = description.trim(),
+                            category = categories.find { it.id == categoryId } ?: GroceryItemCategory(),
+                            isFavorite = isFavorite
+                        )
 
-                // Affichage de l'image
-                imageUri?.let { uri ->
-                    AsyncImage(
-                        model = ImageRequest.Builder(currentContext)
-                            .data(uri)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = null,
-                        modifier = Modifier.size(200.dp),
-                        placeholder = painterResource(R.drawable.baseline_image_24),
-                        error = painterResource(R.drawable.baseline_broken_image_24)
-                    )
-                }
-
-                // Boutton pour sauvegarder l'item
-                val textAlert: String = stringResource(R.string.addItem_alert)
-                val textItemSaved: String = stringResource(R.string.text_saveItem)
-                Button(
-                    colors = ButtonDefaults.submitButtonColors(),
-                    onClick = {
-                        if (name.isEmpty() || description.isEmpty() || categoryId == 0L) {
-                            Toast.makeText(
-                                currentContext,
-                                textAlert,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@Button
-                        }
-
-                        // Si l'item existe déjà, on le met à jour, sinon on l'ajoute
-                        if (groceryItem != null) {
-                            viewModel.updateGroceryItem(
-                                GroceryItem(
-                                    id = id,
-                                    name = name.trim(),
-                                    description = description.trim(),
-                                    categoryId = categoryId,
-                                    isFavorite = isFavorite.compareTo(false),
-                                    imagePath = imageUri?.toString()
-                                )
-                            )
+                        if (groceryItem == null) {
+                            groceryItemViewModel.updateUserGroceryItem(newItem)
                         } else {
-                            viewModel.upsertGroceryItem(
-                                GroceryItem(
-                                    name = name.trim(),
-                                    description = description.trim(),
-                                    categoryId = categoryId,
-                                    isFavorite = isFavorite.compareTo(false),
-                                    imagePath = imageUri?.toString()
-                                )
-                            )
+                            groceryItemViewModel.updateUserGroceryItem(newItem)
                         }
-                        Toast.makeText(currentContext, textItemSaved, Toast.LENGTH_SHORT)
-                            .show()
+
+                        Toast.makeText(
+                            context,
+                            textItemSaved,
+                            Toast.LENGTH_SHORT
+                        ).show()
                         navHostController.popBackStack()
                     }
-                ) {
-                    Text(
-                        text = stringResource(R.string.text_save),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp
-                    )
-                }
+                },
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text(
+                    text = textSave,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
             }
         }
     }
 
-    // Dialog de suppression
-    CustomYesNoDialog(
-        visible = showDeleteDialog,
-        onDismissRequest = { showDeleteDialog = false },
-        title = stringResource(R.string.text_removeItem) + " ${groceryItem?.name ?: name}?",
-        message = stringResource(R.string.text_deleteVerification),
-        onYesWithContext = { context ->
-            if (groceryItem != null) {
-                viewModel.deleteGroceryItem(groceryItem)
-            }
-            showDeleteDialog = false
-            navHostController.popBackStack()
-            Toast.makeText(
-                context,
-                itemDeletedText,
-                Toast.LENGTH_SHORT
-            ).show()
-        },
-        onNo = {
-            showDeleteDialog = false
-        },
-    )
+    // Dialog pour confirmer la suppression
+    if (showDeleteDialog) {
+        CustomYesNoDialog(
+            visible = showDeleteDialog,
+            onDismissRequest = { showDeleteDialog = false },
+            title = "$textRemoveItem $name?",
+            message = textDeleteVerification,
+            onYesWithContext = { context ->
+                groceryItem?.let { groceryItemViewModel.removeUserGroceryItem(it.toUserItem())}
+                showDeleteDialog = false
+                navHostController.popBackStack()
+                Toast.makeText(context, textItemDeleted, Toast.LENGTH_SHORT).show()
+            },
+            onNo = { showDeleteDialog = false }
+        )
+    }
 }
