@@ -78,7 +78,7 @@ router.get("/get", async (req, res, next) => {
 			});
 		}
 
-		res.json(recipes);
+		res.status(200).json(recipes);
 	} catch (err) {
 		next(err);
 	}
@@ -104,7 +104,7 @@ router.get("/get/:id", async (req, res, next) => {
 				select: "name description",
 			},
 		]);
-		res.json(recipe);
+		res.status(200).json(recipe);
 	} catch (err) {
 		next(err);
 	}
@@ -147,7 +147,42 @@ router.get("/get-recipes", async (req, res, next) => {
 			});
 		}
 
-		res.json(recipes);
+		res.status(200).json(recipes);
+	} catch (err) {
+		next(err);
+	}
+});
+
+router.get("/get-recipes-that-contains-ingredient", async (req, res, next) => {
+	try {
+		const ingredientId = req.query.ingredientId;
+		if (!ingredientId) {
+			return res.status(400).json({
+				message: "Paramètre manquant",
+			});
+		}
+
+		// Trouver les recettes qui contiennent l'ingrédient
+		const recipes = await Recipe.find({
+			"ingredients.item": ingredientId,
+		}).populate([
+			{
+				path: "category",
+				select: "name description",
+			},
+			{
+				path: "ingredients.item",
+				select: "name description",
+			},
+		]);
+
+		if (!recipes || recipes.length === 0) {
+			return res.status(404).json({
+				message: "Aucune recette trouvée contenant cet ingrédient",
+			});
+		}
+
+		res.status(200).json(recipes);
 	} catch (err) {
 		next(err);
 	}
@@ -157,7 +192,7 @@ router.get("/get-categories", async (req, res, next) => {
 	try {
 		const categories = await Category.find();
 		categories.sort((a, b) => a.name.localeCompare(b.name));
-		res.json(categories);
+		res.status(200).json(categories);
 	} catch (err) {
 		next(err);
 	}

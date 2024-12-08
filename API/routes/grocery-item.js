@@ -64,7 +64,7 @@ router.get("/get", async (req, res, next) => {
 			});
 		}
 
-		res.json(groceryItems);
+		res.status(200).json(groceryItems);
 	} catch (err) {
 		next(err);
 	}
@@ -84,7 +84,7 @@ router.get("/get/:id", async (req, res, next) => {
 			select: "name description",
 		});
 
-		res.json(groceryItem);
+		res.status(200).json(groceryItem);
 	} catch (err) {
 		next(err);
 	}
@@ -109,7 +109,7 @@ router.get("/get-items", async (req, res, next) => {
 			});
 		}
 
-		res.json(items);
+		res.status(200).json(items);
 	} catch (err) {
 		next(err);
 	}
@@ -120,7 +120,7 @@ router.get("/get-categories", async (req, res, next) => {
 		const categories = await Category.find();
 		categories.sort((a, b) => a.name.localeCompare(b.name));
 
-		res.json(categories);
+		res.status(200).json(categories);
 	} catch (err) {
 		next(err);
 	}
