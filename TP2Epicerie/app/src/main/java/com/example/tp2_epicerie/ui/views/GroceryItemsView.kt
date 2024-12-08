@@ -1,6 +1,5 @@
 package com.example.tp2_epicerie.ui.views
 
-import com.example.tp2_epicerie.viewModels.GroceryViewModel
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,19 +33,22 @@ import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 
 import com.example.tp2_epicerie.data.GroceryItem
-import com.example.tp2_epicerie.data.ItemCategory
 import com.example.tp2_epicerie.ui.common.AppBarMenu
 import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.GroceryItemCard
 import com.example.tp2_epicerie.ui.common.GroceryItemCardInfo
+import com.example.tp2_epicerie.viewModels.GroceryCategories
+import com.example.tp2_epicerie.viewModels.GroceryItems
+import com.example.tp2_epicerie.viewModels.User
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 
 // La vue pour afficher les articles d'épicerie (tous ou favoris)
 @Composable
 fun GroceryItemsView(
-    viewModel: GroceryViewModel,
+    groceryItemViewModel: GroceryItems,
+    groceryCategoriesViewModel: GroceryCategories,
     navHostController: NavHostController,
     mode: Boolean
 ) {

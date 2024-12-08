@@ -1,6 +1,5 @@
 package com.example.tp2_epicerie.ui.views
 
-import com.example.tp2_epicerie.viewModels.GroceryViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,10 +36,12 @@ import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomListCardInfo
 import com.example.tp2_epicerie.ui.common.CustomListCard
+import com.example.tp2_epicerie.viewModels.GroceryLists
+import com.example.tp2_epicerie.viewModels.User
 
 // La page d'accueil ou on affiche les listes d'épicerie et les options
 @Composable
-fun HomeView(viewModel: GroceryViewModel, navHostController: NavHostController) {
+fun HomeView(userViewModel: User, groceryListsViewModel: GroceryLists, navHostController: NavHostController) {
     var showAboutDialog by remember { mutableStateOf(false) }
 
     Scaffold(

@@ -29,10 +29,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.tp2_epicerie.GroceryViewModel
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.GroceryList
+import com.example.tp2_epicerie.viewModels.GroceryItems
+import com.example.tp2_epicerie.viewModels.GroceryLists
 
 // Carte personnalisée
 data class CustomListCardInfo(
@@ -48,7 +49,7 @@ data class CustomListCardInfo(
 
 @Composable
 fun CustomListCard(
-    viewModel: GroceryViewModel = viewModel(), navHostController: NavHostController,
+    groceryListsViewModel: GroceryLists = viewModel(), navHostController: NavHostController,
     cardInfo: CustomListCardInfo
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }

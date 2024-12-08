@@ -1,6 +1,5 @@
 package com.example.tp2_epicerie.ui.views
 
-import com.example.tp2_epicerie.viewModels.GroceryViewModel
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,12 +28,13 @@ import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomTextField
 import com.example.tp2_epicerie.ui.theme.submitButtonColors
+import com.example.tp2_epicerie.viewModels.GroceryCategories
 
 // La page pour ajouter ou modifier une catégorie
 @Composable
 fun AddEditCategoryView(
     id: Long = 0L,
-    viewModel: GroceryViewModel,
+    groceryCategoriesViewModel: GroceryCategories,
     navHostController: NavHostController
 ) {
     var title by remember { mutableStateOf("") }

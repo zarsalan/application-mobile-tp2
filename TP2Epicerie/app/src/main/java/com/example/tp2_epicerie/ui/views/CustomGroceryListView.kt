@@ -33,10 +33,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.tp2_epicerie.GroceryViewModel
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
-import com.example.tp2_epicerie.data.Category
+import com.example.tp2_epicerie.data.GroceryItem
 import com.example.tp2_epicerie.data.GroceryList
 import com.example.tp2_epicerie.data.ListItem
 import com.example.tp2_epicerie.ui.common.AppBarMenu
@@ -44,6 +43,9 @@ import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.ListItemCard
 import com.example.tp2_epicerie.ui.common.ListItemCardInfo
+import com.example.tp2_epicerie.viewModels.GroceryCategories
+import com.example.tp2_epicerie.viewModels.GroceryItems
+import com.example.tp2_epicerie.viewModels.GroceryLists
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -51,7 +53,9 @@ import kotlinx.coroutines.flow.firstOrNull
 @Composable
 fun CustomGroceryListView(
     id: Long,
-    viewModel: GroceryViewModel,
+    groceryItemViewModel: GroceryItems,
+    groceryCategoriesViewModel: GroceryCategories,
+    groceryListsViewModel: GroceryLists,
     navHostController: NavHostController
 ) {
     // On obtient les informations de la liste

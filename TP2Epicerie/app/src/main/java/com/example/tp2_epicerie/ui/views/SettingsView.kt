@@ -1,10 +1,10 @@
 package com.example.tp2_epicerie.ui.views
 
-import com.example.tp2_epicerie.viewModels.GroceryViewModel
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Scaffold
@@ -27,31 +27,30 @@ import com.example.tp2_epicerie.data.Settings
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomDropdownMenu
 import com.example.tp2_epicerie.ui.common.CustomDropdownMenus
+import com.example.tp2_epicerie.viewModels.User
 
 // La page pour les paramètres de l'application
 @Composable
-fun SettingsView(viewModel: GroceryViewModel, navHostController: NavHostController) {
+fun SettingsView(userViewModel: User, navHostController: NavHostController) {
     val context = LocalContext.current
-    val currentUser by viewModel.currentUser.collectAsState()
-    val settings by viewModel.settings.collectAsState()
+    val currentUser by userViewModel.currentUser.collectAsState()
 
-    // Variables locales pour l'état des paramètres
-    var darkMode by remember { mutableStateOf(settings.darkMode) }
-    var language by remember { mutableStateOf(settings.language) }
+    // Variables locales pour l'état des paramètres utilisateur
+    var darkMode by remember { mutableStateOf(currentUser?.settings?.darkMode ?: false) }
+    var language by remember { mutableStateOf(currentUser?.settings?.language ?: "fr") }
 
-    // Chargement des paramètres utilisateur
+    // Charger les paramètres utilisateur dès que currentUser est mis à jour
     LaunchedEffect(currentUser) {
-        if (currentUser != null) {
-            viewModel.fetchSettings()
+        currentUser?.let {
+            darkMode = it.settings.darkMode
+            language = it.settings.language
         }
     }
-
-    Log.d("SettingsView", "darkMode: $darkMode, language: $language")
 
     Scaffold(
         topBar = {
             AppBarView(
-                title = Screen.AddEditCategory.title(),
+                title = "Paramètres",
                 navHostController = navHostController
             )
         }
@@ -60,7 +59,7 @@ fun SettingsView(viewModel: GroceryViewModel, navHostController: NavHostControll
             modifier = Modifier
                 .padding(padding)
                 .padding(top = 15.dp, bottom = 15.dp)
-                .wrapContentSize(),
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -75,18 +74,16 @@ fun SettingsView(viewModel: GroceryViewModel, navHostController: NavHostControll
                     menus = listOf(
                         stringResource(R.string.language_french),
                         stringResource(R.string.language_english)
-                    ).map { it ->
+                    ).map { lang ->
                         CustomDropdownMenu(
-                            text = it,
+                            text = lang,
                             onClick = {
-                                language = it
-                                viewModel.updateSettings(
-                                    Settings(
-                                        darkMode = darkMode,
-                                        language = language
-                                    )
-                                )
-                                Toast.makeText(context, textSettingUpdated, Toast.LENGTH_SHORT).show()
+                                language = lang
+                                currentUser?.let {
+                                    val updatedSettings = it.settings.copy(language = language)
+                                    userViewModel.updateSettings(updatedSettings)
+                                    Toast.makeText(context, textSettingUpdated, Toast.LENGTH_SHORT).show()
+                                }
                             }
                         )
                     }
@@ -104,18 +101,15 @@ fun SettingsView(viewModel: GroceryViewModel, navHostController: NavHostControll
                             text = theme,
                             onClick = {
                                 darkMode = theme == "Sombre"
-                                viewModel.updateSettings(
-                                    Settings(
-                                        darkMode = darkMode,
-                                        language = language
-                                    )
-                                )
-                                viewModel.updateDarkMode(darkMode)
-                                Toast.makeText(
-                                    context,
-                                    "Vos paramètres ont été mis à jour",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                currentUser?.let {
+                                    val updatedSettings = it.settings.copy(darkMode = darkMode)
+                                    userViewModel.updateSettings(updatedSettings)
+                                    Toast.makeText(
+                                        context,
+                                        textSettingUpdated,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                         )
                     }

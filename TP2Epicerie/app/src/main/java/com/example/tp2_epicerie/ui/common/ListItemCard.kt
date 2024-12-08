@@ -39,12 +39,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.tp2_epicerie.GroceryViewModel
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.data.GroceryItem
 import com.example.tp2_epicerie.data.ListItem
+import com.example.tp2_epicerie.viewModels.GroceryItems
+import com.example.tp2_epicerie.viewModels.GroceryLists
 
 data class ListItemCardInfo(
     val listItem: MutableState<ListItem>,
@@ -54,7 +56,8 @@ data class ListItemCardInfo(
 
 @Composable
 fun ListItemCard(
-    viewModel: GroceryViewModel,
+    groceryListsViewModel: GroceryLists,
+    groceryItemsViewModel: GroceryItems,
     cardInfo: ListItemCardInfo
 ) {
     val listItem = cardInfo.listItem.value

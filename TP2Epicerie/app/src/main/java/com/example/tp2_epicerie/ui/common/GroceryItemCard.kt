@@ -45,15 +45,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.tp2_epicerie.GroceryViewModel
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.data.GroceryItem
 import com.example.tp2_epicerie.data.GroceryList
 import com.example.tp2_epicerie.data.ListItem
+import com.example.tp2_epicerie.viewModels.GroceryItems
+import com.example.tp2_epicerie.viewModels.GroceryLists
 
 data class GroceryItemCardInfo(
     val groceryItem: GroceryItem,
-    val viewModel: GroceryViewModel,
+    val groceryItemsViewModel: GroceryItems,
+    val groceryListsViewModel: GroceryLists,
     val onClick: () -> Unit,
     val containerColor: Color,
 )
@@ -61,7 +63,8 @@ data class GroceryItemCardInfo(
 // Composant de carte d'élément d'épicerie
 @Composable
 fun GroceryItemCard(
-    viewModel: GroceryViewModel,
+    groceryItemsViewModel: GroceryItems,
+    groceryListsViewModel: GroceryLists,
     cardInfo: GroceryItemCardInfo
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }

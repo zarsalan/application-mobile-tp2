@@ -1,6 +1,5 @@
 package com.example.tp2_epicerie.ui.common
 
-import com.example.tp2_epicerie.viewModels.GroceryViewModel
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -30,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
-import com.example.tp2_epicerie.data.ItemCategory
+import com.example.tp2_epicerie.viewModels.GroceryCategories
 
 data class CustomCategoryCardInfo(
     val categoryId: Long = 0L,
@@ -43,7 +42,7 @@ data class CustomCategoryCardInfo(
 // Carte pour afficher les catégories
 @Composable
 fun CustomCategoryCard(
-    viewModel: GroceryViewModel,
+    groceryCategoriesViewModel: GroceryCategories,
     navHostController: NavHostController,
     cardInfo: CustomCategoryCardInfo
 ) {

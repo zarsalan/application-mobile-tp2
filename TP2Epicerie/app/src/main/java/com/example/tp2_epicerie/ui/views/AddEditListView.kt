@@ -22,19 +22,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.tp2_epicerie.GroceryViewModel
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.GroceryList
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomTextField
 import com.example.tp2_epicerie.ui.theme.submitButtonColors
+import com.example.tp2_epicerie.viewModels.GroceryLists
 
 // La page pour ajouter ou modifier une liste
 @Composable
 fun AddEditListView(
     id: Long = 0L,
-    viewModel: GroceryViewModel,
+    groceryListsViewModel: GroceryLists,
     navHostController: NavHostController
 ) {
     var title by remember { mutableStateOf("") }

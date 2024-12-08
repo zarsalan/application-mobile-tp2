@@ -17,16 +17,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.tp2_epicerie.GroceryViewModel
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomCategoryCard
 import com.example.tp2_epicerie.ui.common.CustomCategoryCardInfo
+import com.example.tp2_epicerie.viewModels.GroceryCategories
 
 // La page pour afficher les catégories
 @Composable
-fun CategoriesView(viewModel: GroceryViewModel, navHostController: NavHostController) {
+fun CategoriesView(groceryCategoriesViewModel: GroceryCategories, navHostController: NavHostController) {
     Scaffold(
         topBar = {
             AppBarView(

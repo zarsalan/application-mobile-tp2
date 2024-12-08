@@ -1,6 +1,5 @@
 package com.example.tp2_epicerie.ui.views
 
-import com.example.tp2_epicerie.viewModels.GroceryViewModel
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,12 +23,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.tp2_epicerie.data.User
+import com.example.tp2_epicerie.viewModels.User
+
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 @Composable
-fun ConnexionView(viewModel: GroceryViewModel, navHostController: NavHostController) {
+fun ConnexionView(userViewModel: User, navHostController: NavHostController) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -73,10 +73,6 @@ fun ConnexionView(viewModel: GroceryViewModel, navHostController: NavHostControl
         Button(
             onClick = {
                 if (isSignUp.value) {
-                    if (imageUri.value == null) {
-                        Toast.makeText(context, "Veuillez choisir une image", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
                     val user = User(
                         id = UUID.randomUUID().toString(),
                         username = username.value,
