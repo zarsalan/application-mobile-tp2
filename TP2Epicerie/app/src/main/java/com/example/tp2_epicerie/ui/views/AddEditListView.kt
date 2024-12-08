@@ -37,20 +37,9 @@ fun AddEditListView(
     groceryListsViewModel: GroceryListsViewModel,
     navHostController: NavHostController
 ) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    val groceryList = viewModel.getGroceryListById(id)
-        .takeIf { id != 0L }
-        ?.collectAsState(GroceryList())
-        ?.value
-
-    title = ""
-    description = ""
-
-    groceryList?.let {
-        title = it.title
-        description = it.description
-    }
+    val groceryList = groceryListsViewModel.groceryLists.collectAsState().value.find { it.id == id }
+    var title by remember { mutableStateOf(groceryList?.title ?: "") }
+    var description by remember { mutableStateOf(groceryList?.description ?: "") }
 
     Scaffold(
         topBar = {
@@ -87,19 +76,19 @@ fun AddEditListView(
             )
 
             // Bouton pour ajouter ou modifier la liste
-            if (id != 0L) {
+            if (id != "") {
+                // Modification de la liste
                 val textNotFound: String = stringResource(R.string.addlist_notFound)
                 val textUpdated: String = stringResource(R.string.addlist_updated)
+
                 Button(modifier = Modifier.padding(top = 15.dp),
                     colors = ButtonDefaults.submitButtonColors(),
                     onClick = {
                         if (groceryList != null) {
-                            viewModel.updateGroceryList(
-                                GroceryList(
-                                    id = id,
-                                    title = title.trim(),
-                                    description = description.trim(),
-                                )
+                            groceryListsViewModel.updateGroceryList(
+                                listId = groceryList.id,
+                                title = title.trim(),
+                                description = description.trim(),
                             )
                             Toast.makeText(
                                 navHostController.context,
@@ -121,15 +110,15 @@ fun AddEditListView(
                     )
                 }
             } else {
+                // Ajout de la liste
                 val textToast: String = stringResource(R.string.addlist_toast)
+
                 Button(modifier = Modifier.padding(top = 15.dp),
                     colors = ButtonDefaults.submitButtonColors(),
                     onClick = {
-                        viewModel.upsertGroceryList(
-                            GroceryList(
-                                title = title.trim(),
-                                description = description.trim(),
-                            )
+                        groceryListsViewModel.addGroceryList(
+                            title = title.trim(),
+                            description = description.trim(),
                         )
                         Toast.makeText(
                             navHostController.context,
