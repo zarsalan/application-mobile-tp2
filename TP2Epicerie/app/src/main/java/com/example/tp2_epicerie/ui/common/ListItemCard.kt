@@ -51,6 +51,7 @@ import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 
 data class ListItemCardInfo(
     val listItem: ListItem,
+    val groceryItem: GroceryItem,
     val onClick: () -> Unit,
     val containerColor: Color
 )
@@ -61,12 +62,8 @@ fun ListItemCard(
     groceryItemsViewModel: GroceryItemsViewModel,
     listItemCardInfo: ListItemCardInfo
 ) {
-    LaunchedEffect(listItemCardInfo.listItem.groceryItemId){
-        groceryItemsViewModel.getCurrentGroceryItem(listItemCardInfo.listItem.groceryItemId)
-    }
-
-    val groceryItem = groceryItemsViewModel.currentGroceryItem.collectAsState().value
     val listItem = listItemCardInfo.listItem
+    val groceryItem = listItemCardInfo.groceryItem
 
     var showDeleteDialog by remember { mutableStateOf(false) }
 

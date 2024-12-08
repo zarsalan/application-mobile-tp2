@@ -81,21 +81,26 @@ fun GroceryItemCard(
 
     val currentContext = LocalContext.current
 
-    val appBarMenuInfo: AppBarMenuInfo = AppBarMenuInfo(
-        groceryLists.map { groceryList ->
-            AppBarMenu(
-                title = groceryList.title,
-                onClick = {
-                    selectedGroceryList = groceryList
-                    showQuantityDialog = true
-                    menuExpanded = false
+    val appBarMenuInfo: AppBarMenuInfo = remember(groceryLists) {
+        AppBarMenuInfo(
+            menus = groceryLists.map { groceryList ->
+                AppBarMenu(
+                    title = groceryList.title,
+                    onClick = {
+                        selectedGroceryList = groceryList
+                        showQuantityDialog = true
+                        menuExpanded = false
 
-                    // On récupère l'élément d'épicerie non barré correspondant à l'élément sélectionné
-                    groceryListsViewModel.getCurrentGroceryListItemUnchecked(selectedGroceryList, cardInfo.groceryItem.id)
-                }
-            )
-        }
-    )
+                        // On récupère l'élément d'épicerie non barré correspondant à l'élément sélectionné
+                        groceryListsViewModel.getCurrentGroceryListItemUnchecked(
+                            selectedGroceryList,
+                            cardInfo.groceryItem.id
+                        )
+                    }
+                )
+            }
+        )
+    }
 
     Card(
         modifier = Modifier
@@ -311,7 +316,7 @@ fun GroceryItemCard(
         onDismissRequest = { showDeleteDialog = false },
         title = stringResource(R.string.text_removeItem) + " ${cardInfo.groceryItem.name}?",
         message = stringResource(R.string.text_deleteVerification),
-        onYesWithContext = {context ->
+        onYesWithContext = { context ->
             groceryItemsViewModel.removeUserGroceryItem(cardInfo.groceryItem.id)
             showDeleteDialog = false
             Toast.makeText(context, itemDeletedText, Toast.LENGTH_SHORT).show()
