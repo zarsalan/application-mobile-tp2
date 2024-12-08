@@ -85,7 +85,7 @@ fun AddEditListView(
                     colors = ButtonDefaults.submitButtonColors(),
                     onClick = {
                         if (groceryList != null) {
-                            groceryListsViewModel.updateGroceryList(
+                            groceryListsViewModel.saveGroceryList(
                                 listId = groceryList.id,
                                 title = title.trim(),
                                 description = description.trim(),
