@@ -37,20 +37,27 @@ class GroceryRepository(private val userDB: UserDB = Graph.userDB){
     suspend fun addUserGroceryItem(item: GroceryItem): GroceryItemUser {
         val user = CurrentUserCache.user ?: throw Exception("L'utilisateur n'est pas connecté")
 
+        // Ajoute un id à l'item si manquant
+        val itemWithId = if (item.id.isBlank()) {
+            item.copy(id = UUID.randomUUID().toString())
+        } else {
+            item
+        }
+
         // On obtient la catégorie de l'item
-        val category = addUserCategory(item.category)
+        val category = addUserCategory(itemWithId.category)
 
         // Création d'un nouvel item d'épicerie pour l'utilisateur
         val groceryItemUser = GroceryItemUser(
-            id = item.id,
+            id = itemWithId.id,
             categoryId = category.id,
-            name = item.name,
-            description = item.description,
-            isFavorite = item.isFavorite,
+            name = itemWithId.name,
+            description = itemWithId.description,
+            isFavorite = itemWithId.isFavorite,
         )
 
         // Ajout de l'item à la liste d'items d'épicerie de l'utilisateur
-        user.groceryItems[item.id] = groceryItemUser
+        user.groceryItems[itemWithId.id] = groceryItemUser
 
         // Mise à jour de la base de données
         userDB.updateGroceryItem(groceryItemUser)
