@@ -225,7 +225,7 @@ fun AddEditItemView(
         title = "$textRemoveItem $name?",
         message = textDeleteVerification,
         onYesWithContext = { ctx ->
-            groceryItem?.let { groceryItemViewModel.removeUserGroceryItem(it.toUserItem())}
+            groceryItem?.let { groceryItemViewModel.removeUserGroceryItem(it.id)}
             showDeleteDialog = false
             navHostController.popBackStack()
             Toast.makeText(ctx, textItemDeleted, Toast.LENGTH_SHORT).show()

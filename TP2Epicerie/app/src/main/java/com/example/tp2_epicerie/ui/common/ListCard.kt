@@ -120,7 +120,7 @@ fun CustomListCard(
         message = stringResource(R.string.text_listVerification),
         onYes = {
             cardInfo.groceryList?.let {
-                viewModel.deleteGroceryList(it)
+                groceryListsViewModel.deleteGroceryList(it.id)
             }
             showDeleteDialog = false
         },
