@@ -32,8 +32,7 @@ import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.GroceryList
-import com.example.tp2_epicerie.viewModels.GroceryItems
-import com.example.tp2_epicerie.viewModels.GroceryLists
+import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 
 // Carte personnalisée
 data class CustomListCardInfo(
@@ -49,7 +48,7 @@ data class CustomListCardInfo(
 
 @Composable
 fun CustomListCard(
-    groceryListsViewModel: GroceryLists = viewModel(), navHostController: NavHostController,
+    groceryListsViewModel: GroceryListsViewModel = viewModel(), navHostController: NavHostController,
     cardInfo: CustomListCardInfo
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }

@@ -45,8 +45,8 @@ import coil.request.ImageRequest
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.data.GroceryItem
 import com.example.tp2_epicerie.data.ListItem
-import com.example.tp2_epicerie.viewModels.GroceryItems
-import com.example.tp2_epicerie.viewModels.GroceryLists
+import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
+import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 
 data class ListItemCardInfo(
     val listItem: MutableState<ListItem>,
@@ -56,8 +56,8 @@ data class ListItemCardInfo(
 
 @Composable
 fun ListItemCard(
-    groceryListsViewModel: GroceryLists,
-    groceryItemsViewModel: GroceryItems,
+    groceryListsViewModel: GroceryListsViewModel,
+    groceryItemsViewModel: GroceryItemsViewModel,
     cardInfo: ListItemCardInfo
 ) {
     val listItem = cardInfo.listItem.value

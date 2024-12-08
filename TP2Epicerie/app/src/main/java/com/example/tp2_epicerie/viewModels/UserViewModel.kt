@@ -6,11 +6,12 @@ import com.example.tp2_epicerie.CurrentUserCache
 import com.example.tp2_epicerie.Graph
 import com.example.tp2_epicerie.data.Settings
 import com.example.tp2_epicerie.data.User
+import com.example.tp2_epicerie.utilities.loadingFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class User : ViewModel() {
+class UserViewModel : ViewModel() {
     private val userDB = Graph.userDB
 
     // Stockage de l'utilisateur connecté
@@ -24,16 +25,14 @@ class User : ViewModel() {
     fun loginUser(username: String, password: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                _isLoading.value = true
-
-                val user = userDB.loginUser(username, password)
-                if (user != null) {
-                    // Récupérer les informations de l'utilisateur connecté
-                    _currentUser.value = user
-                }
-
-                _isLoading.value = false
-                onResult(user != null)
+                loadingFlow({
+                    val user = userDB.loginUser(username, password)
+                    if (user != null) {
+                        // Récupérer les informations de l'utilisateur connecté
+                        _currentUser.value = user
+                        onResult(true)
+                    }
+                }, _isLoading)
             } catch (e: Exception) {
                 println("Erreur lors de la connexion : ${e.message}")
                 onResult(false)
@@ -45,13 +44,11 @@ class User : ViewModel() {
     fun createUser(user: User, password: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                _isLoading.value = true
-
-                val newUser = userDB.createUser(user, password)
-                _currentUser.value = newUser // Sauvegarde de l'utilisateur nouvellement créé
-
-                _isLoading.value = false
-                onResult(true)
+                loadingFlow({
+                    val newUser = userDB.createUser(user, password)
+                    _currentUser.value = newUser // Sauvegarde de l'utilisateur nouvellement créé
+                    onResult(true)
+                }, _isLoading)
             } catch (e: Exception) {
                 println("Erreur lors de la création de l'utilisateur : ${e.message}")
                 onResult(false)

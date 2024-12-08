@@ -6,10 +6,11 @@ import com.example.tp2_epicerie.Graph
 import com.example.tp2_epicerie.data.Recipe
 import com.example.tp2_epicerie.data.RecipeCategory
 import com.example.tp2_epicerie.data.RecipeList
+import com.example.tp2_epicerie.utilities.loadingFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class RecipeLists : ViewModel() {
+class RecipeListsViewModel : ViewModel() {
     private val userDB = Graph.userDB
     private val apiRepository = Graph.apiRepository
 
@@ -75,52 +76,42 @@ class RecipeLists : ViewModel() {
     // Récupération par l'API ----------------------------------------------------------------------
     // Récupération des recettes à partir de l'API
     suspend fun fetchRecipes(categoryName: String = "", recipeName: String = "") {
-        _isLoading.value = true
-
-        val recipes = apiRepository.getRecipes(categoryName, recipeName)
-        setCurrentRecipes(recipes, _currentRecipes)
-
-        _isLoading.value = false
+        loadingFlow({
+            val recipes = apiRepository.getRecipes(categoryName, recipeName)
+            setCurrentRecipes(recipes, _currentRecipes)
+        }, _isLoading)
     }
 
     // Récupération de plusieurs recettes par id
     private suspend fun fetchRecipesByIds(ids: List<String>) {
-        _isLoading.value = true
-
-        val recipes = apiRepository.getRecipesByIds(ids)
-        setCurrentRecipes(recipes, _currentRecipes)
-
-        _isLoading.value = false
+        loadingFlow({
+            val recipes = apiRepository.getRecipesByIds(ids)
+            setCurrentRecipes(recipes, _currentRecipes)
+        }, _isLoading)
     }
 
     // Récupération d'une recette à partir de l'API
     suspend fun fetchRecipeById(id: String) {
-        _isLoading.value = true
-
-        val recipe = apiRepository.getRecipeById(id)
-        setCurrentRecipe(recipe)
-
-        _isLoading.value = false
+        loadingFlow({
+            val recipe = apiRepository.getRecipeById(id)
+            setCurrentRecipe(recipe)
+        }, _isLoading)
     }
 
     // Récupération des recettes contenant un item à partir de l'API
     suspend fun fetchRecipesByIngredient(ingredientId: String) {
-        _isLoading.value = true
-
-        val recipes = apiRepository.getRecipesContainingIngredient(ingredientId)
-        setCurrentRecipes(recipes, _ingredientRecipes)
-
-        _isLoading.value = false
+        loadingFlow({
+            val recipes = apiRepository.getRecipesContainingIngredient(ingredientId)
+            setCurrentRecipes(recipes, _ingredientRecipes)
+        }, _isLoading)
     }
 
     // Récupération des catégories de recettes à partir de l'API
     suspend fun fetchRecipeCategories() {
-        _isLoading.value = true
-
-        val categories = apiRepository.getRecipeCategories()
-        _recipeCategories.value = categories
-
-        _isLoading.value = false
+        loadingFlow({
+            val categories = apiRepository.getRecipeCategories()
+            _recipeCategories.value = categories
+        }, _isLoading)
     }
 
     // Listes de recettes de l'utilisateur ---------------------------------------------------------

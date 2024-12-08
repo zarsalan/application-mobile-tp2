@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
-import com.example.tp2_epicerie.viewModels.GroceryCategories
+import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
 
 data class CustomCategoryCardInfo(
     val categoryId: Long = 0L,
@@ -42,7 +42,7 @@ data class CustomCategoryCardInfo(
 // Carte pour afficher les catégories
 @Composable
 fun CustomCategoryCard(
-    groceryCategoriesViewModel: GroceryCategories,
+    groceryCategoriesViewModel: GroceryCategoriesViewModel,
     navHostController: NavHostController,
     cardInfo: CustomCategoryCardInfo
 ) {

@@ -1,12 +1,10 @@
 package com.example.tp2_epicerie.ui.views
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,16 +20,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.R
-import com.example.tp2_epicerie.Screen
-import com.example.tp2_epicerie.data.Settings
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomDropdownMenu
 import com.example.tp2_epicerie.ui.common.CustomDropdownMenus
-import com.example.tp2_epicerie.viewModels.User
+import com.example.tp2_epicerie.viewModels.UserViewModel
 
 // La page pour les paramètres de l'application
 @Composable
-fun SettingsView(userViewModel: User, navHostController: NavHostController) {
+fun SettingsView(userViewModel: UserViewModel, navHostController: NavHostController) {
     val context = LocalContext.current
     val currentUser by userViewModel.currentUser.collectAsState()
 

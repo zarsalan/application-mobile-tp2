@@ -36,12 +36,12 @@ import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomListCardInfo
 import com.example.tp2_epicerie.ui.common.CustomListCard
-import com.example.tp2_epicerie.viewModels.GroceryLists
-import com.example.tp2_epicerie.viewModels.User
+import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
+import com.example.tp2_epicerie.viewModels.UserViewModel
 
 // La page d'accueil ou on affiche les listes d'épicerie et les options
 @Composable
-fun HomeView(userViewModel: User, groceryListsViewModel: GroceryLists, navHostController: NavHostController) {
+fun HomeView(userViewModel: UserViewModel, groceryListsViewModel: GroceryListsViewModel, navHostController: NavHostController) {
     var showAboutDialog by remember { mutableStateOf(false) }
 
     Scaffold(

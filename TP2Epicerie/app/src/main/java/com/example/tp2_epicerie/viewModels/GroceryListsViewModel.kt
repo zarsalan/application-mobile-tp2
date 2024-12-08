@@ -10,7 +10,7 @@ import com.example.tp2_epicerie.data.ListItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class GroceryLists : ViewModel() {
+class GroceryListsViewModel : ViewModel() {
     private val userDB = Graph.userDB
     private val groceryRepository = Graph.groceryRepository
 

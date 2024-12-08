@@ -46,7 +46,7 @@ import coil.request.ImageRequest
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.GroceryItem
-import com.example.tp2_epicerie.viewModels.GroceryItems
+import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
 import com.example.tp2_epicerie.ui.common.AppBarMenu
 import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
 import com.example.tp2_epicerie.ui.common.AppBarView
@@ -60,7 +60,7 @@ import com.example.tp2_epicerie.ui.theme.submitButtonColors
 @Composable
 fun AddEditItemView(
     id: Long = 0L,
-    groceryItemViewModel: GroceryItems,
+    groceryItemViewModel: GroceryItemsViewModel,
     navHostController: NavHostController
 ) {
     var name by remember { mutableStateOf("") }

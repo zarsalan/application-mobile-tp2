@@ -28,13 +28,13 @@ import com.example.tp2_epicerie.data.GroceryList
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomTextField
 import com.example.tp2_epicerie.ui.theme.submitButtonColors
-import com.example.tp2_epicerie.viewModels.GroceryLists
+import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 
 // La page pour ajouter ou modifier une liste
 @Composable
 fun AddEditListView(
     id: Long = 0L,
-    groceryListsViewModel: GroceryLists,
+    groceryListsViewModel: GroceryListsViewModel,
     navHostController: NavHostController
 ) {
     var title by remember { mutableStateOf("") }

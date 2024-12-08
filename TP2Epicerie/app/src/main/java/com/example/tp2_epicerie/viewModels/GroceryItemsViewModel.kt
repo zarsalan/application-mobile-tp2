@@ -6,10 +6,11 @@ import com.example.tp2_epicerie.Graph
 import com.example.tp2_epicerie.data.GroceryItem
 import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.data.GroceryItemUser
+import com.example.tp2_epicerie.utilities.loadingFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class GroceryItems : ViewModel() {
+class GroceryItemsViewModel : ViewModel() {
     private val userDB = Graph.userDB
     private val apiRepository = Graph.apiRepository
     private val groceryRepository = Graph.groceryRepository
@@ -25,24 +26,19 @@ class GroceryItems : ViewModel() {
 
     // Récupération des items d'épicerie à partir de l'API et des items de l'utilisateur connecté
     suspend fun fetchGroceryItems(name: String = "", category: String = "") {
-        _isLoading.value = true
-
         try {
-            val items = apiRepository.getGroceryItemsByCategoryAndName(name, category)
-            _groceryItemsAPI.value = items
-            updateGroceryItems(name, category)
+            loadingFlow({
+                _groceryItemsAPI.value = apiRepository.getGroceryItemsByCategoryAndName(name, category)
+                updateGroceryItems(name, category)
+            }, _isLoading)
         } catch (e: Exception) {
             println("Erreur lors de la récupération des items d'épicerie : ${e.message}")
-        } finally {
-            _isLoading.value = false
         }
     }
 
     private fun updateGroceryItems(name: String = "", category: String = "") {
         val user = CurrentUserCache.user ?: return
         val items = mutableListOf<GroceryItem>()
-
-        _isLoading.value = true
 
         // Ajout des items de l'API et des items de l'utilisateur
         for (apiItem in _groceryItemsAPI.value) {
@@ -84,7 +80,6 @@ class GroceryItems : ViewModel() {
         }
 
         _finalItems.value = items.toList()
-        _isLoading.value = false
     }
 
     // Ajout/modification d'un item à l'utilisateur connecté

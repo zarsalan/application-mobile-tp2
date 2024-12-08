@@ -28,13 +28,13 @@ import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomTextField
 import com.example.tp2_epicerie.ui.theme.submitButtonColors
-import com.example.tp2_epicerie.viewModels.GroceryCategories
+import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
 
 // La page pour ajouter ou modifier une catégorie
 @Composable
 fun AddEditCategoryView(
     id: Long = 0L,
-    groceryCategoriesViewModel: GroceryCategories,
+    groceryCategoriesViewModel: GroceryCategoriesViewModel,
     navHostController: NavHostController
 ) {
     var title by remember { mutableStateOf("") }

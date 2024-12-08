@@ -18,22 +18,21 @@ import com.example.tp2_epicerie.ui.views.CustomGroceryListView
 import com.example.tp2_epicerie.ui.views.GroceryItemsView
 import com.example.tp2_epicerie.ui.views.HomeView
 import com.example.tp2_epicerie.ui.views.SettingsView
-import com.example.tp2_epicerie.viewModels.GroceryCategories
-import com.example.tp2_epicerie.viewModels.GroceryItems
-import com.example.tp2_epicerie.viewModels.GroceryLists
-import com.example.tp2_epicerie.viewModels.RecipeLists
-import com.example.tp2_epicerie.viewModels.User
+import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
+import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
+import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
+import com.example.tp2_epicerie.viewModels.RecipeListsViewModel
+import com.example.tp2_epicerie.viewModels.UserViewModel
 
 
 @Composable
 fun Navigation(
     modifier: Modifier = Modifier,
-    userViewModel: User = viewModel(),
-    recipeListsViewModel: RecipeLists = viewModel(),
-    groceryListsViewModel: GroceryLists = viewModel(),
-    groceryItemsViewModel: GroceryItems = viewModel(),
-    groceryCategoriesViewModel: GroceryCategories = viewModel(),
-
+    userViewModel: UserViewModel = viewModel(),
+    groceryCategoriesViewModel: GroceryCategoriesViewModel = viewModel(),
+    groceryItemsViewModel: GroceryItemsViewModel = viewModel(),
+    groceryListsViewModel: GroceryListsViewModel = viewModel(),
+    recipeListsViewModel: RecipeListsViewModel = viewModel(),
     navHostController: NavHostController = rememberNavController()
 ) {
     NavHost(

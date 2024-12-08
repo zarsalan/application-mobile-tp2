@@ -23,13 +23,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.tp2_epicerie.viewModels.User
+import com.example.tp2_epicerie.viewModels.UserViewModel
 
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 @Composable
-fun ConnexionView(userViewModel: User, navHostController: NavHostController) {
+fun ConnexionView(userViewModel: UserViewModel, navHostController: NavHostController) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -73,7 +73,7 @@ fun ConnexionView(userViewModel: User, navHostController: NavHostController) {
         Button(
             onClick = {
                 if (isSignUp.value) {
-                    val user = User(
+                    val user = UserViewModel(
                         id = UUID.randomUUID().toString(),
                         username = username.value,
                         password = "", // Le mot de passe sera haché dans `createUser`

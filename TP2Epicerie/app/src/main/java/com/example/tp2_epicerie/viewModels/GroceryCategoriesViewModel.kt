@@ -5,11 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.tp2_epicerie.CurrentUserCache
 import com.example.tp2_epicerie.Graph
 import com.example.tp2_epicerie.data.GroceryItemCategory
+import com.example.tp2_epicerie.utilities.loadingFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class GroceryCategories : ViewModel() {
+class GroceryCategoriesViewModel : ViewModel() {
     private val userDB = Graph.userDB
     private val apiRepository = Graph.apiRepository
     private val groceryRepository = Graph.groceryRepository
@@ -26,38 +27,23 @@ class GroceryCategories : ViewModel() {
     // Récupération des catégories à partir de l'API et des catégories de l'utilisateur connecté
     fun refreshCategories() {
         viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                val categories = apiRepository.getGroceryCategories()
-                _groceryCategoriesAPI.value = categories
-
+            loadingFlow({
+                _groceryCategoriesAPI.value = apiRepository.getGroceryCategories()
                 updateGroceryCategories()
-            } catch (e: Exception) {
-                println("Erreur lors de la récupération des catégories d'épicerie : ${e.message}")
-            } finally {
-                _isLoading.value = false
-            }
+            }, _isLoading)
         }
     }
 
     // Récupération des catégories de l'utilisateur connecté en le combinant avec les catégories de l'API
-    private fun updateGroceryCategories() {
+    private suspend fun updateGroceryCategories() {
         val user = CurrentUserCache.user ?: return
         val categories = mutableListOf<GroceryItemCategory>()
 
         // Insertion des catégories venant de l'api
-        _isLoading.value = true
-
         for (category in _groceryCategoriesAPI.value) {
-            if (user.groceryCategories.contains(category.id)) {
-                categories.add(user.groceryCategories[category.id]!!)
-            } else {
-                categories.add(category)
-            }
+            categories.add(user.groceryCategories[category.id] ?: category)
         }
         _finalCategories.value = categories.toList()
-
-        _isLoading.value = false
     }
 
     // Ajout/modification d'une catégorie à l'utilisateur connecté

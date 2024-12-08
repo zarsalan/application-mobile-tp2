@@ -49,13 +49,13 @@ import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.data.GroceryItem
 import com.example.tp2_epicerie.data.GroceryList
 import com.example.tp2_epicerie.data.ListItem
-import com.example.tp2_epicerie.viewModels.GroceryItems
-import com.example.tp2_epicerie.viewModels.GroceryLists
+import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
+import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 
 data class GroceryItemCardInfo(
     val groceryItem: GroceryItem,
-    val groceryItemsViewModel: GroceryItems,
-    val groceryListsViewModel: GroceryLists,
+    val groceryItemsViewModel: GroceryItemsViewModel,
+    val groceryListsViewModel: GroceryListsViewModel,
     val onClick: () -> Unit,
     val containerColor: Color,
 )
@@ -63,8 +63,8 @@ data class GroceryItemCardInfo(
 // Composant de carte d'élément d'épicerie
 @Composable
 fun GroceryItemCard(
-    groceryItemsViewModel: GroceryItems,
-    groceryListsViewModel: GroceryLists,
+    groceryItemsViewModel: GroceryItemsViewModel,
+    groceryListsViewModel: GroceryListsViewModel,
     cardInfo: GroceryItemCardInfo
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }

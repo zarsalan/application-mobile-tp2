@@ -38,17 +38,16 @@ import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.GroceryItemCard
 import com.example.tp2_epicerie.ui.common.GroceryItemCardInfo
-import com.example.tp2_epicerie.viewModels.GroceryCategories
-import com.example.tp2_epicerie.viewModels.GroceryItems
-import com.example.tp2_epicerie.viewModels.User
+import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
+import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 
 // La vue pour afficher les articles d'épicerie (tous ou favoris)
 @Composable
 fun GroceryItemsView(
-    groceryItemViewModel: GroceryItems,
-    groceryCategoriesViewModel: GroceryCategories,
+    groceryItemViewModel: GroceryItemsViewModel,
+    groceryCategoriesViewModel: GroceryCategoriesViewModel,
     navHostController: NavHostController,
     mode: Boolean
 ) {
