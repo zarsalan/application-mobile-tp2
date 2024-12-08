@@ -25,7 +25,7 @@ class GroceryCategoriesViewModel : ViewModel() {
     val finalCategories: StateFlow<List<GroceryItemCategory>> = _finalCategories
 
     // Récupération des catégories à partir de l'API et des catégories de l'utilisateur connecté
-    fun refreshCategories() {
+    fun fetchCategories() {
         viewModelScope.launch {
             loadingFlow({
                 _groceryCategoriesAPI.value = apiRepository.getGroceryCategories()
@@ -35,14 +35,22 @@ class GroceryCategoriesViewModel : ViewModel() {
     }
 
     // Récupération des catégories de l'utilisateur connecté en le combinant avec les catégories de l'API
-    private suspend fun updateGroceryCategories() {
+    private fun updateGroceryCategories() {
         val user = CurrentUserCache.user ?: return
         val categories = mutableListOf<GroceryItemCategory>()
 
-        // Insertion des catégories venant de l'api
+        // Insertion des catégories venant de l'api si existant dans les catégories de l'utilisateur
         for (category in _groceryCategoriesAPI.value) {
             categories.add(user.groceryCategories[category.id] ?: category)
         }
+
+        // Insertion des catégories de l'utilisateur si non existant dans les catégories de l'api
+        for (category in user.groceryCategories.values) {
+            if (!_groceryCategoriesAPI.value.any { it.id == category.id }) {
+                categories.add(category)
+            }
+        }
+
         _finalCategories.value = categories.toList()
     }
 

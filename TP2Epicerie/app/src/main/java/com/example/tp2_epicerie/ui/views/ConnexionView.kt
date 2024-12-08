@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -20,16 +20,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.tp2_epicerie.data.User
+import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
 import com.example.tp2_epicerie.viewModels.UserViewModel
 
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 @Composable
-fun ConnexionView(userViewModel: UserViewModel, navHostController: NavHostController) {
+fun ConnexionView(userViewModel: UserViewModel, categoriesViewModel: GroceryCategoriesViewModel, navHostController: NavHostController) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -47,7 +50,7 @@ fun ConnexionView(userViewModel: UserViewModel, navHostController: NavHostContro
     ) {
         Text(
             text = if (isSignUp.value) "Sign up" else "Login",
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -73,15 +76,18 @@ fun ConnexionView(userViewModel: UserViewModel, navHostController: NavHostContro
         Button(
             onClick = {
                 if (isSignUp.value) {
-                    val user = UserViewModel(
-                        id = UUID.randomUUID().toString(),
+                    val user = User(
                         username = username.value,
-                        password = "", // Le mot de passe sera haché dans `createUser`
                     )
                     coroutineScope.launch {
                         try {
-                            viewModel.createUser(user, password.value)
-                            Toast.makeText(context, "Compte créé avec succès", Toast.LENGTH_SHORT).show()
+                            userViewModel.createUser(user, password.value) { success ->
+                                if (success) {
+                                    // Exécution des fonctions fetch des données
+                                    categoriesViewModel.fetchCategories()
+                                    Toast.makeText(context, "Compte créé avec succès", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                             isSignUp.value = false // Retour à l'écran de connexion
                         } catch (e: Exception) {
                             Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT).show()
@@ -90,8 +96,10 @@ fun ConnexionView(userViewModel: UserViewModel, navHostController: NavHostContro
                 } else {
                     coroutineScope.launch {
                         try {
-                            viewModel.loginUser(username.value, password.value) { success ->
+                            userViewModel.loginUser(username.value, password.value) { success ->
                                 if (success) {
+                                    // Exécution des fonctions fetch des données
+                                    categoriesViewModel.fetchCategories()
                                     Toast.makeText(context, "Connexion réussie", Toast.LENGTH_SHORT).show()
                                     // Redirigez vers la page principale
                                 } else {
@@ -114,7 +122,7 @@ fun ConnexionView(userViewModel: UserViewModel, navHostController: NavHostContro
         TextButton(onClick = { isSignUp.value = !isSignUp.value }) {
             Text(
                 text = if (isSignUp.value) "Vous avez déjà un compte ? Connectez-vous" else "Pas encore inscrit ? Créez un compte",
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }

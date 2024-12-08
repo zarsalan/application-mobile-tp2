@@ -50,8 +50,8 @@ class UserViewModel : ViewModel() {
                     onResult(true)
                 }, _isLoading)
             } catch (e: Exception) {
-                println("Erreur lors de la création de l'utilisateur : ${e.message}")
                 onResult(false)
+                throw e
             }
         }
     }

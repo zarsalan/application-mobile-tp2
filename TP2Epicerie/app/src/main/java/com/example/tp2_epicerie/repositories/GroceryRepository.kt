@@ -1,5 +1,6 @@
 package com.example.tp2_epicerie.repositories
 
+import androidx.compose.ui.text.toLowerCase
 import com.example.tp2_epicerie.CurrentUserCache
 import com.example.tp2_epicerie.Graph
 import com.example.tp2_epicerie.data.GroceryItem
@@ -14,7 +15,7 @@ class GroceryRepository(private val userDB: UserDB = Graph.userDB){
         val user = CurrentUserCache.user ?: throw Exception("L'utilisateur n'est pas connecté")
 
         // Vérification de l'existence de la catégorie
-        val existingCategory = user.groceryCategories.values.find { it.name == category.name }
+        val existingCategory = user.groceryCategories.values.find { it.name.lowercase() == category.name.lowercase() }
         if (existingCategory != null) {
             return existingCategory
         }

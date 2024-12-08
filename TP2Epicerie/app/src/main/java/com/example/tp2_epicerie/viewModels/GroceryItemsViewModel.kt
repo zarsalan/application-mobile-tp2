@@ -62,7 +62,7 @@ class GroceryItemsViewModel : ViewModel() {
         val userItemsNotInAPI = user.groceryItems.values.filter { userItem ->
             // Vérifier que l'item respecte les critères de recherche et qu'il n'est pas déjà dans les items
             val matchesName = name.isBlank() || userItem.name.contains(name, ignoreCase = true)
-            val matchesCategory = category.isBlank() || user.groceryCategories[userItem.categoryId]?.name == category
+            val matchesCategory = category.isBlank() || user.groceryCategories[userItem.categoryId]?.name?.lowercase() == category.lowercase()
 
             matchesName && matchesCategory && items.none { it.id == userItem.id }
         }
