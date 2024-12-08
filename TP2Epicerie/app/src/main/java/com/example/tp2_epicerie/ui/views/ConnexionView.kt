@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.data.User
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
+import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
 import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 import com.example.tp2_epicerie.viewModels.RecipeListsViewModel
 import com.example.tp2_epicerie.viewModels.UserViewModel
@@ -37,6 +38,7 @@ import java.util.UUID
 fun ConnexionView(
     userViewModel: UserViewModel,
     categoriesViewModel: GroceryCategoriesViewModel,
+    groceryItemsViewModel: GroceryItemsViewModel,
     groceryListsViewModel: GroceryListsViewModel,
     recipeListsViewModel: RecipeListsViewModel,
     navHostController: NavHostController
@@ -113,8 +115,10 @@ fun ConnexionView(
                                 if (success) {
                                     // Exécution des fonctions fetch des données
                                     categoriesViewModel.fetchCategories()
+                                    groceryItemsViewModel.fetchGroceryItems()
                                     groceryListsViewModel.loadGroceryLists()
                                     recipeListsViewModel.loadRecipeLists()
+
 
                                     Toast.makeText(context, "Connexion réussie", Toast.LENGTH_SHORT)
                                         .show()

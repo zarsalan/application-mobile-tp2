@@ -109,7 +109,7 @@ fun CategoryCard(
         }
     }
 
-    // Dialog de suppression
+    // Dialogue de suppression
     CustomYesNoDialog(
         visible = showDeleteDialog,
         onDismissRequest = { showDeleteDialog = false },

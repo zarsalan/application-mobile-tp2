@@ -55,18 +55,27 @@ fun GroceryItemsView(
     mode: Boolean // true pour "Tous les items", false pour "Favoris"
 ) {
     // Récupération des données d'items et de catégories
-    val groceryItems by groceryItemsViewModel.finalItems.collectAsState(initial = emptyList())
-    val groceryCategories by groceryCategoriesViewModel.finalCategories.collectAsState(initial = emptyList())
+    val groceryItems by groceryItemsViewModel.finalItems.collectAsState()
+    val groceryCategories by groceryCategoriesViewModel.finalCategories.collectAsState()
+
+    val addEditItemRoute = remember { Screen.AddEditItem.route }
 
     // Chaîne pour la catégorie "Autres"
     val otherCategoryLabel = stringResource(R.string.text_category_other)
 
+    // Création de map pour les catégories et les items
+    val categoryLookup = remember(groceryCategories) {
+        groceryCategories.associateBy { it.id }
+    }
+
     // Regroupement des items par catégorie
-    val itemsByCategory = groceryItems
-        .filter { it.isFavorite == mode || mode } // Filtrer par favoris si nécessaire
-        .groupBy { item ->
-            groceryCategories.find { it.id == item.category.id }?.name ?: otherCategoryLabel
-        }
+    val itemsByCategory = remember(groceryItems, groceryCategories, mode) {
+        groceryItems
+            .filter { it.isFavorite == mode || mode } // Filtrer par favoris si nécessaire
+            .groupBy { item ->
+                categoryLookup[item.category.id]?.name ?: otherCategoryLabel
+            }
+    }
 
     Scaffold(
         topBar = {
@@ -112,13 +121,13 @@ fun GroceryItemsView(
                             .padding(vertical = 8.dp)
                     )
                 }
-                items(items) { groceryItem ->
+                items(items, key = {it.id}) { groceryItem ->
                     GroceryItemCard(
                         groceryItemsViewModel = groceryItemsViewModel,
                         groceryListsViewModel = groceryListsViewModel,
                         cardInfo = GroceryItemCardInfo(
                             groceryItem = groceryItem,
-                            onClick = { navHostController.navigate(Screen.AddEditItem.route + "/${groceryItem.id}") },
+                            onClick = { navHostController.navigate( "$addEditItemRoute/${groceryItem.id}") },
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                         )
                     )

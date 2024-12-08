@@ -45,6 +45,7 @@ fun Navigation(
             ConnexionView(
                 userViewModel,
                 groceryCategoriesViewModel,
+                groceryItemsViewModel,
                 groceryListsViewModel,
                 recipeListsViewModel,
                 navHostController
