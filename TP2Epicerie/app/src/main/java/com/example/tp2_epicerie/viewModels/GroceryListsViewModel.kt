@@ -28,6 +28,10 @@ class GroceryListsViewModel : ViewModel() {
     private val _currentGroceryItems = MutableStateFlow<List<GroceryItem>>(emptyList())
     val currentGroceryItems: StateFlow<List<GroceryItem>> = _currentGroceryItems
 
+    // L'item demandé non cochée
+    private val _currentGroceryListItemUnchecked = MutableStateFlow<ListItem?>(null)
+    val currentGroceryListItemUnchecked: StateFlow<ListItem?> = _currentGroceryListItemUnchecked
+
     private fun saveGroceryList(groceryList: GroceryList) {
         viewModelScope.launch {
             try {
@@ -56,6 +60,7 @@ class GroceryListsViewModel : ViewModel() {
             val groceryItemUser = user.groceryItems[listItem.groceryItemId] ?: continue
             val groceryItem = GroceryItem(
                 id = groceryItemUser.id,
+                userCreated = true,
                 name = groceryItemUser.name,
                 description = groceryItemUser.description,
                 isFavorite = groceryItemUser.isFavorite,
@@ -147,5 +152,11 @@ class GroceryListsViewModel : ViewModel() {
         groceryListUpdated(list)
 
         saveGroceryList(list)
+    }
+
+    // Obtention de l'item de la liste d'épicerie non cochée
+    fun getCurrentGroceryListItemUnchecked(groceryList: GroceryList, groceryItemId: String) {
+        val listItem = groceryList.listItems.find { it.groceryItemId == groceryItemId } ?: return
+        _currentGroceryListItemUnchecked.value = listItem
     }
 }

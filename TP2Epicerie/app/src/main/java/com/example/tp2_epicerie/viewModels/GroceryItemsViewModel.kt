@@ -54,6 +54,7 @@ class GroceryItemsViewModel : ViewModel() {
 
                 val groceryItem = GroceryItem(
                     id = groceryItemUser.id,
+                    userCreated = true,
                     name = groceryItemUser.name,
                     description = groceryItemUser.description,
                     isFavorite = groceryItemUser.isFavorite,
@@ -78,6 +79,7 @@ class GroceryItemsViewModel : ViewModel() {
         userItemsNotInAPI.forEach { userItem ->
             val groceryItem = GroceryItem(
                 id = userItem.id,
+                userCreated = true,
                 name = userItem.name,
                 description = userItem.description,
                 isFavorite = userItem.isFavorite,
@@ -106,12 +108,14 @@ class GroceryItemsViewModel : ViewModel() {
         }
     }
 
-    fun removeUserGroceryItem(item: GroceryItemUser) {
+    fun removeUserGroceryItem(itemId: String) {
         val user = CurrentUserCache.user ?: return
 
-        if (item.id.isBlank()) {
+        if (itemId.isBlank()) {
             return
         }
+
+        val item = user.groceryItems[itemId] ?: return
 
         viewModelScope.launch {
             user.groceryItems.remove(item.id)

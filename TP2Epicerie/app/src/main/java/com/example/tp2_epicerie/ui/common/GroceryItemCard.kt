@@ -54,8 +54,6 @@ import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 
 data class GroceryItemCardInfo(
     val groceryItem: GroceryItem,
-    val groceryItemsViewModel: GroceryItemsViewModel,
-    val groceryListsViewModel: GroceryListsViewModel,
     val onClick: () -> Unit,
     val containerColor: Color,
 )
@@ -67,17 +65,21 @@ fun GroceryItemCard(
     groceryListsViewModel: GroceryListsViewModel,
     cardInfo: GroceryItemCardInfo
 ) {
+    // Déclaration des états
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showQuantityDialog by remember { mutableStateOf(false) }
     var selectedQuantity by remember { mutableIntStateOf(1) }
     var selectedGroceryList by remember { mutableStateOf(GroceryList()) }
-    val currentContext = LocalContext.current
-
     var menuExpanded by remember { mutableStateOf(false) }
-    val groceryLists =
-        cardInfo.viewModel.getAllGroceryLists.collectAsState(initial = emptyList()).value
+
+    // Récupération des listes du ViewModel
+    val groceryLists = groceryListsViewModel.groceryLists.collectAsState().value
 
     val itemDeletedText = stringResource(R.string.text_itemDeleted)
+    val cannotDeleteText = stringResource(R.string.text_cannot_delete_api_item)
+    val noListsFound = stringResource(R.string.no_lists_found)
+
+    val currentContext = LocalContext.current
 
     val appBarMenuInfo: AppBarMenuInfo = AppBarMenuInfo(
         groceryLists.map { groceryList ->
@@ -89,7 +91,7 @@ fun GroceryItemCard(
                     menuExpanded = false
 
                     // On récupère l'élément d'épicerie non barré correspondant à l'élément sélectionné
-                    viewModel.fetchUncrossedListItem(selectedGroceryList.id, cardInfo.groceryItem.id)
+                    groceryListsViewModel.getCurrentGroceryListItemUnchecked(selectedGroceryList, cardInfo.groceryItem.id)
                 }
             )
         }
@@ -138,20 +140,6 @@ fun GroceryItemCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                if (cardInfo.groceryItem.imagePath != null) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(currentContext)
-                            .data(Uri.parse(cardInfo.groceryItem.imagePath))
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(50.dp)
-                            .align(Alignment.CenterVertically),
-                        placeholder = painterResource(R.drawable.baseline_image_24),
-                        error = painterResource(R.drawable.baseline_broken_image_24),
-                    )
-                }
             }
 
             // Affichage des boutons d'ajout, de favoris et de suppression
@@ -165,7 +153,15 @@ fun GroceryItemCard(
             ) {
                 // Bouton d'ajout
                 IconButton(onClick = {
-                    menuExpanded = true
+                    if (groceryLists.isNotEmpty()) {
+                        menuExpanded = true
+                    } else {
+                        Toast.makeText(
+                            currentContext,
+                            noListsFound,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -192,44 +188,32 @@ fun GroceryItemCard(
 
                 // Bouton de favoris
                 IconButton(onClick = {
-                    if (cardInfo.groceryItem.isFavorite > 0) {
-                        cardInfo.viewModel.upsertGroceryItem(
-                            GroceryItem(
-                                id = cardInfo.groceryItem.id,
-                                name = cardInfo.groceryItem.name,
-                                description = cardInfo.groceryItem.description,
-                                cardInfo.groceryItem.categoryId,
-                                isFavorite = 0,
-                                cardInfo.groceryItem.imagePath
-                            )
-                        )
-                    } else {
-                        cardInfo.viewModel.upsertGroceryItem(
-                            GroceryItem(
-                                id = cardInfo.groceryItem.id,
-                                name = cardInfo.groceryItem.name,
-                                description = cardInfo.groceryItem.description,
-                                cardInfo.groceryItem.categoryId,
-                                isFavorite = 1,
-                                cardInfo.groceryItem.imagePath
-                            )
-                        )
-                    }
+                    groceryItemsViewModel.updateUserGroceryItem(
+                        cardInfo.groceryItem.copy(isFavorite = !cardInfo.groceryItem.isFavorite)
+                    )
                 }) {
                     Icon(
-                        imageVector = if (cardInfo.groceryItem.isFavorite > 0) {
+                        imageVector = if (cardInfo.groceryItem.isFavorite) {
                             Icons.Filled.Favorite
                         } else {
                             Icons.Default.FavoriteBorder
                         },
                         contentDescription = "Favorite",
-                        tint = if (cardInfo.groceryItem.isFavorite > 0) Color.Red else Color.Black,
+                        tint = if (cardInfo.groceryItem.isFavorite) Color.Red else Color.Black,
                     )
                 }
 
                 // Bouton de suppression
                 IconButton(onClick = {
-                    showDeleteDialog = true
+                    if (cardInfo.groceryItem.userCreated) {
+                        showDeleteDialog = true
+                    } else {
+                        Toast.makeText(
+                            currentContext,
+                            cannotDeleteText,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -277,22 +261,23 @@ fun GroceryItemCard(
             },
             confirmButton = {
                 Button(onClick = {
-                    viewModel.uncrossedListItem.let { it ->
+                    groceryListsViewModel.currentGroceryListItemUnchecked.let { it ->
                         val listItem = it.value
 
                         // Si l'élément est déjà dans la liste, on incrémente la quantité
                         if (listItem != null) {
-                            viewModel.upsertListItem(
+                            groceryListsViewModel.updateGroceryListItem(
                                 listItem.copy(quantity = listItem.quantity + selectedQuantity)
                             )
                         } else {
                             // Sinon, on ajoute l'élément à la liste
-                            viewModel.upsertListItem(
+                            groceryListsViewModel.addGroceryListItem(
                                 ListItem(
                                     groceryListId = selectedGroceryList.id,
                                     groceryItemId = cardInfo.groceryItem.id,
                                     quantity = selectedQuantity
-                                )
+                                ),
+                                groceryItem = cardInfo.groceryItem
                             )
                         }
 
@@ -327,7 +312,7 @@ fun GroceryItemCard(
         title = stringResource(R.string.text_removeItem) + " ${cardInfo.groceryItem.name}?",
         message = stringResource(R.string.text_deleteVerification),
         onYesWithContext = {context ->
-            cardInfo.viewModel.deleteGroceryItem(cardInfo.groceryItem)
+            groceryItemsViewModel.removeUserGroceryItem(cardInfo.groceryItem.id)
             showDeleteDialog = false
             Toast.makeText(context, itemDeletedText, Toast.LENGTH_SHORT).show()
         },

@@ -10,7 +10,7 @@
     <string name="language_french">French</string>
     <string name="text_language">Language</string>
     <string name="language_english">English</string>
-    <string name="settings_toast">our settings have been updated</string>
+    <string name="settings_toast">Your settings have been updated</string>
     <string name="menu_addItem">Add an item</string>
     <string name="menu_addList">Add a List</string>
     <string name="menu_addCategory">Add a category</string>
@@ -68,4 +68,6 @@
 
     <string name="text_category_from_api">This category is from the API</string>
     <string name="text_category_other">Other</string>
+    <string name="text_cannot_delete_api_item">This is an item from the API and cannot be deleted</string>
+    <string name="no_lists_found">No lists have been found</string>
 </resources>

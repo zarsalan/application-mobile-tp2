@@ -40,14 +40,15 @@ import com.example.tp2_epicerie.ui.common.GroceryItemCard
 import com.example.tp2_epicerie.ui.common.GroceryItemCardInfo
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
 import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
+import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 
 // La vue pour afficher les articles d'épicerie (tous ou favoris)
 @Composable
 fun GroceryItemsView(
-    groceryItemViewModel: GroceryItemsViewModel,
-    groceryCategoriesViewModel: GroceryCategoriesViewModel,
+    groceryItemsViewModel: GroceryItemsViewModel,
+    groceryListsViewModel: GroceryListsViewModel,
     navHostController: NavHostController,
     mode: Boolean
 ) {
@@ -137,10 +138,10 @@ fun GroceryItemsView(
                 }
                 items(items) { groceryItem ->
                     GroceryItemCard(
-                        viewModel = viewModel,
+                        groceryItemsViewModel = groceryItemsViewModel,
+                        groceryListsViewModel = groceryListsViewModel,
                         cardInfo = GroceryItemCardInfo(
                             groceryItem = groceryItem,
-                            viewModel = viewModel,
                             onClick = { navHostController.navigate(Screen.AddEditItem.route + "/${groceryItem.id}") },
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                         )

@@ -60,7 +60,7 @@ fun Navigation(
         composable(Screen.AllItems.route) {
             GroceryItemsView(
                 groceryItemsViewModel,
-                groceryCategoriesViewModel,
+                groceryListsViewModel,
                 navHostController,
                 true
             )
@@ -70,7 +70,7 @@ fun Navigation(
         composable(Screen.Favorites.route) {
             GroceryItemsView(
                 groceryItemsViewModel,
-                groceryCategoriesViewModel,
+                groceryListsViewModel,
                 navHostController,
                 false
             )

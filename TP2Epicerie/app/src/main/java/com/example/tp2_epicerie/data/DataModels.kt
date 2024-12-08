@@ -81,6 +81,7 @@ data class GroceryItemCategory(
 
 data class GroceryItem(
     var id: String = "",
+    var userCreated: Boolean = false, // Si l'item a été créé par l'utilisateur
     var category: GroceryItemCategory = GroceryItemCategory(),
     var name: String = "",
     var description: String = "",
