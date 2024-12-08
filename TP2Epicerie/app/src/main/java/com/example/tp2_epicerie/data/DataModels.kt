@@ -1,5 +1,7 @@
 package com.example.tp2_epicerie.data
 
+import java.util.UUID
+
 data class User(
     var id: String = "",
     var username: String = "",
@@ -39,14 +41,14 @@ data class Settings(
 )
 
 data class GroceryList(
-    var id: String = "", // Idée unique générée par UUID
+    var id: String = UUID.randomUUID().toString(), // Idée unique générée par UUID
     var title: String = "",
     var description: String = "",
     var listItems: MutableList<ListItem> = mutableListOf(),
 )
 
 data class ListItem(
-    var id: String = "", // Idée unique générée par UUID
+    var id: String = UUID.randomUUID().toString(), // Idée unique générée par UUID
     var groceryListId: String = "", // Référence à la liste GroceryList
     var groceryItemId: String = "", // Référence à l'item d'épicerie
     var quantity: Int = 0,
@@ -54,7 +56,7 @@ data class ListItem(
 )
 
 data class RecipeList(
-    var id: String = "", // Idée unique générée par UUID
+    var id: String = UUID.randomUUID().toString(), // Idée unique générée par UUID
     var title: String = "",
     var description: String = "",
     var recipes: MutableList<Recipe> = mutableListOf(),

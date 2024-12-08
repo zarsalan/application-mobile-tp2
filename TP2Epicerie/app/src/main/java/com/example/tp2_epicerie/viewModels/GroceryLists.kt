@@ -9,7 +9,6 @@ import com.example.tp2_epicerie.data.GroceryList
 import com.example.tp2_epicerie.data.ListItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.util.UUID
 
 class GroceryLists : ViewModel() {
     private val userDB = Graph.userDB
@@ -73,9 +72,8 @@ class GroceryLists : ViewModel() {
     // Ajout d'une liste
     suspend fun addGroceryList(title: String, description: String) {
         val user = CurrentUserCache.user ?: return
-        val newListId = UUID.randomUUID().toString()
-        val newList = GroceryList(id = newListId, title = title, description = description)
-        user.groceryLists[newListId] = newList
+        val newList = GroceryList(title = title, description = description)
+        user.groceryLists[newList.id] = newList
         loadGroceryLists()
 
         updateGroceryList(newList)
@@ -111,7 +109,7 @@ class GroceryLists : ViewModel() {
         val user = CurrentUserCache.user ?: return
         val list = user.groceryLists[listItem.groceryListId] ?: return
         val groceryItemUser = groceryRepository.addUserGroceryItem(groceryItem)
-        val newItem = listItem.copy(id = UUID.randomUUID().toString(), groceryItemId = groceryItemUser.id)
+        val newItem = listItem.copy(groceryItemId = groceryItemUser.id)
         list.listItems.add(newItem)
         groceryListUpdated(list)
 

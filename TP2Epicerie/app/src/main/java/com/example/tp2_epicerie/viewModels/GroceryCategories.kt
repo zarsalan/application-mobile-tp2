@@ -8,7 +8,6 @@ import com.example.tp2_epicerie.data.GroceryItemCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class GroceryCategories : ViewModel() {
     private val userDB = Graph.userDB
