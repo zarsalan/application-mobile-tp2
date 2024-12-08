@@ -39,7 +39,7 @@ class RecipeListsViewModel : ViewModel() {
 
     private fun recipeListUpdated(recipeList: RecipeList) {
         if (_currentRecipeList.value?.id == recipeList.id) {
-            _currentRecipeList.value = recipeList
+            _currentRecipeList.value = recipeList.copy()
         }
     }
 
@@ -142,7 +142,7 @@ class RecipeListsViewModel : ViewModel() {
     // Récupération d'une liste de recettes de l'utilisateur connecté
     fun loadRecipeList(recipeList: RecipeList) {
         val user = CurrentUserCache.user ?: return
-        _currentRecipeList.value = user.recipeLists[recipeList.id]
+        _currentRecipeList.value = user.recipeLists[recipeList.id]?.copy()
     }
 
     // Ajout de liste de recettes à l'utilisateur connecté

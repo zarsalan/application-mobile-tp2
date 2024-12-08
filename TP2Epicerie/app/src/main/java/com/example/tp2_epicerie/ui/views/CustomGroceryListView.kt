@@ -1,5 +1,6 @@
 package com.example.tp2_epicerie.ui.views
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,9 +54,8 @@ fun CustomGroceryListView(
     LaunchedEffect(id) { groceryListsViewModel.loadCurrentGroceryListItems(id) }
 
     // Collections des états de la liste d'épicerie et des items de la liste
-    val currentGroceryList = groceryListsViewModel.currentGroceryList.collectAsState().value
-    val currentGroceryItems =
-        groceryListsViewModel.currentGroceryItems.collectAsState().value
+    val currentGroceryList by groceryListsViewModel.currentGroceryList.collectAsState()
+    val currentGroceryItems by groceryListsViewModel.currentGroceryItems.collectAsState()
 
     // État pour l'affichage des items cochés ou non cochés
     var indexCrossed by remember { mutableStateOf(false) }
@@ -66,17 +66,17 @@ fun CustomGroceryListView(
         currentGroceryList.listItems.filter { it.isChecked == indexCrossed }
     }
 
-    // Groupage des items par catégorie
-    val listItemsByCategory = remember(itemsToShow, currentGroceryItems) {
-        itemsToShow.groupBy { listItem ->
-            currentGroceryItems.find { it.id == listItem.groceryItemId }?.category?.name
-                ?: ""
-        }
-    }
-
     // Création d'une map pour les items d'épicerie
     val groceryItemLookup = remember(currentGroceryItems) {
         currentGroceryItems.associateBy { it.id }
+    }
+
+    // Groupage des items par catégorie
+    val listItemsByCategory = remember(itemsToShow, currentGroceryItems) {
+        itemsToShow.groupBy { listItem ->
+            val groceryItem = groceryItemLookup[listItem.groceryItemId] ?: return@groupBy ""
+            groceryItem.category.name
+        }
     }
 
     Scaffold(
