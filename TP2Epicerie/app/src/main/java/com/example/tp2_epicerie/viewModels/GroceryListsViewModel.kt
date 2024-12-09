@@ -19,7 +19,7 @@ class GroceryListsViewModel : ViewModel() {
 
     // Les listes d'épicerie de l'utilisateur
     private val _groceryLists = MutableStateFlow<List<GroceryList>>(emptyList())
-    val groceryLists : StateFlow<List<GroceryList>> = _groceryLists
+    val groceryLists: StateFlow<List<GroceryList>> = _groceryLists
 
     // L'id de la liste d'épicerie courante
     private val _currentGroceryList = MutableStateFlow(GroceryList())
@@ -61,11 +61,12 @@ class GroceryListsViewModel : ViewModel() {
                 name = groceryItemUser.name,
                 description = groceryItemUser.description,
                 isFavorite = groceryItemUser.isFavorite,
-                category = user.groceryCategories[groceryItemUser.categoryId] ?: GroceryItemCategory(),
+                category = user.groceryCategories[groceryItemUser.categoryId]
+                    ?: GroceryItemCategory(),
             )
             items.add(groceryItem)
         }
-        Log.d("GroceryListsViewModel", "loadCurrentGroceryListItems completed")
+
         _currentGroceryItems.value = items.toList()
     }
 
@@ -151,8 +152,21 @@ class GroceryListsViewModel : ViewModel() {
         saveGroceryList(list)
     }
 
+    // Suppression d'un ListItem de toutes les listes d'épicerie
+    fun removeGroceryItemFromAllLists(groceryItemId : String) {
+        val user = CurrentUserCache.user ?: return
+        for (list in user.groceryLists.values) {
+            list.listItems.removeIf { it.groceryItemId == groceryItemId }
+            groceryListUpdated(list)
+            saveGroceryList(list)
+        }
+    }
+
     // Obtention de l'item de la liste d'épicerie non cochée
-    fun getCurrentGroceryListItemUnchecked(groceryList: GroceryList, groceryItemId: String): ListItem? {
+    fun getCurrentGroceryListItemUnchecked(
+        groceryList: GroceryList,
+        groceryItemId: String
+    ): ListItem? {
         return groceryList.listItems.find { it.groceryItemId == groceryItemId && !it.isChecked }
     }
 }

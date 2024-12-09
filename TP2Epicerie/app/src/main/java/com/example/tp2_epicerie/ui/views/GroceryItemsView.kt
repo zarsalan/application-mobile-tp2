@@ -97,7 +97,8 @@ fun GroceryItemsView(
         groceryItems.filter { item ->
             val matchesCategory = selectedCategory == "Toutes les catégories" ||
                     categoryLookup[item.category.id]?.name == selectedCategory
-            val matchesSearch = searchText.isBlank() || item.name.contains(searchText, ignoreCase = true)
+            val matchesSearch =
+                searchText.isBlank() || item.name.contains(searchText, ignoreCase = true)
             val matchesMode = item.isFavorite != mode || mode
             matchesCategory && matchesSearch && matchesMode
         }
@@ -131,7 +132,10 @@ fun GroceryItemsView(
                     contentColor = Color.White,
                     containerColor = colorResource(id = R.color.app_bar)
                 ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.text_add))
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.text_add)
+                    )
                 }
             }
         }
@@ -143,7 +147,10 @@ fun GroceryItemsView(
                     .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 4.dp
+                )
             }
         } else {
             Column(
@@ -163,7 +170,10 @@ fun GroceryItemsView(
                         modifier = Modifier
                             .weight(1f)
                             .clickable { isDropdownExpanded = true }
-                            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.small)
+                            .background(
+                                MaterialTheme.colorScheme.surface,
+                                MaterialTheme.shapes.small
+                            )
                             .padding(8.dp)
                     ) {
                         Text(text = selectedCategory, color = MaterialTheme.colorScheme.onSurface)

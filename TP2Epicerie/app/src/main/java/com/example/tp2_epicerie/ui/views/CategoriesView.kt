@@ -53,7 +53,7 @@ fun CategoriesView(
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
             }
         }
-    ) {paddingValues ->
+    ) { paddingValues ->
         val categoriesList =
             groceryCategoriesViewModel.finalCategories.collectAsState(emptyList()).value
         val isLoading = groceryCategoriesViewModel.isLoading.collectAsState(false).value
@@ -62,18 +62,17 @@ fun CategoriesView(
         if (isLoading) {
             // Affichage d'un loader
             CircularProgressIndicator(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(vertical = 16.dp, horizontal = 16.dp),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                strokeWidth = 4.dp
             )
         } else {
             if (categoriesList.isEmpty()) {
                 // Affichage d'un message si la liste est vide
                 Text(
                     text = "Aucune catégorie trouvée",
-                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                     style = TextStyle(fontSize = 20.sp),
                 )
             } else {

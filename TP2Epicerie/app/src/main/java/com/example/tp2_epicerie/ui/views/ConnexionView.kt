@@ -52,10 +52,38 @@ fun ConnexionView(
     val coroutineScope = rememberCoroutineScope()
     val isLoading = userViewModel.isLoading.collectAsState(false).value
 
-    // Déclarez les variables avec MutableState explicitement
+    // Déclaration des variables avec MutableState
     val isSignUp = remember { mutableStateOf(false) }
     val username = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
+
+    fun connectUser(onResult: (Boolean) -> Unit) {
+        try {
+            userViewModel.loginUser(username.value, password.value) { success ->
+                if (success) {
+                    // Exécution des fonctions fetch des données
+                    categoriesViewModel.fetchCategories()
+                    groceryItemsViewModel.fetchGroceryItems()
+                    groceryListsViewModel.loadGroceryLists()
+                    recipeListsViewModel.loadRecipeLists()
+
+                    onResult(true)
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Nom ou mot de passe incorrect",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    onResult(false)
+                }
+            }
+        } catch (e: Exception) {
+            Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT)
+                .show()
+            onResult(false)
+        }
+    }
+
     if (isLoading) {
         Box(
             modifier = Modifier
@@ -110,13 +138,19 @@ fun ConnexionView(
                             try {
                                 userViewModel.createUser(user, password.value) { success ->
                                     if (success) {
-                                        // Exécution des fonctions fetch des données
-                                        categoriesViewModel.fetchCategories()
                                         Toast.makeText(
                                             context,
                                             "Compte créé avec succès",
                                             Toast.LENGTH_SHORT
                                         ).show()
+
+                                        // Connection de l'utilisateur
+                                        connectUser { connectionSuccess ->
+                                            if (connectionSuccess) {
+                                                // Redirection vers la page principale
+                                                navHostController.navigate(Screen.HomeScreen.route)
+                                            }
+                                        }
                                     }
                                 }
                                 isSignUp.value = false // Retour à l'écran de connexion
@@ -127,30 +161,13 @@ fun ConnexionView(
                         }
                     } else {
                         coroutineScope.launch {
-                            try {
-                                userViewModel.loginUser(username.value, password.value) { success ->
-                                    if (success) {
-                                        // Exécution des fonctions fetch des données
-                                        categoriesViewModel.fetchCategories()
-                                        groceryItemsViewModel.fetchGroceryItems()
-                                        groceryListsViewModel.loadGroceryLists()
-                                        recipeListsViewModel.loadRecipeLists()
-
-                                        Toast.makeText(context, "Connexion réussie", Toast.LENGTH_SHORT)
-                                            .show()
-                                        // Redirigez vers la page principale
-                                        navHostController.navigate(Screen.HomeScreen.route)
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "Nom ou mot de passe incorrect",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
+                            connectUser { success ->
+                                if (success) {
+                                    Toast.makeText(context, "Connexion réussie", Toast.LENGTH_SHORT)
+                                        .show()
+                                    // Redirection vers la page principale
+                                    navHostController.navigate(Screen.HomeScreen.route)
                                 }
-                            } catch (e: Exception) {
-                                Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT)
-                                    .show()
                             }
                         }
                     }

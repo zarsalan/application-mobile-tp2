@@ -1,6 +1,7 @@
 package com.example.tp2_epicerie.data
 
 import com.example.tp2_epicerie.CurrentUserCache
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import org.mindrot.jbcrypt.BCrypt
@@ -112,7 +113,7 @@ class UserDB(private val db: FirebaseFirestore) {
     suspend fun deleteGroceryCategory(categoryId: String) {
         try {
             val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
-            db.collection("users").document(user.id).update("groceryCategories.${categoryId}", null).await()
+            db.collection("users").document(user.id).update("groceryCategories.${categoryId}", FieldValue.delete()).await()
         } catch (e: Exception) {
             throw Exception("Erreur lors de la suppression de la catégorie d'item d'épicerie : ${e.message}")
         }
@@ -140,7 +141,7 @@ class UserDB(private val db: FirebaseFirestore) {
     suspend fun deleteGroceryItem(itemId: String) {
         try {
             val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
-            db.collection("users").document(user.id).update("groceryItems.${itemId}", null).await()
+            db.collection("users").document(user.id).update("groceryItems.${itemId}", FieldValue.delete()).await()
         } catch (e: Exception) {
             throw Exception("Erreur lors de la suppression de l'item d'épicerie : ${e.message}")
         }
@@ -168,7 +169,7 @@ class UserDB(private val db: FirebaseFirestore) {
     suspend fun deleteGroceryList(listId: String) {
         try {
             val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
-            db.collection("users").document(user.id).update("groceryLists.${listId}", null).await()
+            db.collection("users").document(user.id).update("groceryLists.${listId}", FieldValue.delete()).await()
         } catch (e: Exception) {
             throw Exception("Erreur lors de la suppression de la liste d'items d'épicerie : ${e.message}")
         }
@@ -196,7 +197,7 @@ class UserDB(private val db: FirebaseFirestore) {
     suspend fun deleteRecipeList(list: RecipeList) {
         try {
             val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
-            db.collection("users").document(user.id).update("recipeLists.${list.id}", null).await()
+            db.collection("users").document(user.id).update("recipeLists.${list.id}", FieldValue.delete()).await()
         } catch (e: Exception) {
             throw Exception("Erreur lors de la suppression de la liste de recettes : ${e.message}")
         }
@@ -224,7 +225,7 @@ class UserDB(private val db: FirebaseFirestore) {
     suspend fun removeFavoriteRecipe(recipe: Recipe) {
         try {
             val user = CurrentUserCache.user ?: throw Exception("Utilisateur non connecté")
-            db.collection("users").document(user.id).update("favoriteRecipes.${recipe.id}", null).await()
+            db.collection("users").document(user.id).update("favoriteRecipes.${recipe.id}", FieldValue.delete()).await()
         } catch (e: Exception) {
             throw Exception("Erreur lors de la suppression de la recette favorite : ${e.message}")
         }

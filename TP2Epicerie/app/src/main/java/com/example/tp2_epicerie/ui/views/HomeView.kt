@@ -48,7 +48,6 @@ import com.example.tp2_epicerie.viewModels.UserViewModel
 fun HomeView(
     userViewModel: UserViewModel,
     groceryListsViewModel: GroceryListsViewModel,
-    groceryItemsViewModel: GroceryItemsViewModel,
     navHostController: NavHostController
 ) {
     var showAboutDialog by remember { mutableStateOf(false) }
@@ -94,6 +93,13 @@ fun HomeView(
                         AppBarMenu(
                             title = stringResource(R.string.menu_about),
                             onClick = { showAboutDialog = true }
+                        ),
+                        AppBarMenu(
+                            title = stringResource(R.string.menu_logout),
+                            onClick = {
+                                userViewModel.logoutUser()
+                                navHostController.navigate(Screen.ConnexionScreen.route)
+                            }
                         )
                     )
                 )

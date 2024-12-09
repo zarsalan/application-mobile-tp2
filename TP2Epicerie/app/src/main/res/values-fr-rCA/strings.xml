@@ -21,6 +21,7 @@
     <string name="menu_about">À propos</string>
     <string name="menu_close">Fermer</string>
     <string name="menu_delete_this_item">Supprimer cet article</string>
+    <string name="menu_logout">Se déconnecter</string>
     <string name="listCard_allItem">Tous les articles</string>
     <string name="listCard_seeItem">Voir tous les articles</string>
     <string name="listCard_favorites">Favoris</string>
@@ -73,4 +74,5 @@
     <string name="no_lists_found">No lists have been found</string>
     <string name="search_button">Rechercher</string>
     <string name="search">Rechercher</string>
+
 </resources>

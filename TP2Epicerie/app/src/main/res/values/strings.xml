@@ -20,6 +20,7 @@
     <string name="menu_about">About</string>
     <string name="menu_close">Close</string>
     <string name="menu_delete_this_item">Delete this item</string>
+    <string name="menu_logout">Log out</string>
     <string name="listCard_allItem">All items</string>
     <string name="listCard_seeItem">See all items</string>
     <string name="listCard_favorites">Favorites</string>
@@ -70,7 +71,7 @@
     <string name="text_category_other">Other</string>
     <string name="text_cannot_delete_api_item">This is an item from the API and cannot be deleted</string>
     <string name="no_lists_found">No lists have been found</string>
-    <string name="search_button">search</string>
-    <string name="search">search</string>
+    <string name="search_button">Search</string>
+    <string name="search">Search</string>
 
 </resources>

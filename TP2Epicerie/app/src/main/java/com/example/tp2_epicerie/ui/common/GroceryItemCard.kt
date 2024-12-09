@@ -309,6 +309,7 @@ fun GroceryItemCard(
         title = stringResource(R.string.text_removeItem) + " ${cardInfo.groceryItem.name}?",
         message = stringResource(R.string.text_deleteVerification),
         onYesWithContext = { context ->
+            groceryListsViewModel.removeGroceryItemFromAllLists(cardInfo.groceryItem.id)
             groceryItemsViewModel.removeUserGroceryItem(cardInfo.groceryItem.id)
             showDeleteDialog = false
             Toast.makeText(context, itemDeletedText, Toast.LENGTH_SHORT).show()
