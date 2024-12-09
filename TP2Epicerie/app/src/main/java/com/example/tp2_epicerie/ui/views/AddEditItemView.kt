@@ -1,14 +1,19 @@
 package com.example.tp2_epicerie.ui.views
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -19,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +42,8 @@ import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.GroceryItem
+import com.example.tp2_epicerie.data.GroceryItemCategory
+import com.example.tp2_epicerie.data.Recipe
 import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
 import com.example.tp2_epicerie.ui.common.AppBarMenu
 import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
@@ -44,7 +52,9 @@ import com.example.tp2_epicerie.ui.common.CustomDropdownMenu
 import com.example.tp2_epicerie.ui.common.CustomDropdownMenus
 import com.example.tp2_epicerie.ui.common.CustomTextField
 import com.example.tp2_epicerie.ui.common.CustomYesNoDialog
+import com.example.tp2_epicerie.ui.common.RecipeCard
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
+import com.example.tp2_epicerie.viewModels.RecipeListsViewModel
 import java.util.UUID
 
 // La page pour ajouter ou modifier un item
@@ -53,21 +63,53 @@ fun AddEditItemView(
     id: String = "",
     groceryItemViewModel: GroceryItemsViewModel,
     groceryCategoriesViewModel: GroceryCategoriesViewModel,
+    recipeListsViewModel: RecipeListsViewModel,
     navHostController: NavHostController
 ) {
-    // Précharger les ressources de chaîne
+    fun saveItem(
+        context: Context,
+        id: String,
+        name: String,
+        description: String,
+        categoryId: String,
+        isFavorite: Boolean,
+        categories: List<GroceryItemCategory>,
+        groceryItemViewModel: GroceryItemsViewModel,
+        navHostController: NavHostController,
+        alertMessage: String,
+        savedMessage: String
+    ) {
+        val category = categories.find { it.id == categoryId }
+        if (name.isEmpty() || description.isEmpty() || categoryId.isEmpty() || category == null) {
+            Toast.makeText(context, alertMessage, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val newItem = GroceryItem(
+            id = id.ifEmpty { UUID.randomUUID().toString() },
+            name = name.trim(),
+            description = description.trim(),
+            category = category,
+            isFavorite = isFavorite
+        )
+        groceryItemViewModel.updateUserGroceryItem(newItem)
+        Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
+        navHostController.popBackStack()
+    }
+
+    // Préparer les ressources
+    val context = LocalContext.current
     val textAlert = stringResource(R.string.addItem_alert)
     val textItemSaved = stringResource(R.string.text_saveItem)
-    val textSave = stringResource(R.string.text_save)
     val textRemoveItem = stringResource(R.string.text_removeItem)
     val textDeleteVerification = stringResource(R.string.text_deleteVerification)
     val textItemDeleted = stringResource(R.string.text_itemDeleted)
+    val textRecipesUsingItem = stringResource(R.string.recipes_using_item)
 
     // État pour afficher le dialog de suppression
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    // État pour afficher les données de l'item
-    val context = LocalContext.current
+    // Charger les données de l'item
     val groceryItems by groceryItemViewModel.finalItems.collectAsState()
     val groceryItem = groceryItems.find { it.id == id }
     val categories by groceryCategoriesViewModel.finalCategories.collectAsState()
@@ -79,7 +121,13 @@ fun AddEditItemView(
     var selectedCategory by remember { mutableStateOf(groceryItem?.category?.name ?: "") }
     var isFavorite by remember { mutableStateOf(groceryItem?.isFavorite ?: false) }
 
-    val scrollState = rememberScrollState()
+    // Charger les recettes associées
+    val ingredientRecipes by recipeListsViewModel.ingredientRecipes.collectAsState()
+    LaunchedEffect(id) {
+        if (id.isNotEmpty()) {
+            recipeListsViewModel.fetchRecipesByIngredient(id)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -103,120 +151,90 @@ fun AddEditItemView(
                     }
                 )
             )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxWidth()
-                .verticalScroll(scrollState),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Champs Nom et Description
-            CustomTextField(
-                label = stringResource(R.string.text_name),
-                value = name,
-                onValueChanged = { name = it },
-                labelColor = MaterialTheme.colorScheme.primary
-            )
-            CustomTextField(
-                label = stringResource(R.string.text_description),
-                value = description,
-                onValueChanged = { description = it },
-                labelColor = MaterialTheme.colorScheme.primary
-            )
-
-            // Sélection de la catégorie
-            CustomDropdownMenu(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                label = stringResource(R.string.text_category),
-                value = selectedCategory,
-                customDropdownMenus = CustomDropdownMenus(
-                    menus = categories.map { category ->
-                        CustomDropdownMenu(
-                            text = category.name,
-                            onClick = {
-                                selectedCategory = category.name
-                                categoryId = category.id
-                            }
+        },
+        content = { padding ->
+            BoxWithConstraints(modifier = Modifier.fillMaxSize().padding(padding)) {
+                val aspectRatio = maxWidth / maxHeight
+                if (aspectRatio > 1f) {
+                    // Mode paysage
+                    Row(modifier = Modifier.fillMaxSize()) {
+                        EditItemFields(
+                            name = name,
+                            description = description,
+                            categoryId = categoryId,
+                            selectedCategory = selectedCategory,
+                            isFavorite = isFavorite,
+                            categories = categories,
+                            onNameChange = { name = it },
+                            onDescriptionChange = { description = it },
+                            onCategorySelect = { selectedCategory = it.name; categoryId = it.id },
+                            onFavoriteToggle = { isFavorite = it },
+                            onSave = {
+                                saveItem(
+                                    context,
+                                    id,
+                                    name,
+                                    description,
+                                    categoryId,
+                                    isFavorite,
+                                    categories,
+                                    groceryItemViewModel,
+                                    navHostController,
+                                    textAlert,
+                                    textItemSaved
+                                )
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+                        RecipeListSection(
+                            title = textRecipesUsingItem,
+                            recipes = ingredientRecipes,
+                            navHostController = navHostController,
+                            modifier = Modifier.weight(1f)
                         )
                     }
-                )
-            )
-
-            // Gestion des favoris
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.addEdit_favorite),
-                    modifier = Modifier.padding(end = 8.dp),
-                    fontSize = 18.sp
-                )
-                Icon(
-                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable { isFavorite = !isFavorite },
-                    tint = if (isFavorite) colorResource(id = R.color.app_bar) else MaterialTheme.colorScheme.primary
-                )
-            }
-
-            // Bouton pour sauvegarder l'item
-            Button(
-                onClick = {
-                    if (name.isEmpty() || description.isEmpty() || categoryId.isEmpty()) {
-                        Toast.makeText(
-                            context,
-                            textAlert,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        val category = categories.find { it.id == categoryId }
-                        if (category == null) {
-                            Toast.makeText(
-                                context,
-                                textAlert,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@Button
-                        }
-
-                        val newItem = GroceryItem(
-                            id = id.ifEmpty { UUID.randomUUID().toString() },
-                            name = name.trim(),
-                            description = description.trim(),
-                            category = category,
-                            isFavorite = isFavorite
+                } else {
+                    // Mode portrait
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        EditItemFields(
+                            name = name,
+                            description = description,
+                            categoryId = categoryId,
+                            selectedCategory = selectedCategory,
+                            isFavorite = isFavorite,
+                            categories = categories,
+                            onNameChange = { name = it },
+                            onDescriptionChange = { description = it },
+                            onCategorySelect = { selectedCategory = it.name; categoryId = it.id },
+                            onFavoriteToggle = { isFavorite = it },
+                            onSave = {
+                                saveItem(
+                                    context,
+                                    id,
+                                    name,
+                                    description,
+                                    categoryId,
+                                    isFavorite,
+                                    categories,
+                                    groceryItemViewModel,
+                                    navHostController,
+                                    textAlert,
+                                    textItemSaved
+                                )
+                            },
+                            modifier = Modifier.weight(1f)
                         )
-
-                        groceryItemViewModel.updateUserGroceryItem(newItem)
-
-                        Toast.makeText(
-                            context,
-                            textItemSaved,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        navHostController.popBackStack()
+                        RecipeListSection(
+                            title = textRecipesUsingItem,
+                            recipes = ingredientRecipes,
+                            navHostController = navHostController,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
-                },
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
-                Text(
-                    text = textSave,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
+                }
             }
         }
-    }
+    )
 
     // Dialog pour confirmer la suppression
     CustomYesNoDialog(
@@ -225,11 +243,99 @@ fun AddEditItemView(
         title = "$textRemoveItem $name?",
         message = textDeleteVerification,
         onYesWithContext = { ctx ->
-            groceryItem?.let { groceryItemViewModel.removeUserGroceryItem(it.id)}
+            groceryItem?.let { groceryItemViewModel.removeUserGroceryItem(it.id) }
             showDeleteDialog = false
             navHostController.popBackStack()
             Toast.makeText(ctx, textItemDeleted, Toast.LENGTH_SHORT).show()
         },
         onNo = { showDeleteDialog = false }
     )
+}
+
+
+@Composable
+fun EditItemFields(
+    name: String,
+    description: String,
+    categoryId: String,
+    selectedCategory: String,
+    isFavorite: Boolean,
+    categories: List<GroceryItemCategory>,
+    onNameChange: (String) -> Unit,
+    onDescriptionChange: (String) -> Unit,
+    onCategorySelect: (GroceryItemCategory) -> Unit,
+    onFavoriteToggle: (Boolean) -> Unit,
+    onSave: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Champs Nom et Description
+        CustomTextField(label = "Nom", value = name, onValueChanged = onNameChange)
+        CustomTextField(label = "Description", value = description, onValueChanged = onDescriptionChange)
+
+        // Dropdown des catégories
+        CustomDropdownMenu(
+            label = "Catégorie",
+            value = selectedCategory,
+            customDropdownMenus = CustomDropdownMenus(
+                menus = categories.map { category ->
+                    CustomDropdownMenu(
+                        text = category.name,
+                        onClick = { onCategorySelect(category) }
+                    )
+                }
+            )
+        )
+
+        // Favoris
+        Row(
+            modifier = Modifier.padding(top = 8.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Favori")
+            Icon(
+                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .clickable { onFavoriteToggle(!isFavorite) }
+            )
+        }
+
+        // Bouton Sauvegarder
+        Button(onClick = onSave, modifier = Modifier.padding(top = 16.dp)) {
+            Text(text = "Sauvegarder")
+        }
+    }
+}
+
+@Composable
+fun RecipeListSection(
+    title: String,
+    recipes: List<Recipe>,
+    navHostController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.padding(16.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(recipes) { recipe ->
+                RecipeCard(
+                    recipe = recipe,
+                    onClick = { navHostController.navigate("recipe/${recipe.id}") },
+                    onFavoriteToggle = {  }
+                )
+            }
+        }
+    }
 }

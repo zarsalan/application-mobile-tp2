@@ -74,5 +74,6 @@
     <string name="no_lists_found">No lists have been found</string>
     <string name="search_button">Rechercher</string>
     <string name="search">Rechercher</string>
+    <string name="recipes_using_item">Les recettes</string>
 
 </resources>
