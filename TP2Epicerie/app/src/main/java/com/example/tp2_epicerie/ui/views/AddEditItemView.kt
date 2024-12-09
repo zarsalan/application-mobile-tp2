@@ -262,7 +262,7 @@ fun AddEditItemView(
                                         textItemSaved
                                     )
                                 },
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier.weight(1.25f)
                             )
                             RecipeListSection(
                                 title = textRecipesUsingItem,

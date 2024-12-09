@@ -146,7 +146,7 @@ fun Navigation(
             LaunchedEffect(id) {
                 recipeListsViewModel.fetchRecipeById(id)
             }
-            RecipeView(recipeListsViewModel, navHostController)
+            RecipeView(recipeListsViewModel, groceryItemsViewModel, groceryListsViewModel, navHostController)
         }
 
         // Paramètres
