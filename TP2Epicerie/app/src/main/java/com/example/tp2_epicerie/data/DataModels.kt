@@ -1,5 +1,8 @@
 package com.example.tp2_epicerie.data
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.example.tp2_epicerie.R
 import com.google.gson.annotations.SerializedName
 import java.util.UUID
 
@@ -82,7 +85,7 @@ data class GroceryItemUser(
 )
 
 data class GroceryItemCategory(
-    @SerializedName("_id") var id: String = "", // Idée unique de l'api ou générée par UUID
+    @SerializedName("_id") var id: String = "1", // Idée unique de l'api ou générée par UUID
     val userCreated: Boolean = false, // Si la catégorie a été créée par l'utilisateur
     val name: String = "",
     val description: String = "",

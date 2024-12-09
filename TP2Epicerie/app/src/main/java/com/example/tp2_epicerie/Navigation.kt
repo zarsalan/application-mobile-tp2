@@ -130,7 +130,7 @@ fun Navigation(
 
         // Affichage de tous les catégories
         composable(Screen.Categories.route) {
-            CategoriesView(groceryCategoriesViewModel, navHostController)
+            CategoriesView(groceryCategoriesViewModel, groceryItemsViewModel, navHostController)
         }
 
         // Paramètres
