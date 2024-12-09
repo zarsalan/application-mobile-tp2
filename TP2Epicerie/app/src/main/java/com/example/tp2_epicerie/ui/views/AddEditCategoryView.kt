@@ -76,10 +76,7 @@ fun AddEditCategoryView(
                     onClick = {
                         if (category != null) {
                             groceryCategoriesViewModel.updateUserGroceryCategory(
-                                GroceryItemCategory(
-                                    id = category.id,
-                                    name = name.trim()
-                                )
+                                category.copy(name = name.trim())
                             )
                             Toast.makeText(
                                 navHostController.context,

@@ -57,7 +57,7 @@ class GroceryCategoriesViewModel : ViewModel() {
     // Ajout/modification d'une catégorie à l'utilisateur connecté
     fun updateUserGroceryCategory(category: GroceryItemCategory) {
         viewModelScope.launch {
-            groceryRepository.addUserCategory(category)
+            groceryRepository.updateUserCategory(category)
             updateGroceryCategories()
         }
     }
