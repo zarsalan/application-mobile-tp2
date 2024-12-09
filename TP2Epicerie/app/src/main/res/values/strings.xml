@@ -78,5 +78,6 @@
     <string name="uncategorized">Uncategorized</string>
     <string name="uncategorized_description">All items without a category</string>
     <string name="cannot_delete_default_category">This is a default category and cannot be deleted</string>
+    <string name="A_Recipe">A recipe</string>
 
 </resources>

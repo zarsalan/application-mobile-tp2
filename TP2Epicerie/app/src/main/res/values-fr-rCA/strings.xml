@@ -79,5 +79,6 @@
     <string name="uncategorized">Non catégorisé</string>
     <string name="uncategorized_description">Tous les articles sans catégorie</string>
     <string name="cannot_delete_default_category">C\'est une catégorie par défaut et ne peut pas être supprimée</string>
+    <string name="A_Recipe">Une recette</string>
 
 </resources>

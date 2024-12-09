@@ -77,6 +77,11 @@ sealed class Screen(val route: String) {
         override fun title() = stringResource(R.string.text_categories)
     }
 
+    object Recipe : Screen("RecipeView") {
+        @Composable
+        override fun title() = stringResource(R.string.text_categories)
+    }
+
     // Page pour les paramètres
     object Settings : Screen("settings") {
         @Composable

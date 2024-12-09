@@ -332,7 +332,7 @@ fun RecipeListSection(
             items(recipes) { recipe ->
                 RecipeCard(
                     recipe = recipe,
-                    onClick = { navHostController.navigate("recipe/${recipe.id}") },
+                    onClick = { navHostController.navigate(Screen.Recipe.route + "/${recipe.id}") },
                     onFavoriteToggle = {  }
                 )
             }

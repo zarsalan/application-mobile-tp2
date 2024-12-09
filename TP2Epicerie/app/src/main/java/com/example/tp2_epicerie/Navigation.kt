@@ -1,6 +1,7 @@
 package com.example.tp2_epicerie
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.rememberNavController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -17,6 +18,7 @@ import com.example.tp2_epicerie.ui.views.ConnexionView
 import com.example.tp2_epicerie.ui.views.CustomGroceryListView
 import com.example.tp2_epicerie.ui.views.GroceryItemsView
 import com.example.tp2_epicerie.ui.views.HomeView
+import com.example.tp2_epicerie.ui.views.RecipeView
 import com.example.tp2_epicerie.ui.views.SettingsView
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
 import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
@@ -131,6 +133,20 @@ fun Navigation(
         // Affichage de tous les catégories
         composable(Screen.Categories.route) {
             CategoriesView(groceryCategoriesViewModel, groceryItemsViewModel, navHostController)
+        }
+
+        // Affichage des détails d'une recette
+        composable(
+            Screen.Recipe.route + "/{id}",
+            arguments = listOf(navArgument("id") {
+                type = NavType.StringType; defaultValue = ""; nullable
+            })
+        ) {
+            val id = it.arguments?.getString("id") ?: ""
+            LaunchedEffect(id) {
+                recipeListsViewModel.fetchRecipeById(id)
+            }
+            RecipeView(recipeListsViewModel, navHostController)
         }
 
         // Paramètres
