@@ -120,30 +120,6 @@ fun RecipeView(recipeListsViewModel: RecipeListsViewModel, navHostController: Na
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
-                /*
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Bouton pour marquer comme favori
-                Button(
-                    onClick = {
-                        val newFavoriteStatus = !recipe.isFavorite
-                        if (newFavoriteStatus) {
-                            recipeListsViewModel.addFavoriteRecipe(recipe)
-                        } else {
-                            recipeListsViewModel.removeFavoriteRecipe(recipe)
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (recipe.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = if (recipe.isFavorite) "Retirer des favoris" else "Ajouter aux favoris",
-                        color = Color.White
-                    )
-                }
-                 */
             }
         }
     )
