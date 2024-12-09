@@ -46,7 +46,7 @@ fun SettingsView(userViewModel: UserViewModel, navHostController: NavHostControl
     Scaffold(
         topBar = {
             AppBarView(
-                title = "Paramètres",
+                title = stringResource(R.string.parameter_title),
                 navHostController = navHostController
             )
         }

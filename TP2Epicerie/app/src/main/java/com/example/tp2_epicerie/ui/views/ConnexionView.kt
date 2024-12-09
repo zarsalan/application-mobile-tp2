@@ -24,10 +24,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.User
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
@@ -57,6 +59,10 @@ fun ConnexionView(
     val username = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
 
+    val errorConnexion: String = stringResource(R.string.error_connexion)
+    val creationSuccess: String = stringResource(R.string.creation_succes)
+    val connexionSuccess: String = stringResource(R.string.connexion_succes)
+
     fun connectUser(onResult: (Boolean) -> Unit) {
         try {
             userViewModel.loginUser(username.value, password.value) { success ->
@@ -71,14 +77,14 @@ fun ConnexionView(
                 } else {
                     Toast.makeText(
                         context,
-                        "Nom ou mot de passe incorrect",
+                        errorConnexion,
                         Toast.LENGTH_SHORT
                     ).show()
                     onResult(false)
                 }
             }
         } catch (e: Exception) {
-            Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT)
+            Toast.makeText(context, "Error : ${e.message}", Toast.LENGTH_SHORT)
                 .show()
             onResult(false)
         }
@@ -104,7 +110,7 @@ fun ConnexionView(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = if (isSignUp.value) "Sign up" else "Login",
+                text = if (isSignUp.value) stringResource(R.string.sign_up) else stringResource(R.string.login),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -112,7 +118,7 @@ fun ConnexionView(
             OutlinedTextField(
                 value = username.value,
                 onValueChange = { username.value = it },
-                label = { Text("Username") },
+                label = { Text(stringResource(R.string.username)) },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -121,7 +127,7 @@ fun ConnexionView(
             OutlinedTextField(
                 value = password.value,
                 onValueChange = { password.value = it },
-                label = { Text("Password") },
+                label = { Text(stringResource(R.string.password)) },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = PasswordVisualTransformation()
             )
@@ -140,7 +146,7 @@ fun ConnexionView(
                                     if (success) {
                                         Toast.makeText(
                                             context,
-                                            "Compte créé avec succès",
+                                            creationSuccess,
                                             Toast.LENGTH_SHORT
                                         ).show()
 
@@ -155,7 +161,7 @@ fun ConnexionView(
                                 }
                                 isSignUp.value = false // Retour à l'écran de connexion
                             } catch (e: Exception) {
-                                Toast.makeText(context, "Erreur : ${e.message}", Toast.LENGTH_SHORT)
+                                Toast.makeText(context, "Error : ${e.message}", Toast.LENGTH_SHORT)
                                     .show()
                             }
                         }
@@ -163,7 +169,7 @@ fun ConnexionView(
                         coroutineScope.launch {
                             connectUser { success ->
                                 if (success) {
-                                    Toast.makeText(context, "Connexion réussie", Toast.LENGTH_SHORT)
+                                    Toast.makeText(context, connexionSuccess, Toast.LENGTH_SHORT)
                                         .show()
                                     // Redirection vers la page principale
                                     navHostController.navigate(Screen.HomeScreen.route)
@@ -174,14 +180,14 @@ fun ConnexionView(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (isSignUp.value) "Créer un compte" else "Se connecter")
+                Text(if (isSignUp.value) stringResource(R.string.create_account) else stringResource(R.string.to_connexion))
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             TextButton(onClick = { isSignUp.value = !isSignUp.value }) {
                 Text(
-                    text = if (isSignUp.value) "Vous avez déjà un compte ? Connectez-vous" else "Pas encore inscrit ? Créez un compte",
+                    text = if (isSignUp.value) stringResource(R.string.already_account) else stringResource(R.string.not_yet_account),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

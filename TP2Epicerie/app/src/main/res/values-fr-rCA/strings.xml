@@ -80,5 +80,19 @@
     <string name="uncategorized_description">Tous les articles sans catégorie</string>
     <string name="cannot_delete_default_category">C\'est une catégorie par défaut et ne peut pas être supprimée</string>
     <string name="A_Recipe">Une recette</string>
+    <string name="parameter_title">Paramètres</string>
+    <string name="error_connexion">Nom ou mot de passe incorrect</string>
+    <string name="sign_up">S\'inscrire</string>
+    <string name="login">Connexion</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="password">Mot de passe</string>
+    <string name="creation_succes">Compte créé avec succès</string>
+    <string name="connexion_succes">Connexion réussie</string>
+    <string name="create_account">Créer un compte</string>
+    <string name="to_connexion">Se connecter</string>
+    <string name="already_account">Vous avez déjà un compte ? Connectez-vous</string>
+    <string name="not_yet_account">Pas encore inscrit ? Créez un compte</string>
+    <string name="favorite">Favori</string>
+    <string name="step">Étapes</string>
 
 </resources>
