@@ -55,7 +55,7 @@ fun CustomGroceryListView(
 
     // Collections des états de la liste d'épicerie et des items de la liste
     val currentGroceryList by groceryListsViewModel.currentGroceryList.collectAsState()
-    val currentGroceryItems by groceryListsViewModel.currentGroceryItems.collectAsState()
+    val finalGroceryItems by groceryItemsViewModel.finalItems.collectAsState()
 
     // État pour l'affichage des items cochés ou non cochés
     var indexCrossed by remember { mutableStateOf(false) }
@@ -67,12 +67,12 @@ fun CustomGroceryListView(
     }
 
     // Création d'une map pour les items d'épicerie
-    val groceryItemLookup = remember(currentGroceryItems) {
-        currentGroceryItems.associateBy { it.id }
+    val groceryItemLookup = remember(finalGroceryItems) {
+        finalGroceryItems.associateBy { it.id }
     }
 
     // Groupage des items par catégorie
-    val listItemsByCategory = remember(itemsToShow, currentGroceryItems) {
+    val listItemsByCategory = remember(itemsToShow, finalGroceryItems) {
         itemsToShow.groupBy { listItem ->
             val groceryItem = groceryItemLookup[listItem.groceryItemId] ?: return@groupBy ""
             groceryItem.category.name

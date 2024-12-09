@@ -126,5 +126,5 @@ data class RecipeCategory(
 
 data class Ingredient(
     var groceryItem: GroceryItem,
-    var quantity: Int,
+    var quantity: String,
 )
