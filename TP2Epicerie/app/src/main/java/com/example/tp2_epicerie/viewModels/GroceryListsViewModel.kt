@@ -57,7 +57,7 @@ class GroceryListsViewModel : ViewModel() {
             val groceryItemUser = user.groceryItems[listItem.groceryItemId] ?: continue
             val groceryItem = GroceryItem(
                 id = groceryItemUser.id,
-                userCreated = true,
+                userCreated = groceryItemUser.userCreated,
                 name = groceryItemUser.name,
                 description = groceryItemUser.description,
                 isFavorite = groceryItemUser.isFavorite,

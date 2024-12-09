@@ -53,7 +53,6 @@ class GroceryItemsViewModel : ViewModel() {
 
                 val groceryItem = GroceryItem(
                     id = groceryItemUser.id,
-                    userCreated = true,
                     name = groceryItemUser.name,
                     description = groceryItemUser.description,
                     isFavorite = groceryItemUser.isFavorite,

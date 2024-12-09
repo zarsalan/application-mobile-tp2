@@ -1,7 +1,9 @@
 package com.example.tp2_epicerie.ui.views
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -24,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.Screen
+import com.example.tp2_epicerie.data.GroceryItem
 import com.example.tp2_epicerie.data.Ingredient
 import com.example.tp2_epicerie.data.Recipe
 import com.example.tp2_epicerie.ui.common.AppBarView
@@ -60,6 +63,10 @@ fun RecipeView(
     // Détails de la recette
     val recipe = currentRecipe!!
 
+    // Obtention des items d'épicerie
+    val groceryItems by groceryItemsViewModel.finalItems.collectAsState()
+    val groceryItemLookup = remember(groceryItems) { groceryItems.associateBy { it.id } }
+
     val addEditItemRoute = remember { Screen.AddEditItem.route }
 
     Scaffold(
@@ -70,22 +77,53 @@ fun RecipeView(
             )
         },
         content = { padding ->
-            Column(
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                RecipeSection(recipe = recipe, modifier = Modifier
-                    .weight(1.25f)
-                    .padding(16.dp))
-                GroceryItems(
-                    modifier = Modifier.weight(1f),
-                    ingredients = recipe.ingredients,
-                    groceryItemsViewModel = groceryItemsViewModel,
-                    groceryListsViewModel = groceryListsViewModel,
-                    navHostController = navHostController,
-                    addEditItemRoute = addEditItemRoute
-                )
+                val aspectRatio = maxWidth / maxHeight
+                if (aspectRatio > 1f) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        RecipeSection(
+                            recipe = recipe, modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp)
+                        )
+                        GroceryItems(
+                            modifier = Modifier.weight(1f),
+                            ingredients = recipe.ingredients,
+                            groceryItemLookup = groceryItemLookup,
+                            groceryItemsViewModel = groceryItemsViewModel,
+                            groceryListsViewModel = groceryListsViewModel,
+                            navHostController = navHostController,
+                            addEditItemRoute = addEditItemRoute
+                        )
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        RecipeSection(
+                            recipe = recipe, modifier = Modifier
+                                .weight(1.25f)
+                                .padding(16.dp)
+                        )
+                        GroceryItems(
+                            modifier = Modifier.weight(1f),
+                            ingredients = recipe.ingredients,
+                            groceryItemLookup = groceryItemLookup,
+                            groceryItemsViewModel = groceryItemsViewModel,
+                            groceryListsViewModel = groceryListsViewModel,
+                            navHostController = navHostController,
+                            addEditItemRoute = addEditItemRoute
+                        )
+                    }
+                }
             }
         }
     )
@@ -95,7 +133,7 @@ fun RecipeView(
 fun RecipeSection(recipe: Recipe, modifier: Modifier) {
     Column(
         modifier = modifier.verticalScroll(rememberScrollState()),
-        ) { // Nom de la recette
+    ) { // Nom de la recette
         Text(
             text = recipe.name,
             style = MaterialTheme.typography.headlineLarge,
@@ -180,6 +218,7 @@ fun RecipeSection(recipe: Recipe, modifier: Modifier) {
 fun GroceryItems(
     modifier: Modifier,
     ingredients: List<Ingredient>,
+    groceryItemLookup: Map<String, GroceryItem>,
     groceryItemsViewModel: GroceryItemsViewModel,
     groceryListsViewModel: GroceryListsViewModel,
     navHostController: NavHostController,
@@ -194,7 +233,8 @@ fun GroceryItems(
                 groceryItemsViewModel = groceryItemsViewModel,
                 groceryListsViewModel = groceryListsViewModel,
                 cardInfo = GroceryItemCardInfo(
-                    groceryItem = ingredient.groceryItem,
+                    groceryItem = groceryItemLookup[ingredient.groceryItem.id]
+                        ?: ingredient.groceryItem,
                     onClick = {
                         navHostController.navigate("$addEditItemRoute/${ingredient.groceryItem.id}")
                     },

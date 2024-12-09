@@ -51,6 +51,7 @@ class GroceryRepository(private val userDB: UserDB = Graph.userDB){
         // Création d'un nouvel item d'épicerie pour l'utilisateur
         val groceryItemUser = GroceryItemUser(
             id = itemWithId.id,
+            userCreated = itemWithId.userCreated,
             categoryId = category.id,
             name = itemWithId.name,
             description = itemWithId.description,

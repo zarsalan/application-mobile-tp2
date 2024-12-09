@@ -66,6 +66,7 @@ fun AddEditItemView(
 ) {
     fun saveItem(
         context: Context,
+        groceryItem: GroceryItem? = GroceryItem(),
         id: String,
         name: String,
         description: String,
@@ -85,9 +86,10 @@ fun AddEditItemView(
 
         val newItem = GroceryItem(
             id = id.ifEmpty { UUID.randomUUID().toString() },
+            userCreated = groceryItem?.userCreated ?: true,
+            category = category,
             name = name.trim(),
             description = description.trim(),
-            category = category,
             isFavorite = isFavorite
         )
         groceryItemViewModel.updateUserGroceryItem(newItem)
@@ -155,34 +157,42 @@ fun AddEditItemView(
         },
         content = { padding ->
             if (id == "") {
-                // On affiche seulement les champs si on ajoute un nouvel item
-                EditItemFields(
-                    name = name,
-                    description = description,
-                    categoryId = categoryId,
-                    selectedCategory = selectedCategory,
-                    isFavorite = isFavorite,
-                    categories = categories,
-                    onNameChange = { name = it },
-                    onDescriptionChange = { description = it },
-                    onCategorySelect = { selectedCategory = it.name; categoryId = it.id },
-                    onFavoriteToggle = { isFavorite = it },
-                    onSave = {
-                        saveItem(
-                            context,
-                            id,
-                            name,
-                            description,
-                            categoryId,
-                            isFavorite,
-                            categories,
-                            groceryItemViewModel,
-                            navHostController,
-                            textAlert,
-                            textItemSaved
-                        )
-                    }
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                ) {
+                    EditItemFields(
+                        name = name,
+                        description = description,
+                        categoryId = categoryId,
+                        selectedCategory = selectedCategory,
+                        isFavorite = isFavorite,
+                        categories = categories,
+                        onNameChange = { name = it },
+                        onDescriptionChange = { description = it },
+                        onCategorySelect = {
+                            selectedCategory = it.name; categoryId = it.id
+                        },
+                        onFavoriteToggle = { isFavorite = it },
+                        onSave = {
+                            saveItem(
+                                context,
+                                groceryItem,
+                                id,
+                                name,
+                                description,
+                                categoryId,
+                                isFavorite,
+                                categories,
+                                groceryItemViewModel,
+                                navHostController,
+                                textAlert,
+                                textItemSaved
+                            )
+                        }
+                    )
+                }
             } else {
                 BoxWithConstraints(
                     modifier = Modifier
@@ -209,6 +219,7 @@ fun AddEditItemView(
                                 onSave = {
                                     saveItem(
                                         context,
+                                        groceryItem,
                                         id,
                                         name,
                                         description,
@@ -250,6 +261,7 @@ fun AddEditItemView(
                                 onSave = {
                                     saveItem(
                                         context,
+                                        groceryItem,
                                         id,
                                         name,
                                         description,
@@ -318,7 +330,11 @@ fun EditItemFields(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Champs Nom et Description
-        CustomTextField(label = stringResource(R.string.text_name), value = name, onValueChanged = onNameChange)
+        CustomTextField(
+            label = stringResource(R.string.text_name),
+            value = name,
+            onValueChanged = onNameChange
+        )
         CustomTextField(
             label = "Description",
             value = description,
