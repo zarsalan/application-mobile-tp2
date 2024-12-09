@@ -9,51 +9,123 @@ import com.example.tp2_epicerie.data.RecipeCategory
 class ApiRepository {
     // Requêttes pour les items -----------------------------------------------------
     suspend fun getGroceryItemsByName(name: String) : List<GroceryItem> {
-        return RetrofitInstance.apiService.getGroceryItemsByName(name)
+        val response = RetrofitInstance.apiService.getGroceryItemsByName(name)
+
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     suspend fun getGroceryItemsByCategory(categoryName: String) : List<GroceryItem> {
-        return RetrofitInstance.apiService.getGroceryItemsByCategory(categoryName)
+        val response = RetrofitInstance.apiService.getGroceryItemsByCategory(categoryName)
+
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     suspend fun getGroceryItemsByCategoryAndName(categoryName: String, name: String) : List<GroceryItem> {
-        return RetrofitInstance.apiService.getGroceryItemsByCategoryAndName(categoryName, name)
+        val response = RetrofitInstance.apiService.getGroceryItemsByCategoryAndName(categoryName, name)
+
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     suspend fun getGroceryItemById(id: String) : GroceryItem {
-        return RetrofitInstance.apiService.getGroceryItemById(id)
+        val response = RetrofitInstance.apiService.getGroceryItemById(id)
+
+        return if (response.isSuccessful) {
+            response.body() ?: GroceryItem()
+        } else {
+            GroceryItem()
+        }
     }
 
     suspend fun getAllGroceryItems() : List<GroceryItem> {
-        return RetrofitInstance.apiService.getAllGroceryItems()
+        val response = RetrofitInstance.apiService.getAllGroceryItems()
+
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     suspend fun getGroceryCategories() : List<GroceryItemCategory> {
-        return RetrofitInstance.apiService.getGroceryCategories()
+        val response = RetrofitInstance.apiService.getGroceryCategories()
+
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     // Requêttes pour les recettes ---------------------------------------------------
     suspend fun getRecipes(categoryName: String? = null, name: String? = null) : List<Recipe> {
-        return RetrofitInstance.apiService.getRecipes(categoryName, name)
+        val response = RetrofitInstance.apiService.getRecipes(categoryName, name)
+
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     suspend fun getRecipeById(id: String) : Recipe {
-        return RetrofitInstance.apiService.getRecipeById(id)
+        val response = RetrofitInstance.apiService.getRecipeById(id)
+
+        return if (response.isSuccessful) {
+            response.body() ?: Recipe()
+        } else {
+            Recipe()
+        }
     }
 
     suspend fun getRecipesByIds(ids: List<String>) : List<Recipe> {
-        return RetrofitInstance.apiService.getRecipesByIds(ids)
+        val response = RetrofitInstance.apiService.getRecipesByIds(ids)
+
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     suspend fun getAllRecipes() : List<Recipe> {
-        return RetrofitInstance.apiService.getAllRecipes()
+        val response = RetrofitInstance.apiService.getAllRecipes()
+
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     suspend fun getRecipesContainingIngredient(ingredientId: String) : List<Recipe> {
-        return RetrofitInstance.apiService.getRecipesContainingIngredient(ingredientId)
+        val response = RetrofitInstance.apiService.getRecipesContainingIngredient(ingredientId)
+
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 
     suspend fun getRecipeCategories() : List<RecipeCategory> {
-        return RetrofitInstance.apiService.getRecipeCategories()
+        val response = RetrofitInstance.apiService.getRecipeCategories()
+
+        return if (response.isSuccessful) {
+            response.body() ?: emptyList()
+        } else {
+            emptyList()
+        }
     }
 }
