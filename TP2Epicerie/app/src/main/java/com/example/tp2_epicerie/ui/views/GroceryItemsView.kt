@@ -119,7 +119,7 @@ fun GroceryItemsView(
                     menus = listOf(
                         AppBarMenu(
                             title = stringResource(R.string.menu_addItem),
-                            onClick = { navHostController.navigate(Screen.AddEditItem.route + "") }
+                            onClick = { navHostController.navigate(Screen.AddEditItem.route + "/") }
                         )
                     )
                 )
@@ -128,7 +128,7 @@ fun GroceryItemsView(
         floatingActionButton = {
             if (mode) {
                 FloatingActionButton(
-                    onClick = { navHostController.navigate(Screen.AddEditItem.route + "") },
+                    onClick = { navHostController.navigate(Screen.AddEditItem.route + "/") },
                     contentColor = Color.White,
                     containerColor = colorResource(id = R.color.app_bar)
                 ) {
