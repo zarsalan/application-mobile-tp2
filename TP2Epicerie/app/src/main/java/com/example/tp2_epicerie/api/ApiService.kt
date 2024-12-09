@@ -4,6 +4,7 @@ import com.example.tp2_epicerie.data.GroceryItem
 import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.data.Recipe
 import com.example.tp2_epicerie.data.RecipeCategory
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -13,55 +14,55 @@ interface ApiService {
     @GET("grocery-items/get")
     suspend fun getGroceryItemsByName(
         @Query("name") name: String
-    ): List<GroceryItem>
+    ): Response<List<GroceryItem>>
 
     @GET("grocery-items/get")
     suspend fun getGroceryItemsByCategory(
         @Query("categoryName") categoryName: String
-    ): List<GroceryItem>
+    ): Response<List<GroceryItem>>
 
     @GET("grocery-items/get")
     suspend fun getGroceryItemsByCategoryAndName(
         @Query("categoryName") categoryName: String,
         @Query("name") name: String
-    ): List<GroceryItem>
+    ): Response<List<GroceryItem>>
 
     @GET("grocery-items/get/{id}")
     suspend fun getGroceryItemById(
         @Path("id") id: String
-    ): GroceryItem
+    ): Response<GroceryItem>
 
     @GET("grocery-items/get-items")
-    suspend fun getAllGroceryItems(): List<GroceryItem>
+    suspend fun getAllGroceryItems(): Response<List<GroceryItem>>
 
     @GET("grocery-items/get-categories")
-    suspend fun getGroceryCategories(): List<GroceryItemCategory>
+    suspend fun getGroceryCategories(): Response<List<GroceryItemCategory>>
 
     // Routes pour les recettes ----------------------------------------------
     @GET("recipes/get")
     suspend fun getRecipes(
         @Query("categoryName") categoryName: String? = null,
         @Query("name") name: String? = null
-    ): List<Recipe>
+    ): Response<List<Recipe>>
 
     @GET("recipes/get/{id}")
     suspend fun getRecipeById(
         @Path("id") id: String
-    ): Recipe
+    ): Response<Recipe>
 
     @GET("recipes/get-recipes")
     suspend fun getRecipesByIds(
         @Query("ids") ids: List<String>
-    ): List<Recipe>
+    ): Response<List<Recipe>>
 
     @GET("recipes/get-recipes")
-    suspend fun getAllRecipes(): List<Recipe>
+    suspend fun getAllRecipes(): Response<List<Recipe>>
 
     @GET("recipes/get-recipes-containing-ingredient")
     suspend fun getRecipesContainingIngredient(
         @Query("ingredientId") ingredientId: String
-    ): List<Recipe>
+    ): Response<List<Recipe>>
 
     @GET("recipes/get-categories")
-    suspend fun getRecipeCategories(): List<RecipeCategory>
+    suspend fun getRecipeCategories(): Response<List<RecipeCategory>>
 }

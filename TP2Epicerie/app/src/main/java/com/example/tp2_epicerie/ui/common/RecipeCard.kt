@@ -73,7 +73,6 @@ fun RecipeCard(
             // Section Ingrédients
             val ingredientsText = recipe.ingredients.joinToString(", ") { ingredient ->
                 ingredient.groceryItem?.name ?: "Ingrédient inconnu"
-
             }
 
             Text(

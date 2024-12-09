@@ -113,21 +113,21 @@ data class GroceryItem(
 // Entités venant de l'API (NON modifiable par l'utilisateur)
 data class Recipe(
     @SerializedName("_id") var id: String = "", // Idée unique de l'api
-    var name: String,
-    var description: String,
-    var ingredients: List<Ingredient>,
-    var steps: List<String>,
-    var category: RecipeCategory,
+    var name: String = "",
+    var description: String = "",
+    var ingredients: List<Ingredient> = emptyList(),
+    var steps: List<String> = emptyList(),
+    var category: RecipeCategory = RecipeCategory(),
     var isFavorite: Boolean = false,
 )
 
 data class RecipeCategory(
     @SerializedName("_id") var id: String = "",
-    var name: String,
-    var description: String
+    var name: String = "",
+    var description: String = "",
 )
 
 data class Ingredient(
-    var groceryItem: GroceryItem,
-    var quantity: String,
+    @SerializedName("item") var groceryItem: GroceryItem = GroceryItem(),
+    var quantity: String = "",
 )

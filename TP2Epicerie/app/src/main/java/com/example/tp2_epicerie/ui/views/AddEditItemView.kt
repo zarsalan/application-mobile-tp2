@@ -1,17 +1,17 @@
 package com.example.tp2_epicerie.ui.views
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,11 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
@@ -114,6 +112,7 @@ fun AddEditItemView(
     val groceryItem = groceryItems.find { it.id == id }
     val categories by groceryCategoriesViewModel.finalCategories.collectAsState()
 
+
     // Champs liés aux données de l'item
     var name by remember { mutableStateOf(groceryItem?.name ?: "") }
     var description by remember { mutableStateOf(groceryItem?.description ?: "") }
@@ -123,6 +122,8 @@ fun AddEditItemView(
 
     // Charger les recettes associées
     val ingredientRecipes by recipeListsViewModel.ingredientRecipes.collectAsState()
+    val recipesAreLoading = recipeListsViewModel.isLoading.collectAsState().value
+
     LaunchedEffect(id) {
         if (id.isNotEmpty()) {
             recipeListsViewModel.fetchRecipesByIngredient(id)
@@ -153,86 +154,128 @@ fun AddEditItemView(
             )
         },
         content = { padding ->
-            BoxWithConstraints(modifier = Modifier.fillMaxSize().padding(padding)) {
-                val aspectRatio = maxWidth / maxHeight
-                if (aspectRatio > 1f) {
-                    // Mode paysage
-                    Row(modifier = Modifier.fillMaxSize()) {
-                        EditItemFields(
-                            name = name,
-                            description = description,
-                            categoryId = categoryId,
-                            selectedCategory = selectedCategory,
-                            isFavorite = isFavorite,
-                            categories = categories,
-                            onNameChange = { name = it },
-                            onDescriptionChange = { description = it },
-                            onCategorySelect = { selectedCategory = it.name; categoryId = it.id },
-                            onFavoriteToggle = { isFavorite = it },
-                            onSave = {
-                                saveItem(
-                                    context,
-                                    id,
-                                    name,
-                                    description,
-                                    categoryId,
-                                    isFavorite,
-                                    categories,
-                                    groceryItemViewModel,
-                                    navHostController,
-                                    textAlert,
-                                    textItemSaved
-                                )
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-                        RecipeListSection(
-                            title = textRecipesUsingItem,
-                            recipes = ingredientRecipes,
-                            navHostController = navHostController,
-                            modifier = Modifier.weight(1f)
+            if (id == "") {
+                // On affiche seulement les champs si on ajoute un nouvel item
+                EditItemFields(
+                    name = name,
+                    description = description,
+                    categoryId = categoryId,
+                    selectedCategory = selectedCategory,
+                    isFavorite = isFavorite,
+                    categories = categories,
+                    onNameChange = { name = it },
+                    onDescriptionChange = { description = it },
+                    onCategorySelect = { selectedCategory = it.name; categoryId = it.id },
+                    onFavoriteToggle = { isFavorite = it },
+                    onSave = {
+                        saveItem(
+                            context,
+                            id,
+                            name,
+                            description,
+                            categoryId,
+                            isFavorite,
+                            categories,
+                            groceryItemViewModel,
+                            navHostController,
+                            textAlert,
+                            textItemSaved
                         )
                     }
-                } else {
-                    // Mode portrait
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        EditItemFields(
-                            name = name,
-                            description = description,
-                            categoryId = categoryId,
-                            selectedCategory = selectedCategory,
-                            isFavorite = isFavorite,
-                            categories = categories,
-                            onNameChange = { name = it },
-                            onDescriptionChange = { description = it },
-                            onCategorySelect = { selectedCategory = it.name; categoryId = it.id },
-                            onFavoriteToggle = { isFavorite = it },
-                            onSave = {
-                                saveItem(
-                                    context,
-                                    id,
-                                    name,
-                                    description,
-                                    categoryId,
-                                    isFavorite,
-                                    categories,
-                                    groceryItemViewModel,
-                                    navHostController,
-                                    textAlert,
-                                    textItemSaved
-                                )
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
-                        RecipeListSection(
-                            title = textRecipesUsingItem,
-                            recipes = ingredientRecipes,
-                            navHostController = navHostController,
-                            modifier = Modifier.weight(1f)
-                        )
+                )
+            } else {
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                ) {
+                    val aspectRatio = maxWidth / maxHeight
+                    if (aspectRatio > 1f) {
+                        // Mode paysage
+                        Row(modifier = Modifier.fillMaxSize()) {
+                            EditItemFields(
+                                name = name,
+                                description = description,
+                                categoryId = categoryId,
+                                selectedCategory = selectedCategory,
+                                isFavorite = isFavorite,
+                                categories = categories,
+                                onNameChange = { name = it },
+                                onDescriptionChange = { description = it },
+                                onCategorySelect = {
+                                    selectedCategory = it.name; categoryId = it.id
+                                },
+                                onFavoriteToggle = { isFavorite = it },
+                                onSave = {
+                                    saveItem(
+                                        context,
+                                        id,
+                                        name,
+                                        description,
+                                        categoryId,
+                                        isFavorite,
+                                        categories,
+                                        groceryItemViewModel,
+                                        navHostController,
+                                        textAlert,
+                                        textItemSaved
+                                    )
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                            RecipeListSection(
+                                title = textRecipesUsingItem,
+                                recipes = ingredientRecipes,
+                                recipesAreLoading = recipesAreLoading,
+                                navHostController = navHostController,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    } else {
+                        // Mode portrait
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            EditItemFields(
+                                name = name,
+                                description = description,
+                                categoryId = categoryId,
+                                selectedCategory = selectedCategory,
+                                isFavorite = isFavorite,
+                                categories = categories,
+                                onNameChange = { name = it },
+                                onDescriptionChange = { description = it },
+                                onCategorySelect = {
+                                    selectedCategory = it.name; categoryId = it.id
+                                },
+                                onFavoriteToggle = { isFavorite = it },
+                                onSave = {
+                                    saveItem(
+                                        context,
+                                        id,
+                                        name,
+                                        description,
+                                        categoryId,
+                                        isFavorite,
+                                        categories,
+                                        groceryItemViewModel,
+                                        navHostController,
+                                        textAlert,
+                                        textItemSaved
+                                    )
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                            RecipeListSection(
+                                title = textRecipesUsingItem,
+                                recipes = ingredientRecipes,
+                                recipesAreLoading = recipesAreLoading,
+                                navHostController = navHostController,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
                 }
             }
+
         }
     )
 
@@ -276,7 +319,11 @@ fun EditItemFields(
     ) {
         // Champs Nom et Description
         CustomTextField(label = "Nom", value = name, onValueChanged = onNameChange)
-        CustomTextField(label = "Description", value = description, onValueChanged = onDescriptionChange)
+        CustomTextField(
+            label = "Description",
+            value = description,
+            onValueChanged = onDescriptionChange
+        )
 
         // Dropdown des catégories
         CustomDropdownMenu(
@@ -319,22 +366,36 @@ fun EditItemFields(
 fun RecipeListSection(
     title: String,
     recipes: List<Recipe>,
+    recipesAreLoading: Boolean,
     navHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(16.dp)) {
         Text(
-            text = title,
+            text = title + " (${recipes.size})",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(recipes) { recipe ->
-                RecipeCard(
-                    recipe = recipe,
-                    onClick = { navHostController.navigate("recipe/${recipe.id}") },
-                    onFavoriteToggle = {  }
+        if (recipesAreLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 4.dp
                 )
+            }
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(recipes) { recipe ->
+                    Log.d("Recipe", recipe.toString())
+                    RecipeCard(
+                        recipe = recipe,
+                        onClick = { navHostController.navigate("recipe/${recipe.id}") },
+                        onFavoriteToggle = { }
+                    )
+                }
             }
         }
     }
