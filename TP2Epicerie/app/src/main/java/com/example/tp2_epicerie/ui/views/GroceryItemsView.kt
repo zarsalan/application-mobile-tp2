@@ -165,6 +165,17 @@ fun GroceryItemsView(
                         .padding(horizontal = 8.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Champ de recherche
+                    TextField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        label = { Text(stringResource(R.string.search)) },
+                        modifier = Modifier.weight(2f),
+                        singleLine = true
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     // Dropdown pour sélectionner la catégorie
                     Box(
                         modifier = Modifier
@@ -192,17 +203,6 @@ fun GroceryItemsView(
                             }
                         }
                     }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    // Champ de recherche
-                    TextField(
-                        value = searchText,
-                        onValueChange = { searchText = it },
-                        label = { Text(stringResource(R.string.search)) },
-                        modifier = Modifier.weight(2f),
-                        singleLine = true
-                    )
                 }
 
                 // Liste des items

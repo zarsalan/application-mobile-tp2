@@ -67,11 +67,15 @@ fun ConnexionView(
         try {
             userViewModel.loginUser(username.value, password.value) { success ->
                 if (success) {
+
                     // Exécution des fonctions fetch des données
                     categoriesViewModel.fetchCategories()
                     groceryItemsViewModel.fetchGroceryItems()
                     groceryListsViewModel.loadGroceryLists()
                     recipeListsViewModel.loadRecipeLists()
+
+                    // Mettre à jour le mode sombre
+
 
                     onResult(true)
                 } else {

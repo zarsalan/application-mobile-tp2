@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tp2_epicerie.CurrentUserCache
 import com.example.tp2_epicerie.Graph
+import com.example.tp2_epicerie.MainActivity
 import com.example.tp2_epicerie.data.Settings
 import com.example.tp2_epicerie.data.User
 import com.example.tp2_epicerie.utilities.loadingFlow
@@ -30,6 +31,7 @@ class UserViewModel : ViewModel() {
                     if (user != null) {
                         // Récupérer les informations de l'utilisateur connecté
                         _currentUser.value = user
+                        MainActivity.isDarkModeEnabled = user.settings.darkMode
                         onResult(true)
                     } else {
                         onResult(false)
@@ -74,6 +76,7 @@ class UserViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 userDB.updateSettings()
+                MainActivity.isDarkModeEnabled = settings.darkMode
             } catch (e: Exception) {
                 println("Erreur lors de la mise à jour des paramètres : ${e.message}")
             }

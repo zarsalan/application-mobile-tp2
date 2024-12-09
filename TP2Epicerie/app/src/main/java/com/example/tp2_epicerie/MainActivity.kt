@@ -12,11 +12,14 @@ import com.example.tp2_epicerie.ui.theme.TP1EpicerieTheme
 
 // L'activité principale de l'application
 class MainActivity : ComponentActivity() {
+    companion object {
+        var isDarkModeEnabled: Boolean = false
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TP1EpicerieTheme() {
+            TP1EpicerieTheme(darkTheme = isDarkModeEnabled) {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Navigation(modifier = Modifier.padding(innerPadding))
                 }
