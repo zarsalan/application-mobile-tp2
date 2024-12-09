@@ -27,7 +27,6 @@ import com.example.tp2_epicerie.data.Recipe
 fun RecipeCard(
     recipe: Recipe,
     onClick: () -> Unit,
-    onFavoriteToggle: (Boolean) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -82,24 +81,6 @@ fun RecipeCard(
                 maxLines = 2, // Limite à deux lignes d'affichage
                 overflow = TextOverflow.Ellipsis // Tronque avec "..."
             )
-            /*
-            Spacer(modifier = Modifier.height(8.dp))
-            // Section Bouton Favori
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                IconButton(
-                    onClick = { onFavoriteToggle(!recipe.isFavorite) }
-                ) {
-                    Icon(
-                        imageVector = if (recipe.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = null,
-                        tint = if (recipe.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-            */
         }
     }
 }

@@ -108,7 +108,7 @@ fun RecipeView(recipeListsViewModel: RecipeListsViewModel, navHostController: Na
 
                 // Étapes
                 Text(
-                    text = "Étapes",
+                    text = stringResource(R.string.step),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 8.dp)

@@ -318,7 +318,7 @@ fun EditItemFields(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Champs Nom et Description
-        CustomTextField(label = "Nom", value = name, onValueChanged = onNameChange)
+        CustomTextField(label = stringResource(R.string.text_name), value = name, onValueChanged = onNameChange)
         CustomTextField(
             label = "Description",
             value = description,
@@ -345,7 +345,7 @@ fun EditItemFields(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Favori")
+            Text(text = stringResource(R.string.favorite))
             Icon(
                 imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                 contentDescription = null,
@@ -357,7 +357,7 @@ fun EditItemFields(
 
         // Bouton Sauvegarder
         Button(onClick = onSave, modifier = Modifier.padding(top = 16.dp)) {
-            Text(text = "Sauvegarder")
+            Text(text = stringResource(R.string.text_save))
         }
     }
 }
@@ -393,7 +393,6 @@ fun RecipeListSection(
                     RecipeCard(
                         recipe = recipe,
                         onClick = { navHostController.navigate(Screen.Recipe.route + "/${recipe.id}") },
-                        onFavoriteToggle = { }
                     )
                 }
             }

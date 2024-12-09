@@ -79,5 +79,19 @@
     <string name="uncategorized_description">All items without a category</string>
     <string name="cannot_delete_default_category">This is a default category and cannot be deleted</string>
     <string name="A_Recipe">A recipe</string>
+    <string name="parameter_title">Parameters</string>
+    <string name="error_connexion">Wrong username or password</string>
+    <string name="sign_up">Sign up</string>
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="creation_succes">Account created successfully</string>
+    <string name="connexion_succes">Login successful</string>
+    <string name="create_account">Create an account</string>
+    <string name="to_connexion">Log in</string>
+    <string name="already_account">Already have an account? Log in</string>
+    <string name="not_yet_account">Not signed up yet? Create an account</string>
+    <string name="favorite">Favorite</string>
+    <string name="step">Steps</string>
 
 </resources>
