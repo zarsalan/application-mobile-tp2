@@ -66,6 +66,7 @@ fun AddEditItemView(
 ) {
     fun saveItem(
         context: Context,
+        groceryItem: GroceryItem? = GroceryItem(),
         id: String,
         name: String,
         description: String,
@@ -85,9 +86,10 @@ fun AddEditItemView(
 
         val newItem = GroceryItem(
             id = id.ifEmpty { UUID.randomUUID().toString() },
+            userCreated = groceryItem?.userCreated ?: true,
+            category = category,
             name = name.trim(),
             description = description.trim(),
-            category = category,
             isFavorite = isFavorite
         )
         groceryItemViewModel.updateUserGroceryItem(newItem)
@@ -170,6 +172,7 @@ fun AddEditItemView(
                     onSave = {
                         saveItem(
                             context,
+                            groceryItem,
                             id,
                             name,
                             description,
@@ -209,6 +212,7 @@ fun AddEditItemView(
                                 onSave = {
                                     saveItem(
                                         context,
+                                        groceryItem,
                                         id,
                                         name,
                                         description,
@@ -250,6 +254,7 @@ fun AddEditItemView(
                                 onSave = {
                                     saveItem(
                                         context,
+                                        groceryItem,
                                         id,
                                         name,
                                         description,

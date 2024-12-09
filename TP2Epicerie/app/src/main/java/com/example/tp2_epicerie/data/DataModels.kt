@@ -78,6 +78,7 @@ data class RecipeList(
 // Entités venant de l'API et modifié par l'utilisateur
 data class GroceryItemUser(
     var id: String = UUID.randomUUID().toString(), // Idée unique de l'api ou générée par UUID
+    var userCreated: Boolean = true, // Si l'item a été créé par l'utilisateur
     var categoryId: String = "", // Référence au id de GroceryItemCategory
     var name: String = "",
     var description: String = "",
