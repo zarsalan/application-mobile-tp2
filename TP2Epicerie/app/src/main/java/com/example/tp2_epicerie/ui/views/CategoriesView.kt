@@ -47,7 +47,7 @@ fun CategoriesView(
                 contentColor = Color.White,
                 containerColor = colorResource(id = R.color.app_bar),
                 onClick = {
-                    navHostController.navigate(Screen.AddEditCategory.route + "/0L")
+                    navHostController.navigate(Screen.AddEditCategory.route + "")
                 }
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)

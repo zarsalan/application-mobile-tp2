@@ -72,15 +72,15 @@ fun HomeView(
                     menus = listOf(
                         AppBarMenu(
                             title = stringResource(R.string.menu_addItem),
-                            onClick = { navHostController.navigate(Screen.AddEditItem.route + "/0L") }
+                            onClick = { navHostController.navigate(Screen.AddEditItem.route + "") }
                         ),
                         AppBarMenu(
                             title = stringResource(R.string.menu_addList),
-                            onClick = { navHostController.navigate(Screen.AddEditListScreen.route + "/0L") }
+                            onClick = { navHostController.navigate(Screen.AddEditListScreen.route + "") }
                         ),
                         AppBarMenu(
                             title = stringResource(R.string.menu_addCategory),
-                            onClick = { navHostController.navigate(Screen.AddEditCategory.route + "/0L") }
+                            onClick = { navHostController.navigate(Screen.AddEditCategory.route + "") }
                         ),
                         AppBarMenu(
                             title = stringResource(R.string.menu_modifyCategories),
@@ -111,7 +111,7 @@ fun HomeView(
                 contentColor = Color.White,
                 containerColor = colorResource(id = R.color.app_bar),
                 onClick = {
-                    navHostController.navigate(Screen.AddEditListScreen.route + "/0L")
+                    navHostController.navigate(Screen.AddEditListScreen.route + "")
                 }
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
