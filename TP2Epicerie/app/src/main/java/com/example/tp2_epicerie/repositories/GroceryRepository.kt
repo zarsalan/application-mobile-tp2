@@ -15,7 +15,7 @@ class GroceryRepository(private val userDB: UserDB = Graph.userDB){
         val user = CurrentUserCache.user ?: throw Exception("L'utilisateur n'est pas connecté")
 
         // Vérification de l'existence de la catégorie
-        val existingCategory = user.groceryCategories.values.find { it.name.lowercase() == category.name.lowercase() }
+        val existingCategory = user.groceryCategories.values.find { it.name.lowercase() == category.name.lowercase() || it.id == category.id }
         if (existingCategory != null) {
             return existingCategory
         }

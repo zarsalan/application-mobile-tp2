@@ -6,7 +6,6 @@ import com.example.tp2_epicerie.CurrentUserCache
 import com.example.tp2_epicerie.Graph
 import com.example.tp2_epicerie.data.GroceryItem
 import com.example.tp2_epicerie.data.GroceryItemCategory
-import com.example.tp2_epicerie.data.GroceryItemUser
 import com.example.tp2_epicerie.utilities.loadingFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -120,6 +119,29 @@ class GroceryItemsViewModel : ViewModel() {
         viewModelScope.launch {
             user.groceryItems.remove(item.id)
             userDB.deleteGroceryItem(item.id)
+
+            updateGroceryItems()
+        }
+    }
+
+    fun categoryDeleted(categoryId: String) {
+        val user = CurrentUserCache.user ?: return
+        val items = user.groceryItems.values.filter { it.categoryId == categoryId }
+        val defaultCategory = GroceryItemCategory()
+
+        viewModelScope.launch {
+            items.forEach { item ->
+                val groceryItem = GroceryItem(
+                    id = item.id,
+                    category = defaultCategory,
+                    name = item.name,
+                    description = item.description,
+                    isFavorite = item.isFavorite,
+                )
+                groceryRepository.addUserGroceryItem(groceryItem)
+                updateGroceryItems()
+                groceryItemChanged(groceryItem)
+            }
 
             updateGroceryItems()
         }

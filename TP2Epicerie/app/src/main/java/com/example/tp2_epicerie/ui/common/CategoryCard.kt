@@ -1,5 +1,6 @@
 package com.example.tp2_epicerie.ui.common
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -32,6 +33,7 @@ import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
 import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
+import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
 import kotlinx.coroutines.launch
 
 data class CustomCategoryCardInfo(
@@ -44,10 +46,14 @@ data class CustomCategoryCardInfo(
 @Composable
 fun CategoryCard(
     groceryCategoriesViewModel: GroceryCategoriesViewModel,
+    groceryItemsViewModel: GroceryItemsViewModel,
     navHostController: NavHostController,
     cardInfo: CustomCategoryCardInfo
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    val categoryFromApiText = stringResource(R.string.text_category_from_api)
+    val cannotDeleteDefaultCategory = stringResource(R.string.cannot_delete_default_category)
 
     Card(
         modifier = Modifier
@@ -90,20 +96,28 @@ fun CategoryCard(
                         tint = Color.Black
                     )
                 }
-                if (cardInfo.groceryItemCategory.userCreated) {
-                    Text(
-                        text = stringResource(R.string.text_category_from_api),
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(end = 3.dp)
-                    )
-                } else {
-                    IconButton(onClick = { showDeleteDialog = true }) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete Icon",
-                            tint = Color.Black
-                        )
+                IconButton(onClick = {
+                    if (cardInfo.groceryItemCategory.id == "1") {
+                        Toast.makeText(
+                            navHostController.context,
+                            cannotDeleteDefaultCategory,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (!cardInfo.groceryItemCategory.userCreated) {
+                        Toast.makeText(
+                            navHostController.context,
+                            categoryFromApiText,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        showDeleteDialog = true
                     }
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete Icon",
+                        tint = Color.Black
+                    )
                 }
             }
         }
@@ -116,6 +130,7 @@ fun CategoryCard(
         title = stringResource(R.string.text_removeCategory) + " ${cardInfo.groceryItemCategory.name}?",
         message = stringResource(R.string.text_categoryVerification),
         onYes = {
+            groceryItemsViewModel.categoryDeleted(cardInfo.groceryItemCategory.id)
             groceryCategoriesViewModel.removeUserGroceryCategory(cardInfo.groceryItemCategory.id)
             showDeleteDialog = false
         },

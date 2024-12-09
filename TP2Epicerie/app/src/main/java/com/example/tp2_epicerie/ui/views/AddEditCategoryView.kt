@@ -40,7 +40,7 @@ fun AddEditCategoryView(
     groceryCategoriesViewModel: GroceryCategoriesViewModel,
     navHostController: NavHostController
 ) {
-    val categoriesList = groceryCategoriesViewModel.finalCategories.collectAsState(emptyList()).value
+    val categoriesList = groceryCategoriesViewModel.finalCategories.collectAsState().value
     val category = categoriesList.find { it.id == id }
     var name by remember { mutableStateOf(category?.name ?: "") }
 

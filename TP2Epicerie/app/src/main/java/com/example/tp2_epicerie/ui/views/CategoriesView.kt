@@ -27,11 +27,13 @@ import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CategoryCard
 import com.example.tp2_epicerie.ui.common.CustomCategoryCardInfo
 import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
+import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
 
 // La page pour afficher les catégories
 @Composable
 fun CategoriesView(
     groceryCategoriesViewModel: GroceryCategoriesViewModel,
+    groceryItemsViewModel: GroceryItemsViewModel,
     navHostController: NavHostController
 ) {
     Scaffold(
@@ -85,6 +87,7 @@ fun CategoriesView(
                     items(categoriesList) { groceryItemCategory ->
                         CategoryCard(
                             groceryCategoriesViewModel = groceryCategoriesViewModel,
+                            groceryItemsViewModel = groceryItemsViewModel,
                             navHostController = navHostController,
                             cardInfo = CustomCategoryCardInfo(
                                 groceryItemCategory = groceryItemCategory,

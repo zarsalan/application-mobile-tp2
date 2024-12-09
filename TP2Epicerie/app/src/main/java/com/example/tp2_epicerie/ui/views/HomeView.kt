@@ -33,11 +33,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.tp2_epicerie.R
 import com.example.tp2_epicerie.Screen
+import com.example.tp2_epicerie.data.GroceryItemCategory
 import com.example.tp2_epicerie.ui.common.AppBarMenu
 import com.example.tp2_epicerie.ui.common.AppBarMenuInfo
 import com.example.tp2_epicerie.ui.common.AppBarView
 import com.example.tp2_epicerie.ui.common.CustomListCard
 import com.example.tp2_epicerie.ui.common.CustomListCardInfo
+import com.example.tp2_epicerie.viewModels.GroceryCategoriesViewModel
 import com.example.tp2_epicerie.viewModels.GroceryItemsViewModel
 
 import com.example.tp2_epicerie.viewModels.GroceryListsViewModel
@@ -52,16 +54,8 @@ fun HomeView(
 ) {
     var showAboutDialog by remember { mutableStateOf(false) }
 
-    // Observer les données utilisateur et listes d'épicerie
-    val currentUser by userViewModel.currentUser.collectAsState()
+    // Observation des listes d'épicerie
     val groceryLists by groceryListsViewModel.groceryLists.collectAsState(emptyList())
-
-    // Charger les listes d'épicerie lorsque l'utilisateur est connecté
-    LaunchedEffect(currentUser) {
-        if (currentUser != null) {
-            groceryListsViewModel.loadGroceryLists()
-        }
-    }
 
     Scaffold(
         topBar = {
