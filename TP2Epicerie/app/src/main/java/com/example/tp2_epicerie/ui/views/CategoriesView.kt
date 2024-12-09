@@ -53,7 +53,7 @@ fun CategoriesView(
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
             }
         }
-    ) {
+    ) {paddingValues ->
         val categoriesList =
             groceryCategoriesViewModel.finalCategories.collectAsState(emptyList()).value
         val isLoading = groceryCategoriesViewModel.isLoading.collectAsState(false).value
@@ -64,7 +64,8 @@ fun CategoriesView(
             CircularProgressIndicator(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(paddingValues)
+                    .padding(vertical = 16.dp, horizontal = 16.dp),
                 color = MaterialTheme.colorScheme.primary
             )
         } else {
@@ -79,7 +80,7 @@ fun CategoriesView(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(it)
+                        .padding(paddingValues)
                         .padding(top = 6.dp)
                 ) {
                     items(categoriesList) { groceryItemCategory ->

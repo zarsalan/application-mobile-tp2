@@ -90,12 +90,6 @@ fun GroceryItemCard(
                         selectedGroceryList = groceryList
                         showQuantityDialog = true
                         menuExpanded = false
-
-                        // On récupère l'élément d'épicerie non barré correspondant à l'élément sélectionné
-                        groceryListsViewModel.getCurrentGroceryListItemUnchecked(
-                            selectedGroceryList,
-                            cardInfo.groceryItem.id
-                        )
                     }
                 )
             }
@@ -266,16 +260,14 @@ fun GroceryItemCard(
             },
             confirmButton = {
                 Button(onClick = {
-                    groceryListsViewModel.currentGroceryListItemUnchecked.let { it ->
-                        val listItem = it.value
-
+                    groceryListsViewModel.getCurrentGroceryListItemUnchecked(selectedGroceryList, cardInfo.groceryItem.id).let { listItem ->
                         // Si l'élément est déjà dans la liste, on incrémente la quantité
                         if (listItem != null) {
                             groceryListsViewModel.updateGroceryListItem(
                                 listItem.copy(quantity = listItem.quantity + selectedQuantity)
                             )
                         } else {
-                            // Sinon, on ajoute l'élément à la liste
+                            // Sinon, on ajoute un nouveau élément à la liste
                             groceryListsViewModel.addGroceryListItem(
                                 ListItem(
                                     groceryListId = selectedGroceryList.id,

@@ -37,7 +37,16 @@ data class GroceryList(
     var title: String = "",
     var description: String = "",
     var listItems: MutableList<ListItem> = mutableListOf(),
-)
+) {
+    fun copy(): GroceryList {
+        return GroceryList(
+            id = this.id,
+            title = this.title,
+            description = this.description,
+            listItems = this.listItems.toMutableList()
+        )
+    }
+}
 
 data class ListItem(
     var id: String = UUID.randomUUID().toString(), // Idée unique générée par UUID
@@ -52,7 +61,16 @@ data class RecipeList(
     var title: String = "",
     var description: String = "",
     var recipes: MutableList<Recipe> = mutableListOf(),
-)
+) {
+    fun copy(): RecipeList {
+        return RecipeList(
+            id = this.id,
+            title = this.title,
+            description = this.description,
+            recipes = this.recipes.toMutableList()
+        )
+    }
+}
 
 // Entités venant de l'API et modifié par l'utilisateur
 data class GroceryItemUser(
@@ -108,5 +126,5 @@ data class RecipeCategory(
 
 data class Ingredient(
     var groceryItem: GroceryItem,
-    var quantity: Int,
+    var quantity: String,
 )

@@ -1,5 +1,6 @@
 package com.example.tp2_epicerie.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tp2_epicerie.CurrentUserCache
@@ -28,10 +29,6 @@ class GroceryListsViewModel : ViewModel() {
     private val _currentGroceryItems = MutableStateFlow<List<GroceryItem>>(emptyList())
     val currentGroceryItems: StateFlow<List<GroceryItem>> = _currentGroceryItems
 
-    // L'item demandé non cochée
-    private val _currentGroceryListItemUnchecked = MutableStateFlow<ListItem?>(null)
-    val currentGroceryListItemUnchecked: StateFlow<ListItem?> = _currentGroceryListItemUnchecked
-
     private fun saveGroceryList(groceryList: GroceryList) {
         viewModelScope.launch {
             try {
@@ -52,7 +49,7 @@ class GroceryListsViewModel : ViewModel() {
     fun loadCurrentGroceryListItems(groceryListId: String) {
         val user = CurrentUserCache.user ?: return
         val groceryList = user.groceryLists[groceryListId] ?: return
-        _currentGroceryList.value = groceryList
+        _currentGroceryList.value = groceryList.copy()
         val items = mutableListOf<GroceryItem>()
 
         // On obtient les GroceryItem de la liste
@@ -68,8 +65,8 @@ class GroceryListsViewModel : ViewModel() {
             )
             items.add(groceryItem)
         }
-
-        _currentGroceryItems.value = items
+        Log.d("GroceryListsViewModel", "loadCurrentGroceryListItems completed")
+        _currentGroceryItems.value = items.toList()
     }
 
     // Rechargement des items de la liste si la liste actuel a été modifiée
@@ -155,8 +152,7 @@ class GroceryListsViewModel : ViewModel() {
     }
 
     // Obtention de l'item de la liste d'épicerie non cochée
-    fun getCurrentGroceryListItemUnchecked(groceryList: GroceryList, groceryItemId: String) {
-        val listItem = groceryList.listItems.find { it.groceryItemId == groceryItemId } ?: return
-        _currentGroceryListItemUnchecked.value = listItem
+    fun getCurrentGroceryListItemUnchecked(groceryList: GroceryList, groceryItemId: String): ListItem? {
+        return groceryList.listItems.find { it.groceryItemId == groceryItemId && !it.isChecked }
     }
 }
