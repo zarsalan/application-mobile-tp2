@@ -70,4 +70,7 @@
     <string name="text_category_other">Other</string>
     <string name="text_cannot_delete_api_item">This is an item from the API and cannot be deleted</string>
     <string name="no_lists_found">No lists have been found</string>
+    <string name="search_button">search</string>
+    <string name="search">search</string>
+
 </resources>

@@ -71,4 +71,6 @@
     <string name="text_category_other">Autre</string>
     <string name="text_cannot_delete_api_item">C\'est un article de l\'API et ne peut pas être supprimé</string>
     <string name="no_lists_found">No lists have been found</string>
+    <string name="search_button">Rechercher</string>
+    <string name="search">Rechercher</string>
 </resources>

@@ -1,19 +1,31 @@
 package com.example.tp2_epicerie.ui.views
 
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,6 +34,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -55,14 +68,23 @@ fun GroceryItemsView(
     navHostController: NavHostController,
     mode: Boolean // true pour "Tous les items", false pour "Favoris"
 ) {
-    // Récupération des données d'items et de catégories
+    // États pour les filtres
+    var selectedCategory by remember { mutableStateOf("Toutes les catégories") }
+    var searchText by remember { mutableStateOf("") }
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+
+    // Récupération des données
     val groceryItems by groceryItemsViewModel.finalItems.collectAsState()
     val groceryCategories by groceryCategoriesViewModel.finalCategories.collectAsState()
     val isLoading by groceryItemsViewModel.isLoading.collectAsState()
 
+    // Chaîne pour les catégories
+    val categoryOptions = remember(groceryCategories) {
+        listOf("Toutes les catégories") + groceryCategories.map { it.name }
+    }
+
     val addEditItemRoute = remember { Screen.AddEditItem.route }
 
-    // Chaîne pour la catégorie "Autres"
     val otherCategoryLabel = stringResource(R.string.text_category_other)
 
     // Création de map pour les catégories et les items
@@ -70,13 +92,21 @@ fun GroceryItemsView(
         groceryCategories.associateBy { it.id }
     }
 
-    // Regroupement des items par catégorie
-    val itemsByCategory = remember(groceryItems, groceryCategories, mode) {
-        groceryItems
-            .filter { it.isFavorite == mode || mode } // Filtrer par favoris si nécessaire
-            .groupBy { item ->
-                categoryLookup[item.category.id]?.name ?: otherCategoryLabel
-            }
+    // Regroupement et filtrage des items
+    val filteredItems = remember(selectedCategory, searchText, groceryItems, mode) {
+        groceryItems.filter { item ->
+            val matchesCategory = selectedCategory == "Toutes les catégories" ||
+                    categoryLookup[item.category.id]?.name == selectedCategory
+            val matchesSearch = searchText.isBlank() || item.name.contains(searchText, ignoreCase = true)
+            val matchesMode = item.isFavorite != mode || mode
+            matchesCategory && matchesSearch && matchesMode
+        }
+    }
+
+    val itemsByCategory = remember(filteredItems) {
+        filteredItems.groupBy { item ->
+            categoryLookup[item.category.id]?.name ?: otherCategoryLabel
+        }
     }
 
     Scaffold(
@@ -98,8 +128,8 @@ fun GroceryItemsView(
             if (mode) {
                 FloatingActionButton(
                     onClick = { navHostController.navigate(Screen.AddEditItem.route + "/0L") },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
+                    contentColor = Color.White,
+                    containerColor = colorResource(id = R.color.app_bar)
                 ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(R.string.text_add))
                 }
@@ -107,44 +137,98 @@ fun GroceryItemsView(
         }
     ) { paddingValues ->
         if (isLoading) {
-            CircularProgressIndicator(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                color = MaterialTheme.colorScheme.primary
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
             ) {
-                itemsByCategory.forEach { (categoryName, items) ->
-                    item {
-                        Text(
-                            text = categoryName,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 22.sp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        )
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                // Barre de recherche et de tri
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Dropdown pour sélectionner la catégorie
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { isDropdownExpanded = true }
+                            .background(MaterialTheme.colorScheme.surface, MaterialTheme.shapes.small)
+                            .padding(8.dp)
+                    ) {
+                        Text(text = selectedCategory, color = MaterialTheme.colorScheme.onSurface)
+                        DropdownMenu(
+                            expanded = isDropdownExpanded,
+                            onDismissRequest = { isDropdownExpanded = false }
+                        ) {
+                            categoryOptions.forEach { category ->
+                                DropdownMenuItem(
+                                    text = { Text(category) },
+                                    onClick = {
+                                        selectedCategory = category
+                                        isDropdownExpanded = false
+                                    }
+                                )
+                            }
+                        }
                     }
-                    items(items, key = {it.id}) { groceryItem ->
-                        GroceryItemCard(
-                            groceryItemsViewModel = groceryItemsViewModel,
-                            groceryListsViewModel = groceryListsViewModel,
-                            cardInfo = GroceryItemCardInfo(
-                                groceryItem = groceryItem,
-                                onClick = { navHostController.navigate( "$addEditItemRoute/${groceryItem.id}") },
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Champ de recherche
+                    TextField(
+                        value = searchText,
+                        onValueChange = { searchText = it },
+                        label = { Text(stringResource(R.string.search)) },
+                        modifier = Modifier.weight(2f),
+                        singleLine = true
+                    )
+                }
+
+                // Liste des items
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp)
+                ) {
+                    itemsByCategory.forEach { (categoryName, items) ->
+                        item {
+                            Text(
+                                text = categoryName,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 22.sp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
                             )
-                        )
+                        }
+                        items(items, key = { it.id }) { groceryItem ->
+                            GroceryItemCard(
+                                groceryItemsViewModel = groceryItemsViewModel,
+                                groceryListsViewModel = groceryListsViewModel,
+                                cardInfo = GroceryItemCardInfo(
+                                    groceryItem = groceryItem,
+                                    onClick = {
+                                        navHostController.navigate("$addEditItemRoute/${groceryItem.id}")
+                                    },
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                )
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+
