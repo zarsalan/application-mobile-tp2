@@ -127,7 +127,7 @@ class GroceryItemsViewModel : ViewModel() {
     fun categoryDeleted(categoryId: String) {
         val user = CurrentUserCache.user ?: return
         val items = user.groceryItems.values.filter { it.categoryId == categoryId }
-        val defaultCategory = GroceryItemCategory()
+        val defaultCategory = GroceryItemCategory(id = "1")
 
         viewModelScope.launch {
             items.forEach { item ->
